@@ -21,6 +21,7 @@ const restaurant = {
   logo: `${SITE}/images/logo.png`,
   image: [`${SITE}/og-image.jpg`, `${SITE}/images/idli-plate.jpg`, `${SITE}/images/dosa-plate.jpg`],
   telephone: brand.phone,
+  menu: `${SITE}/menu/`,
   hasMap: brand.googleMaps,
   sameAs: [brand.googleMaps],
   servesCuisine: ['South Indian', 'Indian', 'Vegetarian'],
@@ -28,6 +29,14 @@ const restaurant = {
   currenciesAccepted: 'INR',
   paymentAccepted: 'UPI',
   acceptsReservations: false,
+  ...(brand.hours && {
+    openingHoursSpecification: {
+      '@type': 'OpeningHoursSpecification',
+      dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+      opens: brand.hours.opens,
+      closes: brand.hours.closes,
+    },
+  }),
   address: { '@type': 'PostalAddress', addressLocality: brand.city, addressRegion: 'West Bengal', addressCountry: 'IN' },
   areaServed: deliveryAreas.map((a) => ({ '@type': 'Place', name: `${a}, ${brand.city}` })),
   hasMenu: {
@@ -98,26 +107,26 @@ const popular = menu.flatMap((m) => m.items.filter((i) => i.popular))
 const areaUrl = (a) => `${SITE}/delivery/${areaSlug(a)}/`
 const nearby = (i) => [-3, -2, -1, 1, 2, 3].map((d) => deliveryAreas[(i + d + deliveryAreas.length) % deliveryAreas.length])
 
-function areaPage(area, i) {
-  const title = `South Indian Food Delivery in ${area}, ${brand.city} | Idli, Dosa & Vada | ${brand.name}`
-  const desc = `Order pure veg South Indian food in ${area}, ${brand.city}: soft idli, crispy vada, masala dosa and uttapam with sambar and chutney. Home delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Pay by UPI.`
-  const areaFaqs = [
-    { q: `Does Idliyala deliver South Indian food to ${area}?`, a: `Yes. Idliyala delivers fresh idli, vada, dosa and uttapam to ${area} and nearby areas like ${nearby(i).slice(2, 5).join(', ')}. Delivery is ₹${brand.deliveryCharge} on orders of ₹${brand.minOrder} or more.` },
-    { q: `How do I order idli or dosa in ${area}?`, a: `Pick your dishes on ${SITE.replace('https://', '')}, enter your ${area} address, pay by UPI and your order reaches our kitchen on WhatsApp. You can also call or WhatsApp ${brand.phoneDisplay}.` },
-    { q: `Is Idliyala pure vegetarian?`, a: `Yes. Everything is 100% pure vegetarian, with batter, sambar and chutneys made fresh every day.` },
-  ]
-  const ldArea = [
-    { '@context': 'https://schema.org', '@type': 'Restaurant', '@id': `${SITE}/#restaurant`, name: brand.name, url: `${SITE}/`, telephone: brand.phone, servesCuisine: ['South Indian', 'Vegetarian'], image: `${SITE}/og-image.jpg`, address: restaurant.address, areaServed: { '@type': 'Place', name: `${area}, ${brand.city}` } },
-    { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
-      { '@type': 'ListItem', position: 1, name: brand.name, item: `${SITE}/` },
-      { '@type': 'ListItem', position: 2, name: 'Delivery areas', item: `${SITE}/#delivery` },
-      { '@type': 'ListItem', position: 3, name: area, item: areaUrl(area) },
-    ] },
-    { '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: areaFaqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) },
-  ]
-  const li = (it) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span></div><span class="price">₹${it.price}</span></li>`
+const li = (it) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span></div><span class="price">₹${it.price}</span></li>`
+const fullMenu = () => `${menu.map((m) => `<div class="menu__panel" id="${m.id}"><div class="menu__panel-head"><h3>${esc(m.category)}</h3><p>${esc(m.blurb)}</p></div><ul class="menu__list">${m.items.map(li).join('')}</ul></div>`).join('\n        ')}
+        <p class="menu__addons"><strong>Add-ons for any dish:</strong> ${addOns.map((a) => `${esc(a.name)} ₹${a.price}`).join(' · ')}</p>`
+const crumbs = (items) => ({
+  '@context': 'https://schema.org',
+  '@type': 'BreadcrumbList',
+  itemListElement: items.map(([name, item], n) => ({ '@type': 'ListItem', position: n + 1, name, item })),
+})
+const restaurantRef = (extra = {}) => ({
+  '@context': 'https://schema.org', '@type': 'Restaurant', '@id': `${SITE}/#restaurant`, name: brand.name, url: `${SITE}/`,
+  telephone: brand.phone, servesCuisine: restaurant.servesCuisine, image: `${SITE}/og-image.jpg`, address: restaurant.address,
+  menu: `${SITE}/menu/`, hasMap: brand.googleMaps, ...extra,
+})
+const faqLd = (list) => ({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: list.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) })
+
+// Shared shell for the static pages: same look as the app, no JavaScript needed.
+function layout({ path, title, desc, ogTitle, lds, main }) {
+  const url = `${SITE}${path}`
   return `<!doctype html>
-<html lang="en">
+<html lang="en-IN">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -125,14 +134,14 @@ function areaPage(area, i) {
     <meta name="description" content="${esc(desc)}" />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <meta name="theme-color" content="#2f6b3c" />
-    <link rel="canonical" href="${areaUrl(area)}" />
+    <link rel="canonical" href="${url}" />
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="${brand.name}" />
-    <meta property="og:title" content="${esc(`South Indian food delivery in ${area} · ${brand.name}`)}" />
+    <meta property="og:title" content="${esc(ogTitle)}" />
     <meta property="og:description" content="${esc(desc)}" />
-    <meta property="og:url" content="${areaUrl(area)}" />
+    <meta property="og:url" content="${url}" />
     <meta property="og:image" content="${SITE}/og-image.jpg" />
     <meta property="og:locale" content="en_IN" />
     <meta name="twitter:card" content="summary_large_image" />
@@ -140,7 +149,7 @@ function areaPage(area, i) {
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="/assets/${cssHref}" />
-    ${ldArea.map(ld).join('\n    ')}
+    ${lds.map(ld).join('\n    ')}
   </head>
   <body>
     <header class="nav"><div class="container nav__inner">
@@ -148,8 +157,35 @@ function areaPage(area, i) {
       <a href="/#menu" class="cart-btn"><span aria-hidden="true">🛒</span><span class="cart-btn__label">Order now</span></a>
     </div></header>
     <main>
-      <section class="hero"><div class="container">
-        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${brand.name}</a> › <a href="/#delivery">Delivery areas</a> › ${esc(area)}</nav>
+${main}
+    </main>
+    <footer class="footer"><div class="container footer__inner">
+      <div class="footer__brand"><img src="/images/logo-mark.png" alt="" width="36" height="32" /><span><strong>${brand.name}</strong>™ · ${brand.tagline}</span></div>
+      <p><a href="/menu/">Menu</a> · <a href="/delivery/">Delivery areas</a> · 📞 <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> · <a href="${brand.googleMaps}" target="_blank" rel="noreferrer">Find us on Google</a></p>
+    </div></footer>
+  </body>
+</html>
+`
+}
+
+function areaPage(area, i) {
+  const areaFaqs = [
+    { q: `Does Idliyala deliver South Indian food to ${area}?`, a: `Yes. Idliyala delivers fresh idli, vada, dosa and uttapam to ${area} and nearby areas like ${nearby(i).slice(2, 5).join(', ')}. Delivery is ₹${brand.deliveryCharge} on orders of ₹${brand.minOrder} or more.` },
+    { q: `How do I order idli or dosa in ${area}?`, a: `Pick your dishes on ${SITE.replace('https://', '')}, enter your ${area} address, pay by UPI and your order reaches our kitchen on WhatsApp. You can also call or WhatsApp ${brand.phoneDisplay}.` },
+    { q: `Is Idliyala pure vegetarian?`, a: `Yes. Everything is 100% pure vegetarian, with batter, sambar and chutneys made fresh every day.` },
+  ]
+  return layout({
+    path: `/delivery/${areaSlug(area)}/`,
+    title: `South Indian Food Delivery in ${area}, ${brand.city} | ${brand.name}`,
+    desc: `Order pure veg South Indian food in ${area}, ${brand.city}: soft idli, crispy vada, masala dosa and uttapam with sambar and chutney. Home delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Pay by UPI.`,
+    ogTitle: `South Indian food delivery in ${area} · ${brand.name}`,
+    lds: [
+      restaurantRef({ areaServed: { '@type': 'Place', name: `${area}, ${brand.city}` } }),
+      crumbs([[brand.name, `${SITE}/`], ['Delivery areas', `${SITE}/delivery/`], [area, areaUrl(area)]]),
+      faqLd(areaFaqs),
+    ],
+    main: `      <section class="hero"><div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${brand.name}</a> › <a href="/delivery/">Delivery areas</a> › ${esc(area)}</nav>
         <span class="eyebrow">100% pure veg · Home delivery in ${esc(area)}</span>
         <h1>South Indian food delivery in ${esc(area)}, ${brand.city}</h1>
         <p class="lead">Craving soft idlis, crispy vadas or a golden masala dosa in ${esc(area)}? ${brand.name} cooks fresh South Indian food every day and delivers it hot to your door in ${esc(area)}, with sambar and coconut chutney on every plate.</p>
@@ -160,8 +196,7 @@ function areaPage(area, i) {
         <h2>Popular in ${esc(area)}</h2>
         <div class="menu__panel"><ul class="menu__list">${popular.map(li).join('')}</ul></div>
         <h2 class="area-menu__full">Full menu</h2>
-        ${menu.map((m) => `<div class="menu__panel"><div class="menu__panel-head"><h3>${esc(m.category)}</h3><p>${esc(m.blurb)}</p></div><ul class="menu__list">${m.items.map(li).join('')}</ul></div>`).join('\n        ')}
-        <p class="menu__addons"><strong>Add-ons for any dish:</strong> ${addOns.map((a) => `${esc(a.name)} ₹${a.price}`).join(' · ')}</p>
+        ${fullMenu()}
         <p><a href="/#menu" class="btn btn--primary">Start your order</a></p>
       </div></section>
       <section class="faq"><div class="container">
@@ -171,27 +206,60 @@ function areaPage(area, i) {
       <section class="area-nearby"><div class="container">
         <h2>We also deliver near ${esc(area)}</h2>
         <ul class="area-links">${nearby(i).map((a) => `<li><a href="/delivery/${areaSlug(a)}/">South Indian food in ${esc(a)}</a></li>`).join('')}</ul>
-      </div></section>
-    </main>
-    <footer class="footer"><div class="container footer__inner">
-      <div class="footer__brand"><img src="/images/logo-mark.png" alt="" width="36" height="32" /><span><strong>${brand.name}</strong>™ · ${brand.tagline}</span></div>
-      <p>📞 <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> · ${brand.city} · <a href="${brand.googleMaps}" target="_blank" rel="noreferrer">Find us on Google</a></p>
-    </div></footer>
-  </body>
-</html>
-`
+      </div></section>`,
+  })
 }
 
-deliveryAreas.forEach((area, i) => {
-  const dir = new URL(`../dist/delivery/${areaSlug(area)}/`, import.meta.url)
-  mkdirSync(dir, { recursive: true })
-  writeFileSync(new URL('index.html', dir), areaPage(area, i))
-})
+const pages = {
+  'menu/': layout({
+    path: '/menu/',
+    title: `${brand.name} Menu & Prices | Idli, Dosa, Vada, Uttapam | Pure Veg, ${brand.city}`,
+    desc: `Full ${brand.name} menu with prices: idli from ₹50, plain dosa ₹60, masala dosa ₹70, uttapam from ₹60, plus Amul butter, cheese and paneer add-ons. 100% pure veg, delivered across ${brand.city}.`,
+    ogTitle: `${brand.name} menu and prices`,
+    lds: [
+      { ...restaurantRef(), hasMenu: restaurant.hasMenu },
+      crumbs([[brand.name, `${SITE}/`], ['Menu', `${SITE}/menu/`]]),
+    ],
+    main: `      <section class="hero"><div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${brand.name}</a> › Menu</nav>
+        <span class="eyebrow">100% pure veg · ${brand.city}</span>
+        <h1>${brand.name} menu and prices</h1>
+        <p class="lead">Every idli, vada, dosa and uttapam comes hot with sambar and coconut chutney. Delivery is ₹${brand.deliveryCharge} on orders of ₹${brand.minOrder} or more, anywhere in our ${deliveryAreas.length} ${brand.city} delivery areas.</p>
+        <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a></div>
+      </div></section>
+      <section class="area-menu"><div class="container">
+        ${fullMenu()}
+        <p><a href="/#menu" class="btn btn--primary">Start your order</a></p>
+      </div></section>`,
+  }),
+  'delivery/': layout({
+    path: '/delivery/',
+    title: `South Indian Food Delivery Areas in ${brand.city} | ${brand.name}`,
+    desc: `${brand.name} delivers pure veg idli, dosa, vada and uttapam to ${deliveryAreas.length} areas in ${brand.city}, including ${deliveryAreas.slice(0, 6).join(', ')} and more.`,
+    ogTitle: `${brand.name} delivery areas in ${brand.city}`,
+    lds: [restaurantRef({ areaServed: restaurant.areaServed }), crumbs([[brand.name, `${SITE}/`], ['Delivery areas', `${SITE}/delivery/`]])],
+    main: `      <section class="hero"><div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${brand.name}</a> › Delivery areas</nav>
+        <span class="eyebrow">Home delivery · ${brand.city}</span>
+        <h1>Where we deliver in ${brand.city}</h1>
+        <p class="lead">Fresh South Indian food, delivered hot to ${deliveryAreas.length} neighbourhoods in north and east ${brand.city}. Delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}.</p>
+        <ul class="area-links">${deliveryAreas.map((a) => `<li><a href="/delivery/${areaSlug(a)}/">South Indian food in ${esc(a)}</a></li>`).join('')}</ul>
+      </div></section>`,
+  }),
+}
 
-const urls = [`${SITE}/`, ...deliveryAreas.map(areaUrl)]
+deliveryAreas.forEach((area, i) => { pages[`delivery/${areaSlug(area)}/`] = areaPage(area, i) })
+for (const [path, html] of Object.entries(pages)) {
+  const dir = new URL(`../dist/${path}`, import.meta.url)
+  mkdirSync(dir, { recursive: true })
+  writeFileSync(new URL('index.html', dir), html)
+}
+
+const urls = [`${SITE}/`, ...Object.keys(pages).map((p) => `${SITE}/${p}`)]
+const images = ['og-image.jpg', 'images/idli-plate.jpg', 'images/dosa-plate.jpg', 'images/logo.png']
 writeFileSync(dist('sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${urls.map((u, i) => `  <url><loc>${u}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>${i ? '0.8' : '1.0'}</priority></url>`).join('\n')}
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${urls.map((u, i) => `  <url><loc>${u}</loc><lastmod>${today}</lastmod>${i ? '' : images.map((im) => `<image:image><image:loc>${SITE}/${im}</image:loc></image:image>`).join('')}</url>`).join('\n')}
 </urlset>
 `)
 
@@ -204,6 +272,7 @@ writeFileSync(dist('llms.txt'), `# ${brand.name}
 > ${brand.name} (${brand.tagline}) is a South Indian food delivery kitchen in ${brand.city}, India, serving fresh idli, vada, dosa and uttapam with sambar and coconut chutney. All food is 100% pure vegetarian. Order online at ${SITE}/ or on WhatsApp/phone ${brand.phoneDisplay}.
 
 ## Ordering and delivery
+- Menu: ${SITE}/menu/
 - Website: ${SITE}/ (pick dishes and add-ons, enter address, pay by UPI; the order is sent on WhatsApp)
 - Phone / WhatsApp: +91 ${brand.phoneDisplay}
 - Google Maps: ${brand.googleMaps}
@@ -223,4 +292,4 @@ ${faqs.map((f) => `**${f.q}**\n${f.a}`).join('\n\n')}
 `)
 
 rmSync(new URL('../dist-ssr', import.meta.url), { recursive: true, force: true })
-console.log(`prerendered index.html, ${deliveryAreas.length} area pages, robots.txt, sitemap.xml, llms.txt`)
+console.log(`prerendered index.html, ${Object.keys(pages).length} static pages, robots.txt, sitemap.xml, llms.txt`)
