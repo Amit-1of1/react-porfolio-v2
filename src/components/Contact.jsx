@@ -1,21 +1,24 @@
 import { brand } from '../data'
 import { whatsappLink } from '../order'
 
-export default function Contact() {
+export default function Contact({ onOrder }) {
   return (
     <section className="contact" id="contact">
       <div className="container contact__inner card">
-        <img src="/images/logo.png" alt="Idliyala logo" className="contact__logo" />
+        <img src="/images/logo.png" alt="Idliyala logo" className="contact__logo" width="400" height="397" loading="lazy" />
         <div>
           <span className="eyebrow">Hungry?</span>
           <h2>Order now, eat fresh</h2>
-          <p>Call or WhatsApp us to place your order. We&apos;ll confirm the total and delivery time right away.</p>
+          <p>Pick your dishes, pay by UPI and your order reaches our kitchen on WhatsApp. Questions first? Call or message us any time.</p>
           <div className="hero__ctas">
-            <a href={whatsappLink('Hi Idliyala! I would like to place an order.')} target="_blank" rel="noreferrer" className="btn btn--whatsapp">
-              WhatsApp {brand.phoneDisplay}
-            </a>
-            <a href={`tel:${brand.phone}`} className="btn btn--ghost">Call us</a>
+            <button type="button" className="btn btn--primary" onClick={onOrder}>
+              <span aria-hidden="true">🛒</span> Order now
+            </button>
+            <a href={`tel:${brand.phone}`} className="btn btn--ghost">Call {brand.phoneDisplay}</a>
           </div>
+          <a className="contact__chat" href={whatsappLink('Hi Idliyala! I have a question.')} target="_blank" rel="noreferrer">
+            Or chat with us on WhatsApp
+          </a>
         </div>
       </div>
     </section>

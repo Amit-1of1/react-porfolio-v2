@@ -21,7 +21,7 @@ export const highlights = [
   { icon: '🌅', title: 'Made fresh daily', text: 'Batter, sambar and chutneys prepared fresh every day. Nothing sits overnight.' },
   { icon: '🍃', title: 'Authentic taste', text: 'Classic South Indian recipes, from a simple plain dosa to our loaded specials.' },
   { icon: '🛵', title: 'Home delivery', text: `Delivered hot across north and east Kolkata on orders of ₹100 and above.` },
-  { icon: '💬', title: 'Order on WhatsApp', text: 'Pick your dishes here and send the order to us in one tap.' },
+  { icon: '📱', title: 'Easy online ordering', text: 'Pick your dishes, pay by UPI and your order reaches us on WhatsApp.' },
 ]
 
 const item = (name, price, extra = {}) => ({ name, price, ...extra })
@@ -134,3 +134,31 @@ export const deliveryAreas = [
 // Real customer reviews only. The section stays hidden while this is empty.
 // Shape: { name: 'Customer name', rating: 5, text: 'Review text', source: 'Google' }
 export const reviews = []
+
+// Shown on the page and also published as FAQ structured data for search engines.
+export const faqs = [
+  {
+    q: 'Where does Idliyala deliver in Kolkata?',
+    a: `We deliver across north and east Kolkata, including ${deliveryAreas.slice(0, -1).join(', ')} and ${deliveryAreas.at(-1)}.`,
+  },
+  {
+    q: 'What is the delivery charge and minimum order?',
+    a: `Delivery is ₹${brand.deliveryCharge} per order and the minimum order is ₹${brand.minOrder}.`,
+  },
+  {
+    q: 'How do I order?',
+    a: 'Add dishes and any add-ons on this website, enter your address, pay by UPI and your order is sent to our kitchen on WhatsApp. You can also call or WhatsApp us on 99033 22982.',
+  },
+  {
+    q: 'How can I pay?',
+    a: 'Pay online with any UPI app such as PhonePe, Google Pay or Paytm. Scan the QR or tap Pay at checkout, then enter the 12-digit UTR from your payment.',
+  },
+  {
+    q: 'What comes with the idli and dosa?',
+    a: 'Every idli, vada, dosa and uttapam comes hot with sambar and coconut chutney. You can add Amul butter, cheese, paneer, schezwan or ghee to any dish.',
+  },
+  {
+    q: 'Is the food vegetarian?',
+    a: 'Yes. Everything on the Idliyala menu is 100% vegetarian, and the batter, sambar and chutneys are made fresh every day.',
+  },
+]

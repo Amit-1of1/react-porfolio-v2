@@ -9,7 +9,7 @@ export default function Footer() {
           <span><strong>{brand.name}</strong>™ · {brand.tagline}</span>
         </div>
         <p>📞 <a href={`tel:${brand.phone}`}>{brand.phoneDisplay}</a> · {brand.city}</p>
-        <p className="footer__copy">© {new Date().getFullYear()} {brand.name}. All rights reserved.</p>
+        <p className="footer__copy" suppressHydrationWarning>© {new Date().getFullYear()} {brand.name}. All rights reserved.</p>
       </div>
     </footer>
   )
