@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { menu } from '../data'
+import { addOns, menu } from '../data'
+import { itemCount } from '../cart'
 
-export default function Menu({ cart, onAdd, onRemove }) {
+export default function Menu({ cart, onPick, onRemoveOne }) {
   const [active, setActive] = useState(menu[0].id)
   const section = menu.find((m) => m.id === active)
 
@@ -11,7 +12,7 @@ export default function Menu({ cart, onAdd, onRemove }) {
         <div className="section-head">
           <span className="eyebrow">Our menu</span>
           <h2>Pick your favourites</h2>
-          <p>Every dish comes hot with sambar and coconut chutney. Tap + to add it to your order.</p>
+          <p>Every dish comes hot with sambar and coconut chutney. Tap Add to choose add-ons and put it in your order.</p>
         </div>
 
         <div className="menu__tabs" role="tablist">
@@ -35,7 +36,7 @@ export default function Menu({ cart, onAdd, onRemove }) {
           </div>
           <ul className="menu__list">
             {section.items.map((it) => {
-              const qty = cart[it.name]?.qty || 0
+              const qty = itemCount(cart, it.name)
               return (
                 <li key={it.name} className="menu-item">
                   <div className="menu-item__info">
@@ -46,12 +47,12 @@ export default function Menu({ cart, onAdd, onRemove }) {
                   <div className="menu-item__right">
                     <span className="price">₹{it.price}</span>
                     {qty === 0 ? (
-                      <button className="add-btn" onClick={() => onAdd(it)} aria-label={`Add ${it.name}`}>Add +</button>
+                      <button className="add-btn" onClick={() => onPick(it)} aria-label={`Add ${it.name}`}>Add +</button>
                     ) : (
                       <div className="stepper">
-                        <button onClick={() => onRemove(it)} aria-label={`Remove one ${it.name}`}>−</button>
+                        <button onClick={() => onRemoveOne(it.name)} aria-label={`Remove one ${it.name}`}>−</button>
                         <span>{qty}</span>
-                        <button onClick={() => onAdd(it)} aria-label={`Add one ${it.name}`}>+</button>
+                        <button onClick={() => onPick(it)} aria-label={`Add one more ${it.name}`}>+</button>
                       </div>
                     )}
                   </div>
@@ -59,6 +60,10 @@ export default function Menu({ cart, onAdd, onRemove }) {
               )
             })}
           </ul>
+          <p className="menu__addons">
+            <strong>Add-ons for any dish:</strong>{' '}
+            {addOns.map((a) => `${a.name} ₹${a.price}`).join(' · ')}
+          </p>
         </div>
       </div>
     </section>

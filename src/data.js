@@ -4,7 +4,7 @@
 export const brand = {
   name: 'Idliyala',
   tagline: 'Daily Fresh Idli',
-  heroTitle: 'Soft idlis. Crispy vadas. Fresh every single day.',
+  heroTitle: ['Soft idlis.', 'Crispy vadas.', 'Fresh every day.'],
   intro:
     'Idliyala is a South Indian kitchen in Kolkata built around the classics: pillowy idlis, golden dosas, loaded uttapams and crunchy vadas, served hot with sambar and coconut chutney and delivered to your door.',
   phoneDisplay: '99033 22982',
@@ -110,19 +110,16 @@ export const menu = [
       item('Tomato Uttapam', 70),
     ],
   },
-  {
-    id: 'add-ons',
-    category: 'Add-ons',
-    blurb: 'Make it extra.',
-    image: null,
-    items: [
-      item('Amul Butter', 20),
-      item('Amul Cheese', 25),
-      item('Amul Paneer', 30),
-      item('Schezwan', 20),
-      item('Ghee', 20),
-    ],
-  },
+]
+
+// Extras a customer can add to any dish, priced per portion. Customers can add
+// as many portions of each as they like; set `max` on one to cap it.
+export const addOns = [
+  { id: 'butter', name: 'Amul Butter', price: 20 },
+  { id: 'cheese', name: 'Amul Cheese', price: 25 },
+  { id: 'paneer', name: 'Amul Paneer', price: 30 },
+  { id: 'schezwan', name: 'Schezwan', price: 20 },
+  { id: 'ghee', name: 'Ghee', price: 20 },
 ]
 
 export const deliveryAreas = [

@@ -7,7 +7,11 @@ export default function Hero() {
       <div className="container hero__inner">
         <div className="hero__copy">
           <span className="eyebrow">South Indian kitchen · {brand.city}</span>
-          <h1>{brand.heroTitle}</h1>
+          <h1 className="hero__title">
+            {brand.heroTitle.map((line, i) => (
+              <span key={line} className={`hero__line hero__line--${i + 1}`}>{line}</span>
+            ))}
+          </h1>
           <p className="lead">{brand.intro}</p>
           <div className="hero__ctas">
             <a href="#menu" className="btn btn--primary">See the menu</a>
