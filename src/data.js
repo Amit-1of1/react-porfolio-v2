@@ -15,7 +15,7 @@ export const brand = {
   upi: { id: '9903284811@axl', payee: 'ANAND JHAWAR' },
   minOrder: 100,
   // Delivery hours, every day, e.g. { opens: '07:30', closes: '22:00' }. Left out of search data until set.
-  hours: null,
+  hours: { opens: '08:00', closes: '20:00', label: '8 am to 8 pm, all 7 days' },
   // Google Business Profile (Maps listing).
   googleMaps: 'https://maps.google.com/?cid=14104414144031816428',
   city: 'Kolkata',
@@ -148,6 +148,10 @@ export const faqs = [
   {
     q: 'What is the delivery charge and minimum order?',
     a: `Delivery is ₹${brand.deliveryCharge} per order and the minimum order is ₹${brand.minOrder}.`,
+  },
+  {
+    q: 'What are your delivery hours?',
+    a: 'We deliver from 8 am to 8 pm, all 7 days of the week.',
   },
   {
     q: 'How do I order?',

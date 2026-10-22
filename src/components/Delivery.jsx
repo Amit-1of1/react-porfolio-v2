@@ -11,6 +11,7 @@ export default function Delivery() {
           <div className="delivery__stats">
             <div><strong>₹{brand.minOrder}</strong><span>minimum order</span></div>
             <div><strong>₹{brand.deliveryCharge}</strong><span>delivery charge</span></div>
+            <div><strong>8–8</strong><span>8 am–8 pm, daily</span></div>
           </div>
           <p>
             We deliver hot to {deliveryAreas.length} neighbourhoods in north and east {brand.city}. Don&apos;t see yours?{' '}

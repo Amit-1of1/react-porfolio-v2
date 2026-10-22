@@ -118,7 +118,7 @@ const crumbs = (items) => ({
 const restaurantRef = (extra = {}) => ({
   '@context': 'https://schema.org', '@type': 'Restaurant', '@id': `${SITE}/#restaurant`, name: brand.name, url: `${SITE}/`,
   telephone: brand.phone, servesCuisine: restaurant.servesCuisine, image: `${SITE}/og-image.jpg`, address: restaurant.address,
-  menu: `${SITE}/menu/`, hasMap: brand.googleMaps, ...extra,
+  menu: `${SITE}/menu/`, hasMap: brand.googleMaps, openingHoursSpecification: restaurant.openingHoursSpecification, ...extra,
 })
 const faqLd = (list) => ({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: list.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) })
 
@@ -190,7 +190,7 @@ function areaPage(area, i) {
         <h1>South Indian food delivery in ${esc(area)}, ${brand.city}</h1>
         <p class="lead">Craving soft idlis, crispy vadas or a golden masala dosa in ${esc(area)}? ${brand.name} cooks fresh South Indian food every day and delivers it hot to your door in ${esc(area)}, with sambar and coconut chutney on every plate.</p>
         <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a><a href="tel:${brand.phone}" class="btn btn--ghost">Call ${brand.phoneDisplay}</a></div>
-        <ul class="hero__badges"><li><strong>₹${brand.deliveryCharge}</strong> delivery</li><li><strong>₹${brand.minOrder}</strong> minimum order</li><li><strong>UPI</strong> payment</li></ul>
+        <ul class="hero__badges"><li><strong>₹${brand.deliveryCharge}</strong> delivery</li><li><strong>₹${brand.minOrder}</strong> minimum order</li><li><strong>UPI</strong> payment</li><li><strong>8 am–8 pm</strong> daily</li></ul>
       </div></section>
       <section class="area-menu"><div class="container">
         <h2>Popular in ${esc(area)}</h2>
@@ -276,6 +276,7 @@ writeFileSync(dist('llms.txt'), `# ${brand.name}
 - Website: ${SITE}/ (pick dishes and add-ons, enter address, pay by UPI; the order is sent on WhatsApp)
 - Phone / WhatsApp: +91 ${brand.phoneDisplay}
 - Google Maps: ${brand.googleMaps}
+- Delivery hours: ${brand.hours.label}
 - Delivery charge: ₹${brand.deliveryCharge}. Minimum order: ₹${brand.minOrder}.
 - Payment: UPI (PhonePe, Google Pay, Paytm or any UPI app)
 - Delivery areas in ${brand.city}: ${deliveryAreas.join(', ')}

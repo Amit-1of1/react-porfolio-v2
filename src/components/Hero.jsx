@@ -22,6 +22,7 @@ export default function Hero({ onOrder }) {
             <li><strong>₹{brand.deliveryCharge}</strong> delivery</li>
             <li><strong>₹{brand.minOrder}</strong> minimum order</li>
             <li><strong>22+</strong> areas served</li>
+            <li><strong>8 am–8 pm</strong> daily</li>
           </ul>
         </div>
         <div className="hero__art">
