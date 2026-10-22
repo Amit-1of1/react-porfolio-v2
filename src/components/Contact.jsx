@@ -19,6 +19,9 @@ export default function Contact({ onOrder }) {
           <a className="contact__chat" href={whatsappLink('Hi Idliyala! I have a question.')} target="_blank" rel="noreferrer">
             Or chat with us on WhatsApp
           </a>
+          <a className="contact__chat" href={brand.googleMaps} target="_blank" rel="noreferrer">
+            Loved your meal? Review us on Google
+          </a>
         </div>
       </div>
     </section>

@@ -21,6 +21,8 @@ const restaurant = {
   logo: `${SITE}/images/logo.png`,
   image: [`${SITE}/og-image.jpg`, `${SITE}/images/idli-plate.jpg`, `${SITE}/images/dosa-plate.jpg`],
   telephone: brand.phone,
+  hasMap: brand.googleMaps,
+  sameAs: [brand.googleMaps],
   servesCuisine: ['South Indian', 'Indian', 'Vegetarian'],
   priceRange: `₹${Math.min(...prices)}–₹${Math.max(...prices)}`,
   currenciesAccepted: 'INR',
@@ -173,7 +175,7 @@ function areaPage(area, i) {
     </main>
     <footer class="footer"><div class="container footer__inner">
       <div class="footer__brand"><img src="/images/logo-mark.png" alt="" width="36" height="32" /><span><strong>${brand.name}</strong>™ · ${brand.tagline}</span></div>
-      <p>📞 <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> · ${brand.city}</p>
+      <p>📞 <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> · ${brand.city} · <a href="${brand.googleMaps}" target="_blank" rel="noreferrer">Find us on Google</a></p>
     </div></footer>
   </body>
 </html>
@@ -204,6 +206,7 @@ writeFileSync(dist('llms.txt'), `# ${brand.name}
 ## Ordering and delivery
 - Website: ${SITE}/ (pick dishes and add-ons, enter address, pay by UPI; the order is sent on WhatsApp)
 - Phone / WhatsApp: +91 ${brand.phoneDisplay}
+- Google Maps: ${brand.googleMaps}
 - Delivery charge: ₹${brand.deliveryCharge}. Minimum order: ₹${brand.minOrder}.
 - Payment: UPI (PhonePe, Google Pay, Paytm or any UPI app)
 - Delivery areas in ${brand.city}: ${deliveryAreas.join(', ')}

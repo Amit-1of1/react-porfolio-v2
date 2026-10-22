@@ -14,6 +14,8 @@ export const brand = {
   // UPI account that receives online payments (from the PhonePe QR).
   upi: { id: '9903284811@axl', payee: 'ANAND JHAWAR' },
   minOrder: 100,
+  // Google Business Profile (Maps listing).
+  googleMaps: 'https://maps.google.com/?cid=14104414144031816428',
   city: 'Kolkata',
 }
 
