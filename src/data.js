@@ -110,19 +110,15 @@ export const menu = [
       item('Tomato Uttapam', 70),
     ],
   },
-  {
-    id: 'add-ons',
-    category: 'Add-ons',
-    blurb: 'Make it extra.',
-    image: null,
-    items: [
-      item('Amul Butter', 20),
-      item('Amul Cheese', 25),
-      item('Amul Paneer', 30),
-      item('Schezwan', 20),
-      item('Ghee', 20),
-    ],
-  },
+]
+
+// Extras a customer can add to any dish, priced per plate.
+export const addOns = [
+  { id: 'butter', name: 'Amul Butter', price: 20 },
+  { id: 'cheese', name: 'Amul Cheese', price: 25 },
+  { id: 'paneer', name: 'Amul Paneer', price: 30 },
+  { id: 'schezwan', name: 'Schezwan', price: 20 },
+  { id: 'ghee', name: 'Ghee', price: 20 },
 ]
 
 export const deliveryAreas = [

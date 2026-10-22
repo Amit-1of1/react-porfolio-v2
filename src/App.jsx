@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useState } from 'react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Highlights from './components/Highlights'
@@ -8,29 +8,23 @@ import Reviews from './components/Reviews'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
+import AddOnSheet from './components/AddOnSheet'
+import { addItem, cartCount, cartSubtotal, changeQty, removeOneOf, toggleAddOn } from './cart'
 
 export default function App() {
-  const [cart, setCart] = useState({})
+  const [cart, setCart] = useState([])
   const [cartOpen, setCartOpen] = useState(false)
+  const [picking, setPicking] = useState(null)
 
-  const add = useCallback((it) => {
-    setCart((c) => ({ ...c, [it.name]: { name: it.name, price: it.price, qty: (c[it.name]?.qty || 0) + 1 } }))
+  const confirmPick = useCallback((item, ids, qty) => {
+    setCart((c) => addItem(c, item, ids, qty))
+    setPicking(null)
   }, [])
-
-  const remove = useCallback((it) => {
-    setCart((c) => {
-      const qty = (c[it.name]?.qty || 0) - 1
-      const next = { ...c }
-      if (qty <= 0) delete next[it.name]
-      else next[it.name] = { ...c[it.name], qty }
-      return next
-    })
-  }, [])
-
-  const lines = useMemo(() => Object.values(cart), [cart])
-  const count = lines.reduce((s, l) => s + l.qty, 0)
-  const subtotal = lines.reduce((s, l) => s + l.qty * l.price, 0)
+  const closePick = useCallback(() => setPicking(null), [])
   const closeCart = useCallback(() => setCartOpen(false), [])
+
+  const count = cartCount(cart)
+  const subtotal = cartSubtotal(cart)
 
   return (
     <>
@@ -38,27 +32,29 @@ export default function App() {
       <main>
         <Hero />
         <Highlights />
-        <Menu cart={cart} onAdd={add} onRemove={remove} />
+        <Menu cart={cart} onPick={setPicking} onRemoveOne={(name) => setCart((c) => removeOneOf(c, name))} />
         <Delivery />
         <Reviews />
         <Contact />
       </main>
       <Footer />
 
-      {count > 0 && !cartOpen && (
+      {count > 0 && !cartOpen && !picking && (
         <button className="cart-bar" onClick={() => setCartOpen(true)}>
           <span>{count} item{count > 1 ? 's' : ''} · ₹{subtotal}</span>
           <strong>View order →</strong>
         </button>
       )}
 
+      <AddOnSheet item={picking} onClose={closePick} onConfirm={confirmPick} />
+
       <CartDrawer
         open={cartOpen}
         onClose={closeCart}
-        lines={lines}
-        onAdd={add}
-        onRemove={remove}
-        onClear={() => setCart({})}
+        lines={cart}
+        onQty={(key, d) => setCart((c) => changeQty(c, key, d))}
+        onToggleAddOn={(key, id) => setCart((c) => toggleAddOn(c, key, id))}
+        onClear={() => setCart([])}
       />
     </>
   )

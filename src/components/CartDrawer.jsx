@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import { brand, deliveryAreas } from '../data'
+import { addOns, brand, deliveryAreas } from '../data'
+import { addOnNames, cartSubtotal, lineTotal } from '../cart'
 import { buildOrderMessage, openWhatsApp, validateOrderForm } from '../order'
 
 const STORAGE_KEY = 'idliyala-customer'
@@ -28,14 +29,14 @@ function Field({ id, label, error, optional, children }) {
   )
 }
 
-export default function CartDrawer({ open, onClose, lines, onAdd, onRemove, onClear }) {
+export default function CartDrawer({ open, onClose, lines, onQty, onToggleAddOn, onClear }) {
   const [form, setForm] = useState(loadSaved)
   const [errors, setErrors] = useState({})
   const [submitted, setSubmitted] = useState(false)
   const [sent, setSent] = useState(false)
   const formRef = useRef(null)
 
-  const subtotal = lines.reduce((s, l) => s + l.price * l.qty, 0)
+  const subtotal = cartSubtotal(lines)
   const belowMin = subtotal < brand.minOrder
 
   useEffect(() => {
@@ -104,14 +105,35 @@ export default function CartDrawer({ open, onClose, lines, onAdd, onRemove, onCl
           <form ref={formRef} onSubmit={handleSubmit} noValidate>
             <ul className="drawer__lines">
               {lines.map((l) => (
-                <li key={l.name}>
-                  <span className="drawer__name">{l.name}</span>
-                  <div className="stepper stepper--sm">
-                    <button type="button" onClick={() => onRemove(l)} aria-label={`Remove one ${l.name}`}>−</button>
-                    <span>{l.qty}</span>
-                    <button type="button" onClick={() => onAdd(l)} aria-label={`Add one ${l.name}`}>+</button>
+                <li key={l.key}>
+                  <div className="drawer__row">
+                    <div className="drawer__item">
+                      <span className="drawer__name">{l.name}</span>
+                      {l.addOns.length > 0 && <span className="drawer__extras">+ {addOnNames(l).join(', ')}</span>}
+                    </div>
+                    <div className="stepper stepper--sm">
+                      <button type="button" onClick={() => onQty(l.key, -1)} aria-label={`Remove one ${l.name}`}>−</button>
+                      <span>{l.qty}</span>
+                      <button type="button" onClick={() => onQty(l.key, 1)} aria-label={`Add one ${l.name}`}>+</button>
+                    </div>
+                    <span className="drawer__amt">₹{lineTotal(l)}</span>
                   </div>
-                  <span className="drawer__amt">₹{l.price * l.qty}</span>
+                  <div className="chips" role="group" aria-label={`Add-ons for ${l.name}`}>
+                    {addOns.map((a) => {
+                      const on = l.addOns.includes(a.id)
+                      return (
+                        <button
+                          type="button"
+                          key={a.id}
+                          className={`chip ${on ? 'is-on' : ''}`}
+                          aria-pressed={on}
+                          onClick={() => onToggleAddOn(l.key, a.id)}
+                        >
+                          {on ? '✓ ' : '+ '}{a.name.replace('Amul ', '')} ₹{a.price}
+                        </button>
+                      )
+                    })}
+                  </div>
                 </li>
               ))}
             </ul>

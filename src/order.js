@@ -1,4 +1,5 @@
 import { brand } from './data'
+import { addOnNames, cartSubtotal, lineTotal } from './cart'
 
 export const whatsappLink = (text) =>
   `https://wa.me/${brand.whatsapp}?text=${encodeURIComponent(text)}`
@@ -17,9 +18,12 @@ export const formatAddress = (a) =>
     .join(', ')
 
 export function buildOrderMessage(lines, form) {
-  const subtotal = lines.reduce((s, l) => s + l.price * l.qty, 0)
+  const subtotal = cartSubtotal(lines)
   const total = subtotal + brand.deliveryCharge
-  const rows = lines.map((l) => `• ${l.qty} x ${l.name} = ₹${l.price * l.qty}`)
+  const rows = lines.map((l) => {
+    const extras = l.addOns.length ? ` + ${addOnNames(l).join(', ')}` : ''
+    return `• ${l.qty} x ${l.name}${extras} = ₹${lineTotal(l)}`
+  })
   return [
     '*New order from idliyala.com*',
     '',
