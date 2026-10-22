@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { addOns, brand, deliveryAreas } from '../data'
+import { addOns, brand, deliveryAreas, menu } from '../data'
 import { addOnNames, cartSubtotal, lineLabels, lineTotal, maxOf, unitPrice } from '../cart'
 import { buildOrderMessage, makeOrderCode, openWhatsApp, orderRecord, validateOrderForm, whatsappLink } from '../order'
 import { recordOrder, recordPayment } from '../api'
@@ -31,7 +31,9 @@ function Field({ id, label, error, optional, children }) {
   )
 }
 
-export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, onSplit, onClear }) {
+const popular = menu.flatMap((m) => m.items.filter((i) => i.popular))
+
+export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, onSplit, onClear, onPick }) {
   const [form, setForm] = useState(loadSaved)
   const [errors, setErrors] = useState({})
   const [submitted, setSubmitted] = useState(false)
@@ -138,8 +140,18 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
           </div>
         ) : lines.length === 0 ? (
           <div className="drawer__empty">
-            <p>Your order is empty. Add some idlis or dosas from the menu.</p>
-            <a href="#menu" className="btn btn--primary" onClick={onClose}>Browse the menu</a>
+            <p>Your order is empty. Start with a favourite:</p>
+            <ul className="drawer__picks">
+              {popular.map((it) => (
+                <li key={it.name}>
+                  <span>{it.name}</span>
+                  <span className="price">₹{it.price}</span>
+                  <button type="button" className="add-btn" onClick={() => onPick(it)} aria-label={`Add ${it.name}`}>Add +</button>
+                </li>
+              ))}
+            </ul>
+            <a href="#menu" className="btn btn--ghost btn--block" onClick={onClose}>See the full menu</a>
+            <p className="drawer__hint">Minimum order ₹{brand.minOrder} · Delivery ₹{brand.deliveryCharge} · Pay by UPI</p>
           </div>
         ) : (
           <form ref={formRef} onSubmit={handleSubmit} noValidate>

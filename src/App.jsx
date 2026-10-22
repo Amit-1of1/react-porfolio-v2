@@ -6,6 +6,7 @@ import Menu from './components/Menu'
 import Delivery from './components/Delivery'
 import Reviews from './components/Reviews'
 import Contact from './components/Contact'
+import Faq from './components/Faq'
 import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
 import AddOnSheet from './components/AddOnSheet'
@@ -22,20 +23,22 @@ export default function App() {
   }, [])
   const closePick = useCallback(() => setPicking(null), [])
   const closeCart = useCallback(() => setCartOpen(false), [])
+  const openCart = useCallback(() => setCartOpen(true), [])
 
   const count = cartCount(cart)
   const subtotal = cartSubtotal(cart)
 
   return (
     <>
-      <Navbar cartCount={count} onCartClick={() => setCartOpen(true)} />
+      <Navbar cartCount={count} onCartClick={openCart} />
       <main>
-        <Hero />
+        <Hero onOrder={openCart} />
         <Highlights />
         <Menu cart={cart} onPick={setPicking} onRemoveOne={(name) => setCart((c) => removeOneOf(c, name))} />
         <Delivery />
         <Reviews />
-        <Contact />
+        <Faq />
+        <Contact onOrder={openCart} />
       </main>
       <Footer />
 
@@ -56,6 +59,7 @@ export default function App() {
         onSetAddOn={(key, id, n) => setCart((c) => setAddOn(c, key, id, n))}
         onSplit={(key) => setCart((c) => splitLine(c, key))}
         onClear={() => setCart([])}
+        onPick={setPicking}
       />
     </>
   )
