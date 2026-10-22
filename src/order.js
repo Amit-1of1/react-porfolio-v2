@@ -1,6 +1,21 @@
 import { brand } from './data'
 import { addOnNames, cartSubtotal, lineLabels, lineTotal, unitPrice } from './cart'
 
+// Short, readable order reference, e.g. IDL-M4K2Q7.
+export const makeOrderCode = () =>
+  'IDL-' + (Date.now().toString(36).slice(-4) + Math.random().toString(36).slice(2, 4)).toUpperCase()
+
+export const orderTotal = (lines) => cartSubtotal(lines) + brand.deliveryCharge
+
+// UPI deep link that opens the customer's UPI app with amount and note filled in.
+export const upiLink = (amount, orderCode) => {
+  const enc = (v) => encodeURIComponent(v)
+  // pa is left unencoded: some UPI apps reject "%40" in the VPA.
+  return `upi://pay?pa=${brand.upi.id}&pn=${enc(brand.upi.payee)}&am=${amount.toFixed(2)}&cu=INR&tn=${enc(`Idliyala ${orderCode}`)}`
+}
+
+export const isValidUtr = (utr) => /^\d{12}$/.test(utr)
+
 export const whatsappLink = (text) =>
   `https://wa.me/${brand.whatsapp}?text=${encodeURIComponent(text)}`
 
@@ -17,7 +32,7 @@ export const formatAddress = (a) =>
     .filter(Boolean)
     .join(', ')
 
-export function buildOrderMessage(lines, form) {
+export function buildOrderMessage(lines, form, payment) {
   const subtotal = cartSubtotal(lines)
   const total = subtotal + brand.deliveryCharge
   const labels = lineLabels(lines)
@@ -30,6 +45,7 @@ export function buildOrderMessage(lines, form) {
   })
   return [
     '*New order from idliyala.com*',
+    payment ? `Order ID: ${payment.orderCode}` : null,
     '',
     ...rows,
     '',
@@ -41,6 +57,9 @@ export function buildOrderMessage(lines, form) {
     `*Phone:* +91 ${form.phone}`,
     `*Address:* ${formatAddress(form)}`,
     form.note.trim() ? `*Note:* ${form.note.trim()}` : null,
+    ...(payment
+      ? ['', '*Payment: Paid via UPI (check this UTR in PhonePe)*', `Amount: ₹${total}`, `To: ${brand.upi.id}`, `UTR / Txn ID: ${payment.utr}`]
+      : []),
   ]
     .filter((l) => l !== null)
     .join('\n')
@@ -56,4 +75,22 @@ export function validateOrderForm(f) {
   if (!f.area) e.area = 'Please choose your area.'
   if (!/^7\d{5}$/.test(f.pincode)) e.pincode = 'Enter a valid 6-digit Kolkata pincode.'
   return e
+}
+
+// Row saved to the orders table when the customer moves to payment.
+export function orderRecord(lines, form, orderCode) {
+  const subtotal = cartSubtotal(lines)
+  return {
+    order_code: orderCode,
+    customer_name: form.name.trim(),
+    phone: form.phone,
+    address: formatAddress(form),
+    area: form.area,
+    pincode: form.pincode,
+    note: form.note.trim() || null,
+    items: lines.map((l) => ({ name: l.name, qty: l.qty, add_ons: l.addOns, unit_price: unitPrice(l), line_total: lineTotal(l) })),
+    subtotal,
+    delivery_charge: brand.deliveryCharge,
+    total: subtotal + brand.deliveryCharge,
+  }
 }
