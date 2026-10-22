@@ -32,33 +32,23 @@ export default function AddOnSheet({ item, onClose, onConfirm }) {
           <button className="icon-btn" onClick={onClose} aria-label="Close">✕</button>
         </div>
 
-        <p className="sheet__label">Add-ons <span>(optional, per plate)</span></p>
+        <p className="sheet__label">Add-ons <span>(optional, price per portion)</span></p>
         <ul className="addon-list">
           {addOns.map((a) => {
             const n = counts[a.id] || 0
-            const max = maxOf(a.id)
             return (
-              <li key={a.id}>
-                <label className={`addon ${n > 0 ? 'is-on' : ''}`}>
-                  <input type="checkbox" checked={n > 0} onChange={() => set(a.id, n > 0 ? 0 : 1)} />
-                  <span className="addon__box" aria-hidden="true" />
-                  <span className="addon__name">{a.name}</span>
-                  <span className="addon__price">+₹{a.price * Math.max(n, 1)}</span>
-                </label>
-                {max > 1 && n > 0 && (
-                  <div className="portions" role="radiogroup" aria-label={`${a.name} portions`}>
-                    {Array.from({ length: max }, (_, i) => i + 1).map((p) => (
-                      <button
-                        type="button"
-                        key={p}
-                        role="radio"
-                        aria-checked={n === p}
-                        className={`portion ${n === p ? 'is-on' : ''}`}
-                        onClick={() => set(a.id, p)}
-                      >
-                        {p}X <small>₹{a.price * p}</small>
-                      </button>
-                    ))}
+              <li key={a.id} className={`addon ${n > 0 ? 'is-on' : ''}`}>
+                <span className="addon__name">
+                  {a.name}
+                  <span className="addon__price">₹{a.price}{n > 1 && <small> × {n} = ₹{a.price * n}</small>}</span>
+                </span>
+                {n === 0 ? (
+                  <button type="button" className="add-btn" onClick={() => set(a.id, 1)} aria-label={`Add ${a.name}`}>Add +</button>
+                ) : (
+                  <div className="stepper">
+                    <button type="button" onClick={() => set(a.id, n - 1)} aria-label={`Less ${a.name}`}>−</button>
+                    <span>{n}</span>
+                    <button type="button" onClick={() => set(a.id, n + 1)} disabled={n >= maxOf(a.id)} aria-label={`More ${a.name}`}>+</button>
                   </div>
                 )}
               </li>

@@ -1,11 +1,11 @@
-import { addOns as ADD_ONS, MAX_PORTIONS } from './data'
+import { addOns as ADD_ONS } from './data'
 
 // A cart is an array of lines. Each line is one dish with one set of add-ons:
 // { key, name, basePrice, addOns: { [addOnId]: portions }, qty }. The same
 // dish with different add-ons lives on separate lines.
 
 const byId = Object.fromEntries(ADD_ONS.map((a) => [a.id, a]))
-export const maxOf = (id) => byId[id].max || MAX_PORTIONS
+export const maxOf = (id) => byId[id].max || Infinity
 
 // Drops zero counts, clamps to each add-on's max and keeps the menu order.
 function normalize(counts) {
