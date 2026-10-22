@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { addOns, brand, deliveryAreas } from '../data'
-import { addOnNames, cartSubtotal, lineTotal } from '../cart'
+import { addOnNames, cartSubtotal, lineTotal, maxOf } from '../cart'
 import { buildOrderMessage, openWhatsApp, validateOrderForm } from '../order'
 
 const STORAGE_KEY = 'idliyala-customer'
@@ -29,7 +29,7 @@ function Field({ id, label, error, optional, children }) {
   )
 }
 
-export default function CartDrawer({ open, onClose, lines, onQty, onToggleAddOn, onClear }) {
+export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, onClear }) {
   const [form, setForm] = useState(loadSaved)
   const [errors, setErrors] = useState({})
   const [submitted, setSubmitted] = useState(false)
@@ -109,7 +109,7 @@ export default function CartDrawer({ open, onClose, lines, onQty, onToggleAddOn,
                   <div className="drawer__row">
                     <div className="drawer__item">
                       <span className="drawer__name">{l.name}</span>
-                      {l.addOns.length > 0 && <span className="drawer__extras">+ {addOnNames(l).join(', ')}</span>}
+                      {addOnNames(l).length > 0 && <span className="drawer__extras">+ {addOnNames(l).join(', ')}</span>}
                     </div>
                     <div className="stepper stepper--sm">
                       <button type="button" onClick={() => onQty(l.key, -1)} aria-label={`Remove one ${l.name}`}>−</button>
@@ -120,16 +120,25 @@ export default function CartDrawer({ open, onClose, lines, onQty, onToggleAddOn,
                   </div>
                   <div className="chips" role="group" aria-label={`Add-ons for ${l.name}`}>
                     {addOns.map((a) => {
-                      const on = l.addOns.includes(a.id)
+                      const n = l.addOns[a.id] || 0
+                      const short = a.name.replace('Amul ', '')
+                      if (n > 0) {
+                        return (
+                          <span key={a.id} className="chip chip--stepper is-on">
+                            <button type="button" onClick={() => onSetAddOn(l.key, a.id, n - 1)} aria-label={n === 1 ? `Remove ${short}` : `Less ${short}`}>{n === 1 ? '✕' : '−'}</button>
+                            {n}X {short} ₹{a.price * n}
+                            <button type="button" onClick={() => onSetAddOn(l.key, a.id, n + 1)} disabled={n >= maxOf(a.id)} aria-label={`More ${short}`}>+</button>
+                          </span>
+                        )
+                      }
                       return (
                         <button
                           type="button"
                           key={a.id}
-                          className={`chip ${on ? 'is-on' : ''}`}
-                          aria-pressed={on}
-                          onClick={() => onToggleAddOn(l.key, a.id)}
+                          className="chip"
+                          onClick={() => onSetAddOn(l.key, a.id, 1)}
                         >
-                          {on ? '✓ ' : '+ '}{a.name.replace('Amul ', '')} ₹{a.price}
+                          + {short} ₹{a.price}
                         </button>
                       )
                     })}

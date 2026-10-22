@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react'
 import { addOns } from '../data'
+import { addOnsPrice, maxOf } from '../cart'
 
 // Bottom sheet shown when a dish is added: pick add-ons and quantity.
 export default function AddOnSheet({ item, onClose, onConfirm }) {
-  const [selected, setSelected] = useState([])
+  const [counts, setCounts] = useState({})
   const [qty, setQty] = useState(1)
 
   useEffect(() => {
-    setSelected([])
+    setCounts({})
     setQty(1)
     if (!item) return
     const onKey = (e) => e.key === 'Escape' && onClose()
@@ -16,8 +17,8 @@ export default function AddOnSheet({ item, onClose, onConfirm }) {
   }, [item, onClose])
 
   if (!item) return null
-  const toggle = (id) => setSelected((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]))
-  const unit = item.price + addOns.filter((a) => selected.includes(a.id)).reduce((s, a) => s + a.price, 0)
+  const set = (id, n) => setCounts((c) => ({ ...c, [id]: n }))
+  const unit = item.price + addOnsPrice(Object.fromEntries(Object.entries(counts).filter(([, n]) => n > 0)))
 
   return (
     <div className="sheet" role="dialog" aria-modal="true" aria-label={`Add ${item.name}`}>
@@ -33,16 +34,36 @@ export default function AddOnSheet({ item, onClose, onConfirm }) {
 
         <p className="sheet__label">Add-ons <span>(optional, per plate)</span></p>
         <ul className="addon-list">
-          {addOns.map((a) => (
-            <li key={a.id}>
-              <label className={`addon ${selected.includes(a.id) ? 'is-on' : ''}`}>
-                <input type="checkbox" checked={selected.includes(a.id)} onChange={() => toggle(a.id)} />
-                <span className="addon__box" aria-hidden="true" />
-                <span className="addon__name">{a.name}</span>
-                <span className="addon__price">+₹{a.price}</span>
-              </label>
-            </li>
-          ))}
+          {addOns.map((a) => {
+            const n = counts[a.id] || 0
+            const max = maxOf(a.id)
+            return (
+              <li key={a.id}>
+                <label className={`addon ${n > 0 ? 'is-on' : ''}`}>
+                  <input type="checkbox" checked={n > 0} onChange={() => set(a.id, n > 0 ? 0 : 1)} />
+                  <span className="addon__box" aria-hidden="true" />
+                  <span className="addon__name">{a.name}</span>
+                  <span className="addon__price">+₹{a.price * Math.max(n, 1)}</span>
+                </label>
+                {max > 1 && n > 0 && (
+                  <div className="portions" role="radiogroup" aria-label={`${a.name} portions`}>
+                    {Array.from({ length: max }, (_, i) => i + 1).map((p) => (
+                      <button
+                        type="button"
+                        key={p}
+                        role="radio"
+                        aria-checked={n === p}
+                        className={`portion ${n === p ? 'is-on' : ''}`}
+                        onClick={() => set(a.id, p)}
+                      >
+                        {p}X <small>₹{a.price * p}</small>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </li>
+            )
+          })}
         </ul>
 
         <div className="sheet__foot">
@@ -51,7 +72,7 @@ export default function AddOnSheet({ item, onClose, onConfirm }) {
             <span>{qty}</span>
             <button type="button" onClick={() => setQty((q) => q + 1)} aria-label="One more">+</button>
           </div>
-          <button className="btn btn--primary sheet__add" onClick={() => onConfirm(item, selected, qty)}>
+          <button className="btn btn--primary sheet__add" onClick={() => onConfirm(item, counts, qty)}>
             Add to order · ₹{unit * qty}
           </button>
         </div>

@@ -21,7 +21,8 @@ export function buildOrderMessage(lines, form) {
   const subtotal = cartSubtotal(lines)
   const total = subtotal + brand.deliveryCharge
   const rows = lines.map((l) => {
-    const extras = l.addOns.length ? ` + ${addOnNames(l).join(', ')}` : ''
+    const names = addOnNames(l)
+    const extras = names.length ? ` + ${names.join(', ')}` : ''
     return `• ${l.qty} x ${l.name}${extras} = ₹${lineTotal(l)}`
   })
   return [

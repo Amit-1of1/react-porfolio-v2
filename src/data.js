@@ -112,7 +112,10 @@ export const menu = [
   },
 ]
 
-// Extras a customer can add to any dish, priced per plate.
+// Extras a customer can add to any dish, priced per portion. Customers pick
+// 1X to 3X of each (MAX_PORTIONS); set `max` on one to change its limit.
+export const MAX_PORTIONS = 3
+
 export const addOns = [
   { id: 'butter', name: 'Amul Butter', price: 20 },
   { id: 'cheese', name: 'Amul Cheese', price: 25 },
