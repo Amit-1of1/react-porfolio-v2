@@ -4,7 +4,7 @@
 export const brand = {
   name: 'Idliyala',
   tagline: 'Daily Fresh Idli',
-  heroTitle: 'Soft idlis. Crisp dosas. Fresh every single day.',
+  heroTitle: 'Soft idlis. Crispy vadas. Fresh every single day.',
   intro:
     'Idliyala is a South Indian kitchen in Kolkata built around the classics: pillowy idlis, golden dosas, loaded uttapams and crunchy vadas, served hot with sambar and coconut chutney and delivered to your door.',
   phoneDisplay: '99033 22982',
