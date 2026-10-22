@@ -56,6 +56,9 @@ export default function AddOnSheet({ item, onClose, onConfirm }) {
           })}
         </ul>
 
+        {qty > 1 && Object.values(counts).some((n) => n > 0) && (
+          <p className="sheet__note">These add-ons go on each of the {qty} plates. For different add-ons, add each plate separately or split it at checkout.</p>
+        )}
         <div className="sheet__foot">
           <div className="stepper stepper--lg">
             <button type="button" onClick={() => setQty((q) => Math.max(1, q - 1))} aria-label="One less">−</button>

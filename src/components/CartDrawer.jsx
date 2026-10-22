@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { addOns, brand, deliveryAreas } from '../data'
-import { addOnNames, cartSubtotal, lineTotal, maxOf } from '../cart'
+import { addOnNames, cartSubtotal, lineLabels, lineTotal, maxOf, unitPrice } from '../cart'
 import { buildOrderMessage, openWhatsApp, validateOrderForm } from '../order'
 
 const STORAGE_KEY = 'idliyala-customer'
@@ -29,7 +29,7 @@ function Field({ id, label, error, optional, children }) {
   )
 }
 
-export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, onClear }) {
+export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, onSplit, onClear }) {
   const [form, setForm] = useState(loadSaved)
   const [errors, setErrors] = useState({})
   const [submitted, setSubmitted] = useState(false)
@@ -37,6 +37,7 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
   const formRef = useRef(null)
 
   const subtotal = cartSubtotal(lines)
+  const labels = lineLabels(lines)
   const belowMin = subtotal < brand.minOrder
 
   useEffect(() => {
@@ -108,8 +109,13 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
                 <li key={l.key}>
                   <div className="drawer__row">
                     <div className="drawer__item">
-                      <span className="drawer__name">{l.name}</span>
-                      {addOnNames(l).length > 0 && <span className="drawer__extras">+ {addOnNames(l).join(', ')}</span>}
+                      <span className="drawer__name">{labels[l.key]}</span>
+                      {addOnNames(l).length > 0 && (
+                        <span className="drawer__extras">
+                          {l.qty > 1 ? `On each of the ${l.qty} plates: ` : '+ '}{addOnNames(l).join(', ')}
+                        </span>
+                      )}
+                      {l.qty > 1 && <span className="drawer__each">₹{unitPrice(l)} per plate</span>}
                     </div>
                     <div className="stepper stepper--sm">
                       <button type="button" onClick={() => onQty(l.key, -1)} aria-label={`Remove one ${l.name}`}>−</button>
@@ -118,7 +124,15 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
                     </div>
                     <span className="drawer__amt">₹{lineTotal(l)}</span>
                   </div>
-                  <div className="chips" role="group" aria-label={`Add-ons for ${l.name}`}>
+                  {l.qty > 1 && (
+                    <button type="button" className="split-btn" onClick={() => onSplit(l.key)}>
+                      Want different add-ons on each plate? Split into {l.qty} separate plates
+                    </button>
+                  )}
+                  <p className="chips__label">
+                    {l.qty > 1 ? `Add-ons for each ${l.name} plate` : `Add-ons for this ${l.name}`}
+                  </p>
+                  <div className="chips" role="group" aria-label={`Add-ons for ${labels[l.key]}`}>
                     {addOns.map((a) => {
                       const n = l.addOns[a.id] || 0
                       const short = a.name.replace('Amul ', '')

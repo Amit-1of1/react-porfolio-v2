@@ -59,3 +59,27 @@ export function setAddOn(cart, key, addOnId, portions) {
   if (twin) return rest.map((l) => (l.key === newKey ? { ...l, qty: l.qty + line.qty } : l))
   return cart.map((l) => (l.key === key ? { ...line, key: newKey, addOns } : l))
 }
+
+// Breaks a line of several plates into one line per plate, so each plate can
+// get its own add-ons.
+let splitSeq = 0
+export function splitLine(cart, key) {
+  const i = cart.findIndex((l) => l.key === key)
+  if (i < 0 || cart[i].qty < 2) return cart
+  const line = cart[i]
+  const plates = Array.from({ length: line.qty }, () => ({ ...line, key: `${line.key}#${++splitSeq}`, qty: 1 }))
+  return [...cart.slice(0, i), ...plates, ...cart.slice(i + 1)]
+}
+
+// Display names that tell apart several lines of the same dish:
+// "Masala Dosa (1)", "Masala Dosa (2)". Single lines keep the plain name.
+export function lineLabels(cart) {
+  const totals = {}
+  cart.forEach((l) => { totals[l.name] = (totals[l.name] || 0) + 1 })
+  const seen = {}
+  return Object.fromEntries(cart.map((l) => {
+    if (totals[l.name] < 2) return [l.key, l.name]
+    seen[l.name] = (seen[l.name] || 0) + 1
+    return [l.key, `${l.name} (${seen[l.name]})`]
+  }))
+}

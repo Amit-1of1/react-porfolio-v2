@@ -9,7 +9,7 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 import CartDrawer from './components/CartDrawer'
 import AddOnSheet from './components/AddOnSheet'
-import { addItem, cartCount, cartSubtotal, changeQty, removeOneOf, setAddOn } from './cart'
+import { addItem, cartCount, cartSubtotal, changeQty, removeOneOf, setAddOn, splitLine } from './cart'
 
 export default function App() {
   const [cart, setCart] = useState([])
@@ -54,6 +54,7 @@ export default function App() {
         lines={cart}
         onQty={(key, d) => setCart((c) => changeQty(c, key, d))}
         onSetAddOn={(key, id, n) => setCart((c) => setAddOn(c, key, id, n))}
+        onSplit={(key) => setCart((c) => splitLine(c, key))}
         onClear={() => setCart([])}
       />
     </>

@@ -1,5 +1,5 @@
 import { brand } from './data'
-import { addOnNames, cartSubtotal, lineTotal } from './cart'
+import { addOnNames, cartSubtotal, lineLabels, lineTotal, unitPrice } from './cart'
 
 export const whatsappLink = (text) =>
   `https://wa.me/${brand.whatsapp}?text=${encodeURIComponent(text)}`
@@ -20,10 +20,13 @@ export const formatAddress = (a) =>
 export function buildOrderMessage(lines, form) {
   const subtotal = cartSubtotal(lines)
   const total = subtotal + brand.deliveryCharge
-  const rows = lines.map((l) => {
+  const labels = lineLabels(lines)
+  const rows = lines.flatMap((l) => {
     const names = addOnNames(l)
-    const extras = names.length ? ` + ${names.join(', ')}` : ''
-    return `• ${l.qty} x ${l.name}${extras} = ₹${lineTotal(l)}`
+    const head = `• ${l.qty} x ${labels[l.key]} = ₹${lineTotal(l)}`
+    if (!names.length) return [head]
+    const each = l.qty > 1 ? ` (on each plate, ₹${unitPrice(l)} per plate)` : ''
+    return [head, `   ↳ add-ons: ${names.join(', ')}${each}`]
   })
   return [
     '*New order from idliyala.com*',
