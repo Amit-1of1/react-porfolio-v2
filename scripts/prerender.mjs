@@ -2,7 +2,7 @@
 // into dist/ so search engines and AI assistants can read everything without
 // running JavaScript. All content comes from src/data.js.
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
-import { addOns, areaSlug, brand, deliveryAreas, faqs, menu } from '../src/data.js'
+import { addOns, areaSlug, brand, deliveryAreas, dishDescription, faqs, menu } from '../src/data.js'
 import { render } from '../dist-ssr/entry-server.js'
 
 const SITE = 'https://www.idliyala.com'
@@ -61,6 +61,15 @@ const restaurant = {
   },
 }
 
+// The /menu/ page shows dish descriptions, so its menu data carries them too.
+const describedMenu = {
+  ...restaurant.hasMenu,
+  hasMenuSection: restaurant.hasMenu.hasMenuSection.map((sec) => ({
+    ...sec,
+    hasMenuItem: sec.hasMenuItem.map((it) => (dishDescription(it.name) ? { ...it, description: dishDescription(it.name) } : it)),
+  })),
+}
+
 const faqPage = {
   '@context': 'https://schema.org',
   '@type': 'FAQPage',
@@ -108,7 +117,8 @@ const areaUrl = (a) => `${SITE}/delivery/${areaSlug(a)}/`
 const nearby = (i) => [-3, -2, -1, 1, 2, 3].map((d) => deliveryAreas[(i + d + deliveryAreas.length) % deliveryAreas.length])
 
 const li = (it) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span></div><span class="price">₹${it.price}</span></li>`
-const fullMenu = () => `${menu.map((m) => `<div class="menu__panel" id="${m.id}"><div class="menu__panel-head"><h3>${esc(m.category)}</h3><p>${esc(m.blurb)}</p></div><ul class="menu__list">${m.items.map(li).join('')}</ul></div>`).join('\n        ')}
+const liDesc = (it) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span>${dishDescription(it.name) ? `<span class="menu-item__desc">${esc(dishDescription(it.name))}</span>` : ''}</div><span class="price">₹${it.price}</span></li>`
+const fullMenu = (row = li) => `${menu.map((m) => `<div class="menu__panel" id="${m.id}"><div class="menu__panel-head"><h3>${esc(m.category)}</h3><p>${esc(m.blurb)}</p></div><ul class="menu__list">${m.items.map(row).join('')}</ul></div>`).join('\n        ')}
         <p class="menu__addons"><strong>Add-ons for any dish:</strong> ${addOns.map((a) => `${esc(a.name)} ₹${a.price}`).join(' · ')}</p>`
 const crumbs = (items) => ({
   '@context': 'https://schema.org',
@@ -217,7 +227,7 @@ const pages = {
     desc: `Full ${brand.name} menu with prices: idli from ₹50, plain dosa ₹60, masala dosa ₹70, uttapam from ₹60, plus Amul butter, cheese and paneer add-ons. 100% pure veg, delivered across ${brand.city}.`,
     ogTitle: `${brand.name} menu and prices`,
     lds: [
-      { ...restaurantRef(), hasMenu: restaurant.hasMenu },
+      { ...restaurantRef(), hasMenu: describedMenu },
       crumbs([[brand.name, `${SITE}/`], ['Menu', `${SITE}/menu/`]]),
     ],
     main: `      <section class="hero"><div class="container">
@@ -228,7 +238,7 @@ const pages = {
         <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a></div>
       </div></section>
       <section class="area-menu"><div class="container">
-        ${fullMenu()}
+        ${fullMenu(liDesc)}
         <p><a href="/#menu" class="btn btn--primary">Start your order</a></p>
       </div></section>`,
   }),
@@ -264,7 +274,7 @@ ${urls.map((u, i) => `  <url><loc>${u}</loc><lastmod>${today}</lastmod>${i ? '' 
 `)
 
 const menuText = menu
-  .map((m) => `### ${m.category}\n${m.blurb}\n\n${m.items.map((i) => `- ${i.name}: ₹${i.price}`).join('\n')}`)
+  .map((m) => `### ${m.category}\n${m.blurb}\n\n${m.items.map((i) => `- ${i.name}: ₹${i.price}${dishDescription(i.name) ? ` (${dishDescription(i.name).replace(/\.$/, '')})` : ''}`).join('\n')}`)
   .join('\n\n')
 
 writeFileSync(dist('llms.txt'), `# ${brand.name}

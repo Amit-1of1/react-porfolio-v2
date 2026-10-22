@@ -4,8 +4,10 @@ import { addOnNames, cartSubtotal, lineLabels, lineTotal, maxOf, unitPrice } fro
 import { buildOrderMessage, makeOrderCode, openWhatsApp, orderRecord, validateOrderForm, whatsappLink } from '../order'
 import { recordOrder, recordPayment } from '../api'
 import PaymentStep from './PaymentStep'
+import { track } from '@vercel/analytics'
 
 const STORAGE_KEY = 'idliyala-customer'
+export const LAST_ORDER_KEY = 'idliyala-last-order'
 const emptyForm = { name: '', phone: '', house: '', street: '', landmark: '', area: '', pincode: '', note: '' }
 
 // Remember returning customers' details on this device (never the note).
@@ -33,7 +35,7 @@ function Field({ id, label, error, optional, children }) {
 
 const popular = menu.flatMap((m) => m.items.filter((i) => i.popular))
 
-export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, onSplit, onClear, onPick }) {
+export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, onSplit, onClear, onPick, lastOrder, onReorder }) {
   const [form, setForm] = useState(loadSaved)
   const [errors, setErrors] = useState({})
   const [submitted, setSubmitted] = useState(false)
@@ -70,6 +72,8 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
 
   const handlePaid = async (utr) => {
     await recordPayment(orderCode, utr)
+    try { localStorage.setItem(LAST_ORDER_KEY, JSON.stringify(lines)) } catch { /* storage unavailable: fine */ }
+    track('Order sent', { total: subtotal + brand.deliveryCharge })
     const text = buildOrderMessage(lines, form, { orderCode, utr })
     setLastMessage(whatsappLink(text))
     openWhatsApp(text)
@@ -99,6 +103,7 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
       const { note, ...keep } = form
       localStorage.setItem(STORAGE_KEY, JSON.stringify(keep))
     } catch { /* storage unavailable: fine */ }
+    track('Checkout started', { total: subtotal + brand.deliveryCharge })
     const code = makeOrderCode()
     setOrderCode(code)
     recordOrder(orderRecord(lines, form, code))
@@ -136,11 +141,28 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
             <h4>Thank you, {form.name.split(' ')[0]}!</h4>
             <p>Your order <strong>{orderCode}</strong> and payment details are ready in WhatsApp. Press <strong>send</strong> there and we&apos;ll confirm your delivery time.</p>
             <a className="btn btn--ghost btn--block" href={lastMessage}>WhatsApp didn&apos;t open? Tap here</a>
+            <a
+              className="done__share"
+              href={whatsappLink(`I order fresh idli and dosa from Idliyala. Pure veg, delivered hot across Kolkata. Try it: https://www.idliyala.com`)}
+              target="_blank"
+              rel="noreferrer"
+            >
+              Share Idliyala with a friend on WhatsApp
+            </a>
             <button type="button" className="btn btn--primary btn--block" onClick={finish}>Done</button>
           </div>
         ) : lines.length === 0 ? (
           <div className="drawer__empty">
-            <p>Your order is empty. Start with a favourite:</p>
+            {lastOrder?.length > 0 && (
+              <div className="reorder card">
+                <strong>Order again?</strong>
+                <span>{lastOrder.map((l) => `${l.qty} x ${l.name}${addOnNames(l).length ? ` (+ ${addOnNames(l).join(', ')})` : ''}`).join(', ')}</span>
+                <button type="button" className="btn btn--primary btn--block" onClick={onReorder}>
+                  Add my last order · ₹{cartSubtotal(lastOrder)}
+                </button>
+              </div>
+            )}
+            <p>{lastOrder?.length > 0 ? 'Or start with a favourite:' : 'Your order is empty. Start with a favourite:'}</p>
             <ul className="drawer__picks">
               {popular.map((it) => (
                 <li key={it.name}>
