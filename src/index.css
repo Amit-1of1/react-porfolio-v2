@@ -157,6 +157,9 @@ a.cart-btn { text-decoration: none; }
 }
 .menu-item:last-child { border-bottom: 0; }
 .menu-item__info { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
+.reorder { display: grid; gap: 0.5rem; padding: 1rem; width: 100%; color: var(--ink); }
+.reorder span { font-size: 0.88rem; color: var(--muted); }
+.done__share { color: var(--green); font-weight: 600; padding: 0.5rem 0; }
 .menu__more { text-align: center; margin: 1.25rem 0 0; }
 .menu__more a { color: var(--green); font-weight: 600; }
 .menu-item__info:has(.menu-item__desc) { flex: 1; min-width: 0; row-gap: 0.15rem; }
