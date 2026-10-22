@@ -23,7 +23,7 @@ export default function Navbar({ cartCount, onCartClick }) {
     <header className={`nav ${scrolled ? 'nav--scrolled' : ''}`}>
       <div className="container nav__inner">
         <a href="#top" className="nav__brand" onClick={() => setOpen(false)}>
-          <img src="/images/logo-mark.png" alt="" width="44" height="41" />
+          <img src="/images/logo-mark.png" alt="Idliyala logo" width="50" height="45" />
           <span>
             <strong>{brand.name}</strong>
             <small>{brand.tagline}</small>
