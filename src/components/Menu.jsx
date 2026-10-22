@@ -68,6 +68,7 @@ export default function Menu({ cart, onPick, onRemoveOne }) {
           </p>
         </div>
         ))}
+        <p className="menu__more"><a href="/menu/">See the full menu with dish descriptions →</a></p>
       </div>
     </section>
   )

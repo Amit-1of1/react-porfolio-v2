@@ -154,6 +154,14 @@ export const faqs = [
     a: 'We deliver from 8 am to 8 pm, all 7 days of the week.',
   },
   {
+    q: 'Can I order South Indian breakfast for home delivery?',
+    a: 'Yes. Orders start at 8 am every day, so idli, vada, upma and dosa can reach you hot for breakfast, and we keep cooking through lunch and evening snacks until 8 pm.',
+  },
+  {
+    q: 'What should I order at Idliyala?',
+    a: "Popular picks are Idli (3 pcs) for ₹50, Plain Dosa for ₹60, Masala Dosa for ₹70, Onion Tomato Uttapam for ₹75 and Idliyala's Special Dosa for ₹250. Add Amul butter, cheese or paneer to any dish.",
+  },
+  {
     q: 'How do I order?',
     a: 'Add dishes and any add-ons on this website, enter your address, pay by UPI and your order is sent to our kitchen on WhatsApp. You can also call or WhatsApp us on 99033 22982.',
   },
@@ -173,3 +181,49 @@ export const faqs = [
 
 // URL slug for each delivery area's page, e.g. "Dum Dum Park" -> "dum-dum-park".
 export const areaSlug = (area) => area.toLowerCase().replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+
+// Short plain descriptions of the classic dishes, used on the /menu/ page and in
+// search data so search engines and AI assistants know what each dish is.
+// "Butter ..." and "Ghee ..." variants reuse the base dish with a note.
+const dishInfo = {
+  'Idli (3 pcs)': 'Three soft steamed rice-and-lentil cakes with sambar and coconut chutney.',
+  'Vada (3 pcs)': 'Three crispy fried urad dal vadas (medu vada) with sambar and coconut chutney.',
+  'Masala Idli': 'Idli pieces tossed with onion, tomato and South Indian spices.',
+  'Fried Idli': 'Idli pieces pan-fried until crisp outside and soft inside.',
+  Upma: 'Savoury semolina (rava) cooked with mustard seeds, curry leaves and vegetables.',
+  'Plain Dosa': 'Thin, crisp rice-and-lentil crepe with sambar and coconut chutney.',
+  'Onion Plain Dosa': 'Crisp dosa topped with chopped onions.',
+  'Rava Plain Dosa': 'Lacy, extra-crisp dosa made with semolina batter.',
+  'Paneer Plain Dosa': 'Crisp dosa topped with grated paneer.',
+  'Garlic Plain Dosa': 'Crisp dosa spread with a spicy garlic chutney.',
+  'Chilli Plain Dosa': 'Crisp dosa topped with green chillies.',
+  'Mysore Plain Dosa': 'Crisp dosa spread with spicy red Mysore chutney.',
+  'Schezwan Plain Dosa': 'Crisp dosa spread with spicy schezwan sauce.',
+  'Masala Dosa': 'Crisp dosa filled with spiced potato masala, served with sambar and coconut chutney.',
+  'Rava Masala Dosa': 'Lacy semolina dosa filled with spiced potato masala.',
+  'Mysore Masala Dosa': 'Dosa spread with spicy red Mysore chutney and filled with potato masala.',
+  'Garlic Masala Dosa': 'Masala dosa spread with a spicy garlic chutney.',
+  'Dhaniya Masala Dosa': 'Masala dosa with fresh coriander (dhaniya).',
+  'Schezwan Masala Dosa': 'Masala dosa spread with spicy schezwan sauce.',
+  'Paneer Masala Dosa': 'Masala dosa with paneer added to the filling.',
+  'Plain Uttapam': 'Thick, fluffy rice-and-lentil pancake with sambar and coconut chutney.',
+  'Masala Uttapam': 'Thick uttapam with spiced potato masala.',
+  'Onion Uttapam': 'Thick uttapam topped with onions.',
+  'Onion Tomato Uttapam': 'Thick uttapam topped with onions and tomatoes.',
+  'Onion Chilli Uttapam': 'Thick uttapam topped with onions and green chillies.',
+  'Mix Veg Uttapam': 'Thick uttapam topped with mixed vegetables.',
+  'Cheese Masala Uttapam': 'Masala uttapam topped with cheese.',
+  'Paneer Cheese Uttapam': 'Thick uttapam topped with paneer and cheese.',
+  'Mysore Masala Uttapam': 'Uttapam with spicy red Mysore chutney and potato masala.',
+  'Coconut Uttapam': 'Thick uttapam topped with grated coconut.',
+  'Tomato Uttapam': 'Thick uttapam topped with tomatoes.',
+}
+
+export function dishDescription(name) {
+  if (dishInfo[name]) return dishInfo[name]
+  for (const fat of ['Butter', 'Ghee']) {
+    const base = name.replace(`${fat} `, '')
+    if (base !== name && dishInfo[base]) return `${dishInfo[base].replace(/\.$/, '')}, finished with ${fat.toLowerCase()}.`
+  }
+  return ''
+}
