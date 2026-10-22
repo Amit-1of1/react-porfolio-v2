@@ -5,7 +5,7 @@ export default function Hero({ onOrder }) {
     <section className="hero" id="top">
       <div className="container hero__inner">
         <div className="hero__copy">
-          <span className="eyebrow">South Indian kitchen · {brand.city}</span>
+          <span className="eyebrow">100% pure veg South Indian kitchen · {brand.city}</span>
           <h1 className="hero__title">
             {brand.heroTitle.map((line, i) => (
               <span key={line} className={`hero__line hero__line--${i + 1}`}>{line}</span>

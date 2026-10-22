@@ -159,6 +159,9 @@ export const faqs = [
   },
   {
     q: 'Is the food vegetarian?',
-    a: 'Yes. Everything on the Idliyala menu is 100% vegetarian, and the batter, sambar and chutneys are made fresh every day.',
+    a: 'Yes. Idliyala is a 100% pure vegetarian kitchen, and the batter, sambar and chutneys are made fresh every day.',
   },
 ]
+
+// URL slug for each delivery area's page, e.g. "Dum Dum Park" -> "dum-dum-park".
+export const areaSlug = (area) => area.toLowerCase().replace(/'/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')

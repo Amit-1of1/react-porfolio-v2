@@ -1,4 +1,4 @@
-import { brand, deliveryAreas } from '../data'
+import { areaSlug, brand, deliveryAreas } from '../data'
 import { whatsappLink } from '../order'
 
 export default function Delivery() {
@@ -18,7 +18,7 @@ export default function Delivery() {
           </p>
         </div>
         <ul className="delivery__areas">
-          {deliveryAreas.map((a) => <li key={a}>📍 {a}</li>)}
+          {deliveryAreas.map((a) => <li key={a}><a href={`/delivery/${areaSlug(a)}/`}>📍 {a}</a></li>)}
         </ul>
       </div>
     </section>
