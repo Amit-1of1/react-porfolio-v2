@@ -11,6 +11,8 @@ export const brand = {
   phone: '+919903322982',
   whatsapp: '919903322982',
   deliveryCharge: 50,
+  // UPI account that receives online payments (from the PhonePe QR).
+  upi: { id: '9903284811@axl', payee: 'ANAND JHAWAR' },
   minOrder: 100,
   city: 'Kolkata',
 }

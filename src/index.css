@@ -414,3 +414,28 @@ section { padding: clamp(3.5rem, 8vw, 6rem) 0; }
   html { scroll-behavior: auto; }
   * { transition: none !important; animation: none !important; }
 }
+
+/* Payment step */
+.pay { display: grid; gap: 1rem; }
+.pay__back { justify-self: start; color: var(--green); }
+.pay__amount {
+  display: grid; justify-items: center; gap: 0.15rem; padding: 1rem; border-radius: 16px;
+  background: var(--green-dark); color: #fff; text-align: center;
+}
+.pay__amount span { font-size: 0.85rem; opacity: 0.8; }
+.pay__amount strong { font-family: var(--font-display); font-size: 2.4rem; line-height: 1.1; color: var(--yellow); }
+.pay__amount small { font-size: 0.8rem; opacity: 0.8; letter-spacing: 0.04em; }
+.pay__steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 1.25rem; }
+.pay__steps h4 { margin: 0 0 0.6rem; font-family: var(--font-display); color: var(--green-dark); font-size: 1.1rem; }
+.pay__hint { font-size: 0.82rem; color: var(--muted); margin: 0.45rem 0 0.6rem; }
+.btn--upi { background: #5f259f; color: #fff; box-shadow: 0 6px 18px rgba(95, 37, 159, 0.3); }
+.pay__qr { display: flex; gap: 1rem; align-items: center; background: var(--white); border-radius: 14px; padding: 0.85rem; border: 1px solid var(--cream-2); }
+.pay__qr canvas { width: 140px !important; height: 140px !important; flex: none; border-radius: 8px; }
+.pay__id { display: grid; gap: 0.3rem; justify-items: start; min-width: 0; }
+.pay__id span { font-size: 0.75rem; color: var(--muted); }
+.pay__id code { font-size: 0.95rem; font-weight: 700; color: var(--ink); word-break: break-all; }
+.pay__id small { font-size: 0.75rem; color: var(--muted); }
+.done { display: grid; gap: 0.9rem; text-align: center; justify-items: center; padding-top: 1rem; }
+.done__tick { width: 64px; height: 64px; border-radius: 50%; background: var(--whatsapp); color: #fff; font-size: 2rem; display: grid; place-items: center; }
+.done h4 { margin: 0; font-family: var(--font-display); font-size: 1.5rem; color: var(--green-dark); }
+.done p { color: var(--muted); margin: 0; }
