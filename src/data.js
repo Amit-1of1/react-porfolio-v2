@@ -122,6 +122,42 @@ export const menu = [
   },
 ]
 
+// Picture for each dish. Variants share one picture of their base dish
+// (Butter Masala Dosa uses the Masala Dosa picture). A look with no file in
+// /images/dishes/ yet shows no picture.
+const dishLooks = [
+  ['pizza-dosa', /^Pizza Dosa/],
+  ['special-dosa', /Special/],
+  ['masala-idli', /Masala Idli/],
+  ['fried-idli', /Fried Idli/],
+  ['idli', /^Idli/],
+  ['vada', /^Vada/],
+  ['upma', /^Upma/],
+  ['cheese-uttapam', /Cheese.*Uttapam/],
+  ['mix-veg-uttapam', /Mix Veg Uttapam/],
+  ['coconut-uttapam', /Coconut Uttapam/],
+  ['onion-tomato-uttapam', /(Onion Tomato|^Tomato) Uttapam/],
+  ['onion-uttapam', /Onion.*Uttapam/],
+  ['masala-uttapam', /Masala Uttapam/],
+  ['plain-uttapam', /Uttapam/],
+  ['rava-masala-dosa', /Rava Masala Dosa/],
+  ['mysore-masala-dosa', /(Mysore|Garlic|Schezwan|Dhaniya) Masala Dosa/],
+  ['paneer-masala-dosa', /Paneer Masala Dosa/],
+  ['masala-dosa', /Masala Dosa/],
+  ['rava-dosa', /Rava.*Plain Dosa/],
+  ['onion-dosa', /Onion.*Plain Dosa/],
+  ['paneer-dosa', /Paneer.*Plain Dosa/],
+  ['mysore-dosa', /(Mysore|Garlic|Chilli|Schezwan).*Plain Dosa/],
+  ['plain-dosa', /Plain Dosa/],
+]
+export const dishLook = (name) => dishLooks.find(([, re]) => re.test(name))?.[0] || null
+// Looks that have a picture so far.
+export const dishPhotoLooks = new Set(['cheese-uttapam', 'coconut-uttapam', 'fried-idli', 'idli', 'masala-dosa', 'masala-idli', 'masala-uttapam', 'mix-veg-uttapam', 'mysore-dosa', 'mysore-masala-dosa', 'onion-dosa', 'onion-tomato-uttapam', 'onion-uttapam', 'paneer-dosa', 'paneer-masala-dosa', 'pizza-dosa', 'plain-dosa', 'plain-uttapam', 'rava-dosa', 'rava-masala-dosa', 'special-dosa', 'upma', 'vada'])
+export const dishPhoto = (name) => {
+  const look = dishLook(name)
+  return look && dishPhotoLooks.has(look) ? `/images/dishes/${look}.webp` : null
+}
+
 // Plain Idli, Vada and Upma are served as they are: no add-ons.
 const noAddOnNames = new Set(menu.flatMap((m) => m.items.filter((i) => i.noAddOns).map((i) => i.name)))
 export const allowsAddOns = (name) => !noAddOnNames.has(name)
