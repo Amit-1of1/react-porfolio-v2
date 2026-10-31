@@ -54,7 +54,7 @@ export default function Showcase() {
                     src={`/images/showcase/${s.id}-wide.webp`}
                     alt={s.alt}
                     width="1600"
-                    height="750"
+                    height="563"
                     loading={i === 0 ? 'eager' : 'lazy'}
                     decoding="async"
                   />

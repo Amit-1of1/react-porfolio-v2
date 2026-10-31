@@ -32,7 +32,7 @@ export const favourites = [
 ]
 
 // Photos in the carousel above the facts strip. Each id needs
-// public/images/showcase/<id>-wide.webp (1600x750) and <id>-phone.webp (900x675).
+// public/images/showcase/<id>-wide.webp (1600x563) and <id>-phone.webp (900x506).
 export const showcaseSlides = [
   { id: 'idli', name: 'Idli (3 pcs)', alt: 'Three soft idlis on a banana leaf with sambar, coconut chutney and red chutney' },
   { id: 'special-dosa', name: "Idliyala's Special Dosa", alt: "Idliyala's Special Dosa loaded with cheese, paneer and vegetables, cut into pieces" },
