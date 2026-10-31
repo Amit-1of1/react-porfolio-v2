@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { addOns, sides } from '../data'
+import { addOns, dishPhoto, sides } from '../data'
 import { addOnsPrice, maxOf } from '../cart'
 
 // Bottom sheet shown when a dish is added: pick add-ons and quantity.
@@ -25,7 +25,8 @@ export default function AddOnSheet({ item, onClose, onConfirm }) {
       <div className="sheet__backdrop" onClick={onClose} />
       <div className="sheet__panel">
         <div className="sheet__head">
-          <div>
+          {dishPhoto(item.name) && <img className="sheet__img" src={dishPhoto(item.name)} alt="" width="88" height="88" />}
+          <div className="sheet__title">
             <h3>{item.name}</h3>
             <p>₹{item.price}</p>
             <p>{sides.short}</p>
