@@ -155,8 +155,8 @@ export const addOns = [
   { id: 'ghee', name: 'Ghee', price: 20 },
   // Paid extras on top of the complimentary sambar and chutneys every dish gets.
   { id: 'special-coconut-chutney', name: 'Special Coconut Chutney (100\u00a0ml)', price: 25 },
-  { id: 'extra-sambar', name: 'Extra Sambar (250\u00a0ml)', price: 20 },
-  { id: 'extra-coconut-chutney', name: 'Extra Coconut Chutney (150\u00a0ml)', price: 15 },
+  { id: 'extra-sambar', name: 'Extra Sambar (150\u00a0ml)', price: 25 },
+  { id: 'extra-coconut-chutney', name: 'Extra Coconut Chutney (100\u00a0ml)', price: 15 },
   { id: 'extra-red-chutney', name: 'Extra Red Chutney (25\u00a0ml)', price: 10 },
 ]
 
@@ -203,7 +203,7 @@ export const faqs = [
   },
   {
     q: 'What comes with every dish?',
-    a: 'Every dish comes with three complimentary sides: sambar, coconut chutney and a red chutney made with onion and garlic. You can add Amul butter, cheese, paneer, schezwan or ghee to any dish except plain Idli, Vada and Upma, which are served as they are. Want more on the side? Add Extra Sambar (250 ml) for ₹20, Extra Coconut Chutney (150 ml) for ₹15, Extra Red Chutney (25 ml) for ₹10 or our Special Coconut Chutney (100 ml) for ₹25.',
+    a: 'Every dish comes with three complimentary sides: sambar, coconut chutney and a red chutney made with onion and garlic. You can add Amul butter, cheese, paneer, schezwan or ghee to any dish except plain Idli, Vada and Upma, which are served as they are. Want more on the side? Add Extra Sambar (150 ml) for ₹25, Extra Coconut Chutney (100 ml) for ₹15, Extra Red Chutney (25 ml) for ₹10 or our Special Coconut Chutney (100 ml) for ₹25.',
   },
   {
     q: 'How much does a South Indian breakfast for two cost?',
