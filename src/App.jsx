@@ -60,8 +60,8 @@ export default function App() {
       <main>
         <Hero onOrder={openCart} />
         <Showcase />
-        <Favourites cart={cart} onPick={pick} onRemoveOne={removeOne} />
         <HowItWorks onOrder={openCart} />
+        <Favourites cart={cart} onPick={pick} onRemoveOne={removeOne} />
         <Highlights />
         <Menu cart={cart} onPick={pick} onRemoveOne={removeOne} />
         <Delivery />

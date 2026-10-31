@@ -433,7 +433,6 @@ a.cart-btn { text-decoration: none; }
 .showcase__text small { font-size: 1.1rem; color: var(--muted); }
 
 /* Favourites quick order */
-.favs { padding-top: clamp(2rem, 5vw, 3.5rem); }
 .favs__grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.1rem; }
 .fav { overflow: hidden; display: flex; flex-direction: column; }
 .fav__img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; }
