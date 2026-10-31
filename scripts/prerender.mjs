@@ -145,8 +145,6 @@ Sitemap: ${SITE}/sitemap.xml
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 const cssHref = readdirSync(new URL('../dist/assets', import.meta.url)).find((f) => f.endsWith('.css'))
 const popular = menu.flatMap((m) => m.items.filter((i) => i.popular))
-const areaUrl = (a) => `${SITE}/delivery/${areaSlug(a)}/`
-const nearby = (i) => [-3, -2, -1, 1, 2, 3].map((d) => deliveryAreas[(i + d + deliveryAreas.length) % deliveryAreas.length])
 
 const li = (it) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span><span class="menu-item__sides">${sides.short}</span></div><span class="price">₹${it.price}</span></li>`
 const liDesc = (it) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span>${dishDescription(it.name) ? `<span class="menu-item__desc">${esc(dishDescription(it.name))}</span>` : ''}<span class="menu-item__sides">${sides.short}</span></div><span class="price">₹${it.price}</span></li>`
@@ -214,48 +212,6 @@ ${main}
 `
 }
 
-function areaPage(area, i) {
-  const areaFaqs = [
-    { q: `Does Idliyala deliver South Indian food to ${area}?`, a: `Yes. Idliyala delivers fresh idli, vada, dosa and uttapam to ${area} and nearby areas like ${nearby(i).slice(2, 5).join(', ')}. Delivery is ₹${brand.deliveryCharge} on orders of ₹${brand.minOrder} or more.` },
-    { q: `How do I order idli or dosa in ${area}?`, a: `Pick your dishes on ${SITE.replace('https://', '')}, enter your ${area} address and send the order to our kitchen on WhatsApp. You can also call or WhatsApp ${brand.phoneDisplay}.` },
-    { q: `Is Idliyala pure vegetarian?`, a: `Yes. Everything is 100% pure vegetarian, with batter, sambar and chutneys made fresh every day.` },
-  ]
-  return layout({
-    path: `/delivery/${areaSlug(area)}/`,
-    title: `South Indian Food Delivery in ${area}, ${brand.city} | ${brand.name}`,
-    desc: `Pure veg idli, vada, dosa and uttapam delivered in ${area}, ${brand.city}, with complimentary sambar and chutneys. Delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Order on WhatsApp.`,
-    ogTitle: `South Indian food delivery in ${area} · ${brand.name}`,
-    lds: [
-      restaurantRef({ areaServed: { '@type': 'Place', name: `${area}, ${brand.city}` } }),
-      crumbs([[brand.name, `${SITE}/`], ['Delivery areas', `${SITE}/delivery/`], [area, areaUrl(area)]]),
-      faqLd(areaFaqs),
-    ],
-    main: `      <section class="hero"><div class="container">
-        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${brand.name}</a> › <a href="/delivery/">Delivery areas</a> › ${esc(area)}</nav>
-        <span class="eyebrow">100% pure veg · Home delivery in ${esc(area)}</span>
-        <h1>South Indian food delivery in ${esc(area)}, ${brand.city}</h1>
-        <p class="lead">Craving soft idlis, crispy vadas or a golden masala dosa in ${esc(area)}? ${brand.name} cooks fresh South Indian food every day and delivers it hot to your door in ${esc(area)}, with complimentary ${sides.full} on every plate.</p>
-        <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a><a href="tel:${brand.phone}" class="btn btn--ghost">Call ${brand.phoneDisplay}</a></div>
-        <ul class="hero__badges"><li><strong>₹${brand.deliveryCharge}</strong> delivery</li><li><strong>₹${brand.minOrder}</strong> minimum order</li><li><strong>WhatsApp</strong> ordering</li><li><strong>8 am–8 pm</strong> daily</li></ul>
-      </div></section>
-      <section class="area-menu"><div class="container">
-        <h2>Popular in ${esc(area)}</h2>
-        <div class="menu__panel"><ul class="menu__list">${popular.map(li).join('')}</ul></div>
-        <h2 class="area-menu__full">Full menu</h2>
-        ${fullMenu()}
-        <p><a href="/#menu" class="btn btn--primary">Start your order</a></p>
-      </div></section>
-      <section class="faq"><div class="container">
-        <h2>Ordering in ${esc(area)}</h2>
-        <div class="faq__list">${areaFaqs.map((f) => `<details class="faq__item card" open><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('')}</div>
-      </div></section>
-      <section class="area-nearby"><div class="container">
-        <h2>We also deliver near ${esc(area)}</h2>
-        <ul class="area-links">${nearby(i).map((a) => `<li><a href="/delivery/${areaSlug(a)}/">South Indian food in ${esc(a)}</a></li>`).join('')}</ul>
-      </div></section>`,
-  })
-}
-
 // One page per dish people search for by name ("masala dosa delivery kolkata").
 const dishUrl = (d) => `${SITE}/dishes/${d.slug}/`
 const dishItems = (d) => menu.flatMap((m) => m.items.filter((i) => d.match.test(i.name)))
@@ -310,12 +266,22 @@ function dishPage(d) {
       </div></section>
       <section class="area-nearby"><div class="container">
         <h2>${esc(d.name)} delivered to</h2>
-        <ul class="area-links">${deliveryAreas.map((a) => `<li><a href="/delivery/${areaSlug(a)}/">${esc(a)}</a></li>`).join('')}</ul>
+        <ul class="area-links area-links--plain">${deliveryAreas.map((a) => `<li><span>${esc(a)}</span></li>`).join('')}</ul>
+        <p><a href="/delivery/">See all delivery areas and charges</a></p>
         <h2>More from our kitchen</h2>
         <ul class="area-links">${dishPages.filter((o) => o !== d).map((o) => `<li><a href="/dishes/${o.slug}/">${esc(o.name)} delivery in ${brand.city}</a></li>`).join('')}</ul>
       </div></section>`,
   })
 }
+
+// The one delivery page: every area name, plus the questions people ask about delivery.
+const deliveryFaqs = [
+  { q: `Which areas of ${brand.city} does ${brand.name} deliver to?`, a: `${brand.name} delivers to ${deliveryAreas.slice(0, -1).join(', ')} and ${deliveryAreas.at(-1)}.` },
+  { q: 'What is the delivery charge and minimum order?', a: `Delivery is ₹${brand.deliveryCharge} per order and the minimum order is ₹${brand.minOrder}.` },
+  { q: 'What are the delivery hours?', a: `We deliver ${brand.hours.label}.` },
+  { q: 'My area is not on the list. Can you still deliver?', a: `Message us on WhatsApp at ${brand.phoneDisplay} with your area and we will tell you if we can reach you.` },
+  { q: 'How do I place an order?', a: `Pick your dishes on ${SITE.replace('https://', '')}, enter your address and send the order to our kitchen on WhatsApp. You can also call or WhatsApp ${brand.phoneDisplay}. No payment is taken on the website.` },
+]
 
 const pages = {
   'menu/': layout({
@@ -347,18 +313,30 @@ const pages = {
     title: `South Indian Food Delivery Areas in ${brand.city} | ${brand.name}`,
     desc: `${brand.name} delivers pure veg idli, dosa, vada and uttapam to ${deliveryAreas.length} areas in ${brand.city}, including ${deliveryAreas.slice(0, 6).join(', ')} and more.`,
     ogTitle: `${brand.name} delivery areas in ${brand.city}`,
-    lds: [restaurantRef({ areaServed: restaurant.areaServed }), crumbs([[brand.name, `${SITE}/`], ['Delivery areas', `${SITE}/delivery/`]])],
+    lds: [restaurantRef({ areaServed: restaurant.areaServed }), crumbs([[brand.name, `${SITE}/`], ['Delivery areas', `${SITE}/delivery/`]]), faqLd(deliveryFaqs)],
     main: `      <section class="hero"><div class="container">
         <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${brand.name}</a> › Delivery areas</nav>
         <span class="eyebrow">Home delivery · ${brand.city}</span>
-        <h1>Where we deliver in ${brand.city}</h1>
-        <p class="lead">Fresh South Indian food, delivered hot to ${deliveryAreas.length} neighbourhoods in north and east ${brand.city}. Delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}.</p>
-        <ul class="area-links">${deliveryAreas.map((a) => `<li><a href="/delivery/${areaSlug(a)}/">South Indian food in ${esc(a)}</a></li>`).join('')}</ul>
+        <h1>South Indian food delivery areas in ${brand.city}</h1>
+        <p class="lead">${brand.name} delivers fresh, 100% pure veg idli, vada, dosa and uttapam to ${deliveryAreas.length} neighbourhoods in north and east ${brand.city}, ${brand.hours.label}. Delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Every dish comes with complimentary ${sides.full}.</p>
+        <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a><a href="tel:${brand.phone}" class="btn btn--ghost">Call ${brand.phoneDisplay}</a></div>
+      </div></section>
+      <section class="area-nearby"><div class="container">
+        <h2>Areas we deliver to</h2>
+        <ul class="area-links area-links--plain">${deliveryAreas.map((a) => `<li id="${areaSlug(a)}"><span>${esc(a)}</span></li>`).join('')}</ul>
+      </div></section>
+      <section class="area-menu"><div class="container">
+        <h2>Popular dishes</h2>
+        <div class="menu__panel"><ul class="menu__list">${popular.map(li).join('')}</ul></div>
+        <p><a href="/#menu" class="btn btn--primary">Start your order</a> <a href="/menu/" class="btn btn--ghost">See the full menu</a></p>
+      </div></section>
+      <section class="faq"><div class="container">
+        <h2>Delivery questions</h2>
+        <div class="faq__list">${deliveryFaqs.map((f) => `<details class="faq__item card" open><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('')}</div>
       </div></section>`,
   }),
 }
 
-deliveryAreas.forEach((area, i) => { pages[`delivery/${areaSlug(area)}/`] = areaPage(area, i) })
 dishPages.forEach((d) => { pages[`dishes/${d.slug}/`] = dishPage(d) })
 for (const [path, html] of Object.entries(pages)) {
   const dir = new URL(`../dist/${path}`, import.meta.url)
@@ -417,7 +395,7 @@ Last updated: ${brand.updated}
 - Delivery charge: ₹${brand.deliveryCharge}. Minimum order: ₹${brand.minOrder}.
 - Payment: not taken on the website; confirmed with the order on WhatsApp
 - Delivery areas in ${brand.city}: ${deliveryAreas.join(', ')}
-- Area pages: ${deliveryAreas.map(areaUrl).join(' ')}
+- Delivery areas page: ${SITE}/delivery/
 - Dish pages: ${dishPages.map((d) => `${d.name}: ${dishUrl(d)}`).join(' · ')}
 
 ## Menu (prices in INR)

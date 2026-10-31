@@ -366,8 +366,6 @@ a.cart-btn { text-decoration: none; }
 
 .contact__chat { display: block; margin-top: -0.25rem; color: var(--green); font-weight: 600; padding: 0.5rem 0; }
 .delivery__copy a { color: var(--yellow); font-weight: 600; }
-.delivery__areas a { color: inherit; text-decoration: none; display: block; }
-.delivery__areas li:hover { background: rgba(255, 255, 255, 0.16); }
 .drawer__picks { list-style: none; margin: 0; padding: 0; width: 100%; display: grid; gap: 0.25rem; }
 .drawer__picks li {
   display: grid; grid-template-columns: 1fr auto auto; align-items: center; gap: 0.75rem;
@@ -381,7 +379,9 @@ a.cart-btn { text-decoration: none; }
 .area-menu .menu__panel { margin-bottom: 1rem; }
 .area-menu__full { margin-top: 2.5rem; }
 .area-links { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.6rem; }
-.area-links a { display: block; padding: 0.75rem 1rem; background: var(--white); border-radius: 12px; color: var(--green); font-weight: 600; text-decoration: none; box-shadow: var(--shadow); }
+.area-links a, .area-links span { display: block; padding: 0.75rem 1rem; background: var(--white); border-radius: 12px; color: var(--green); font-weight: 600; text-decoration: none; box-shadow: var(--shadow); }
+.area-links--plain { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0.5rem; }
+.area-links--plain span { padding: 0.55rem 0.8rem; font-size: 0.92rem; }
 .hero .area-links { margin-top: 1.5rem; }
 .area-nearby .area-links + h2 { margin-top: 2.5rem; }
 .footer__dishes { font-size: 0.9rem; }
