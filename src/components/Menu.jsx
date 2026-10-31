@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { addOns, addOnsLabel, dishAlt, dishPhoto, menu, sides } from '../data'
+import { addOns, addOnsLabel, menu, sides } from '../data'
 import { itemCount } from '../cart'
 
 export default function Menu({ cart, onPick, onRemoveOne }) {
@@ -39,10 +39,8 @@ export default function Menu({ cart, onPick, onRemoveOne }) {
             <ul className="menu__list">
               {section.items.map((it) => {
                 const qty = itemCount(cart, it.name)
-                const photo = dishPhoto(it.name)
                 return (
                   <li key={it.name} className="menu-item">
-                    {photo && <img className="menu-item__img" src={photo} alt={dishAlt(it.name)} width="132" height="132" loading="lazy" decoding="async" />}
                     <div className="menu-item__info">
                       <span className="veg-dot" title="Vegetarian" aria-label="Vegetarian" />
                       <span className="menu-item__name">{it.name}</span>
