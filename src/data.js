@@ -17,6 +17,12 @@ export const brand = {
   // Google Business Profile (Maps listing).
   googleMaps: 'https://maps.google.com/?cid=14104414144031816428',
   city: 'Kolkata',
+  // Date the menu, prices and delivery details were last checked. Update it
+  // whenever they change: it is shown on the site and given to search engines.
+  updated: '2026-10-31',
+  updatedLabel: '31 October 2026',
+  // IndexNow key (public/<key>.txt): lets Bing, and so ChatGPT search, hear about updates quickly.
+  indexNowKey: '427219c46dc3b3499a425a5c86c50086',
 }
 
 // The three complimentary sides that come with every dish.
@@ -195,6 +201,22 @@ export const faqs = [
   {
     q: 'What comes with every dish?',
     a: 'Every dish comes with three complimentary sides: sambar, coconut chutney and a red chutney made with onion and garlic. You can add Amul butter, cheese, paneer, schezwan or ghee to any dish except plain Idli, Vada and Upma, which are served as they are.',
+  },
+  {
+    q: 'How much does a South Indian breakfast for two cost?',
+    a: 'A typical order of 2 plates of Idli (3 pcs) at ₹50 each and 1 Masala Dosa at ₹70 comes to ₹170, plus ₹50 delivery, so ₹220 in total. Sambar, coconut chutney and red chutney are included free with every dish.',
+  },
+  {
+    q: 'What is the cheapest dish at Idliyala?',
+    a: 'Idli (3 pcs) and Vada (3 pcs) are ₹50 each, and Plain Dosa and Plain Uttapam are ₹60. The minimum order is ₹100, so two plates are enough to order.',
+  },
+  {
+    q: 'Do you deliver on Sundays?',
+    a: 'Yes. Idliyala delivers every day of the week, including Sundays, from 8 am to 8 pm.',
+  },
+  {
+    q: 'Does the red chutney have onion and garlic?',
+    a: 'Yes. The red chutney is made with onion and garlic. Sambar and coconut chutney also come with every dish.',
   },
   {
     q: 'Is the food vegetarian?',
