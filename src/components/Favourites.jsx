@@ -1,4 +1,4 @@
-import { dishPhoto, favourites, menu } from '../data'
+import { dishAlt, dishPhoto, favourites, menu } from '../data'
 import { itemCount } from '../cart'
 
 const allItems = menu.flatMap((m) => m.items)
@@ -18,7 +18,7 @@ export default function Favourites({ cart, onPick, onRemoveOne }) {
             const qty = itemCount(cart, it.name)
             return (
               <li key={it.name} className="card fav">
-                <img className="fav__img" src={dishPhoto(it.name)} alt={it.name} width="400" height="400" loading="lazy" decoding="async" />
+                <img className="fav__img" src={dishPhoto(it.name)} alt={dishAlt(it.name)} width="400" height="400" loading="lazy" decoding="async" />
                 <div className="fav__body">
                   <span className="fav__name"><span className="veg-dot" aria-label="Vegetarian" />{it.name}</span>
                   <div className="fav__row">

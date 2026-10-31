@@ -5,8 +5,8 @@ export default function Hero({ onOrder }) {
     <section className="hero" id="top">
       <div className="container hero__inner">
         <div className="hero__copy">
-          <span className="eyebrow">100% pure veg South Indian kitchen · {brand.city}</span>
           <h1 className="hero__title">
+            <span className="eyebrow">Pure veg South Indian food delivery in {brand.city}</span>
             {brand.heroTitle.map((line, i) => (
               <span key={line} className={`hero__line hero__line--${i + 1}`}>{line}</span>
             ))}
@@ -27,8 +27,8 @@ export default function Hero({ onOrder }) {
         </div>
         <div className="hero__art">
           <div className="hero__sun" aria-hidden="true" />
-          <img className="hero__img hero__img--idli" src="/images/idli-plate.jpg" alt="Soft idlis and a crispy vada with sambar and coconut chutney" width="500" height="297" fetchpriority="high" />
-          <img className="hero__img hero__img--dosa" src="/images/dosa-plate.jpg" alt="Golden masala dosa with sambar and chutney" width="480" height="300" loading="lazy" />
+          <img className="hero__img hero__img--idli" src="/images/idli-plate.webp" alt="Soft idlis and a crispy vada with sambar and coconut chutney" width="500" height="297" fetchpriority="high" />
+          <img className="hero__img hero__img--dosa" src="/images/dosa-plate.webp" alt="Golden masala dosa with sambar and chutney" width="480" height="300" loading="lazy" />
         </div>
       </div>
     </section>

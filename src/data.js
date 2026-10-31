@@ -286,3 +286,37 @@ export function dishDescription(name) {
   }
   return ''
 }
+
+// Descriptive alt text for a dish photo, so image search and screen readers know
+// what is on the plate, e.g. "Masala Dosa: crisp dosa filled with spiced potato
+// masala, served with sambar and chutneys".
+export function dishAlt(name) {
+  const desc = dishDescription(name).replace(/\.$/, '')
+  const what = desc ? `${name}: ${desc.charAt(0).toLowerCase()}${desc.slice(1)}` : name
+  return `${what}, served with sambar and chutneys`
+}
+
+// Landing pages for the dishes people search for by name, e.g. "idli delivery
+// kolkata". Each lists the menu items whose name matches `match`.
+export const dishPages = [
+  {
+    slug: 'idli', name: 'Idli', photo: 'idli', match: /Idli\b/,
+    intro: 'Soft, fluffy idlis steamed fresh every morning from our own rice-and-lentil batter. Order a plate of 3 for ₹50, or try masala idli and crisp fried idli with butter or ghee.',
+  },
+  {
+    slug: 'vada', name: 'Vada', photo: 'vada', match: /^Vada/,
+    intro: 'Crispy medu vada made from urad dal, fried golden outside and soft inside. A plate of 3 is ₹50 and pairs perfectly with a plate of idli for a classic idli-vada breakfast.',
+  },
+  {
+    slug: 'dosa', name: 'Dosa', photo: 'plain-dosa', match: /Plain Dosa/,
+    intro: 'Thin, golden and crisp dosas made on the tawa to order: plain, onion, rava, paneer, garlic, Mysore and schezwan, from ₹60.',
+  },
+  {
+    slug: 'masala-dosa', name: 'Masala Dosa', photo: 'masala-dosa', match: /Masala Dosa|Special Dosa|Pizza Dosa/,
+    intro: "Crisp dosa filled with our spiced potato masala, from the classic Masala Dosa at ₹70 to Mysore, rava, paneer and the loaded Idliyala's Special Dosa.",
+  },
+  {
+    slug: 'uttapam', name: 'Uttapam', photo: 'onion-tomato-uttapam', match: /Uttapam/,
+    intro: 'Thick, fluffy uttapam topped generously with onion, tomato, chilli, vegetables, cheese, paneer or coconut, from ₹60.',
+  },
+]

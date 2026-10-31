@@ -2,7 +2,7 @@
 // into dist/ so search engines and AI assistants can read everything without
 // running JavaScript. All content comes from src/data.js.
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
-import { addOns, addOnsLabel, areaSlug, brand, deliveryAreas, dishDescription, dishPhoto, faqs, menu, sides } from '../src/data.js'
+import { addOns, addOnsLabel, areaSlug, brand, deliveryAreas, dishAlt, dishDescription, dishPages, dishPhoto, faqs, menu, showcaseSlides, sides } from '../src/data.js'
 import { render } from '../dist-ssr/entry-server.js'
 
 const SITE = 'https://www.idliyala.com'
@@ -16,11 +16,20 @@ const restaurant = {
   '@id': `${SITE}/#restaurant`,
   name: brand.name,
   alternateName: `${brand.name} - ${brand.tagline}`,
+  slogan: brand.tagline,
   description: brand.intro,
   url: `${SITE}/`,
   logo: `${SITE}/images/logo.png`,
   image: [`${SITE}/og-image.jpg`, `${SITE}/images/idli-plate.jpg`, `${SITE}/images/dosa-plate.jpg`],
   telephone: brand.phone,
+  contactPoint: {
+    '@type': 'ContactPoint',
+    telephone: brand.phone,
+    contactType: 'customer service',
+    contactOption: 'Orders on phone and WhatsApp',
+    areaServed: 'IN',
+    availableLanguage: ['English', 'Hindi', 'Bengali'],
+  },
   menu: `${SITE}/menu/`,
   hasMap: brand.googleMaps,
   sameAs: [brand.googleMaps],
@@ -37,7 +46,8 @@ const restaurant = {
     },
   }),
   address: { '@type': 'PostalAddress', addressLocality: brand.city, addressRegion: 'West Bengal', addressCountry: 'IN' },
-  areaServed: deliveryAreas.map((a) => ({ '@type': 'Place', name: `${a}, ${brand.city}` })),
+  areaServed: [{ '@type': 'City', name: brand.city }, ...deliveryAreas.map((a) => ({ '@type': 'Place', name: `${a}, ${brand.city}` }))],
+  keywords: 'south indian food delivery kolkata, idli, dosa, vada, uttapam, pure veg, salt lake, lake town',
   hasMenu: {
     '@type': 'Menu',
     name: `${brand.name} menu`,
@@ -49,6 +59,7 @@ const restaurant = {
         '@type': 'MenuItem',
         name: i.name,
         suitableForDiet: 'https://schema.org/VegetarianDiet',
+        ...(dishPhoto(i.name) && { image: `${SITE}${dishPhoto(i.name)}` }),
         offers: { '@type': 'Offer', price: i.price, priceCurrency: 'INR' },
       })),
     })),
@@ -75,7 +86,10 @@ const faqPage = {
   mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
 }
 
-const website = { '@context': 'https://schema.org', '@type': 'WebSite', name: brand.name, url: `${SITE}/` }
+const website = {
+  '@context': 'https://schema.org', '@type': 'WebSite', '@id': `${SITE}/#website`, name: brand.name,
+  alternateName: `${brand.name} ${brand.tagline}`, url: `${SITE}/`, inLanguage: 'en-IN', publisher: { '@id': `${SITE}/#restaurant` },
+}
 
 const ld = (obj) => `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>`
 
@@ -115,7 +129,7 @@ const popular = menu.flatMap((m) => m.items.filter((i) => i.popular))
 const areaUrl = (a) => `${SITE}/delivery/${areaSlug(a)}/`
 const nearby = (i) => [-3, -2, -1, 1, 2, 3].map((d) => deliveryAreas[(i + d + deliveryAreas.length) % deliveryAreas.length])
 
-const img = (it) => (dishPhoto(it.name) ? `<img class="menu-item__img" src="${dishPhoto(it.name)}" alt="${esc(it.name)}" width="132" height="132" loading="lazy" decoding="async">` : '')
+const img = (it) => (dishPhoto(it.name) ? `<img class="menu-item__img" src="${dishPhoto(it.name)}" alt="${esc(dishAlt(it.name))}" width="132" height="132" loading="lazy" decoding="async">` : '')
 const li = (it) => `<li class="menu-item">${img(it)}<div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span><span class="menu-item__sides">${sides.short}</span></div><span class="price">₹${it.price}</span></li>`
 const liDesc = (it) => `<li class="menu-item">${img(it)}<div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span>${dishDescription(it.name) ? `<span class="menu-item__desc">${esc(dishDescription(it.name))}</span>` : ''}<span class="menu-item__sides">${sides.short}</span></div><span class="price">₹${it.price}</span></li>`
 const fullMenu = (row = li) => `${menu.map((m) => `<div class="menu__panel" id="${m.id}"><div class="menu__panel-head"><h3>${esc(m.category)}</h3><p>${esc(m.blurb)}</p></div><ul class="menu__list">${m.items.map(row).join('')}</ul></div>`).join('\n        ')}
@@ -132,8 +146,10 @@ const restaurantRef = (extra = {}) => ({
 })
 const faqLd = (list) => ({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: list.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) })
 
+const FONTS = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap'
+
 // Shared shell for the static pages: same look as the app, no JavaScript needed.
-function layout({ path, title, desc, ogTitle, lds, main }) {
+function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow, max-image-preview:large', canonical = true }) {
   const url = `${SITE}${path}`
   return `<!doctype html>
 <html lang="en-IN">
@@ -142,9 +158,9 @@ function layout({ path, title, desc, ogTitle, lds, main }) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>${esc(title)}</title>
     <meta name="description" content="${esc(desc)}" />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="robots" content="${robots}" />
     <meta name="theme-color" content="#2f6b3c" />
-    <link rel="canonical" href="${url}" />
+    ${canonical ? `<link rel="canonical" href="${url}" />` : ''}
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
@@ -157,21 +173,23 @@ function layout({ path, title, desc, ogTitle, lds, main }) {
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link href="${FONTS}" rel="stylesheet" media="print" onload="this.media='all'" />
+    <noscript><link href="${FONTS}" rel="stylesheet" /></noscript>
     <link rel="stylesheet" href="/assets/${cssHref}" />
     ${lds.map(ld).join('\n    ')}
   </head>
   <body>
     <header class="nav"><div class="container nav__inner">
-      <a href="/" class="nav__brand"><img src="/images/logo-mark.png" alt="Idliyala logo" width="72" height="65" /><span><strong>${brand.name}</strong><small>${brand.tagline}</small></span></a>
+      <a href="/" class="nav__brand"><img src="/images/logo-mark.webp" alt="Idliyala logo" width="72" height="65" /><span><strong>${brand.name}</strong><small>${brand.tagline}</small></span></a>
       <a href="/#menu" class="cart-btn"><span aria-hidden="true">🛒</span><span class="cart-btn__label">Order now</span></a>
     </div></header>
     <main>
 ${main}
     </main>
     <footer class="footer"><div class="container footer__inner">
-      <div class="footer__brand"><img src="/images/logo-mark.png" alt="" width="36" height="32" /><span><strong>${brand.name}</strong>™ · ${brand.tagline}</span></div>
-      <p><a href="/menu/">Menu</a> · <a href="/delivery/">Delivery areas</a> · 📞 <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> · <a href="${brand.googleMaps}" target="_blank" rel="noreferrer">Find us on Google</a></p>
+      <div class="footer__brand"><img src="/images/logo-mark.webp" alt="" width="36" height="32" /><span><strong>${brand.name}</strong>™ · ${brand.tagline}</span></div>
+      <p><a href="/menu/">Menu</a> · <a href="/delivery/">Delivery areas</a> · ${dishPages.map((d) => `<a href="/dishes/${d.slug}/">${esc(d.name)} delivery</a>`).join(' · ')}</p>
+      <p>📞 <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> · <a href="${brand.googleMaps}" target="_blank" rel="noreferrer">Find us on Google</a></p>
     </div></footer>
   </body>
 </html>
@@ -187,7 +205,7 @@ function areaPage(area, i) {
   return layout({
     path: `/delivery/${areaSlug(area)}/`,
     title: `South Indian Food Delivery in ${area}, ${brand.city} | ${brand.name}`,
-    desc: `Order pure veg South Indian food in ${area}, ${brand.city}: soft idli, crispy vada, masala dosa and uttapam with complimentary sambar and two chutneys. Home delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Order on WhatsApp.`,
+    desc: `Pure veg idli, vada, dosa and uttapam delivered in ${area}, ${brand.city}, with complimentary sambar and chutneys. Delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Order on WhatsApp.`,
     ogTitle: `South Indian food delivery in ${area} · ${brand.name}`,
     lds: [
       restaurantRef({ areaServed: { '@type': 'Place', name: `${area}, ${brand.city}` } }),
@@ -220,6 +238,70 @@ function areaPage(area, i) {
   })
 }
 
+// One page per dish people search for by name ("masala dosa delivery kolkata").
+const dishUrl = (d) => `${SITE}/dishes/${d.slug}/`
+const dishItems = (d) => menu.flatMap((m) => m.items.filter((i) => d.match.test(i.name)))
+function dishPage(d) {
+  const items = dishItems(d)
+  const from = Math.min(...items.map((i) => i.price))
+  const lower = d.name.toLowerCase()
+  const photo = `/images/dishes/${d.photo}.webp`
+  const dishFaqs = [
+    { q: `Where can I order ${lower} in ${brand.city}?`, a: `Order ${lower} from ${brand.name} on ${SITE.replace('https://', '')} or on WhatsApp ${brand.phoneDisplay}. We deliver across north and east ${brand.city}, including ${deliveryAreas.slice(0, 8).join(', ')} and more.` },
+    { q: `How much does ${lower} cost at ${brand.name}?`, a: `${d.name} starts at ₹${from}. Every plate comes with complimentary ${sides.full}. Delivery is ₹${brand.deliveryCharge} on orders of ₹${brand.minOrder} or more.` },
+    { q: `Is ${brand.name}'s ${lower} pure vegetarian?`, a: `Yes. ${brand.name} is a 100% pure vegetarian kitchen, and the batter, sambar and chutneys are made fresh every day.` },
+    { q: `When can I get ${lower} delivered?`, a: `We deliver ${brand.hours.label}, so ${lower} can reach you hot for breakfast, lunch or an evening snack.` },
+  ]
+  return layout({
+    path: `/dishes/${d.slug}/`,
+    title: `${d.name} Delivery in ${brand.city} from ₹${from} | Pure Veg | ${brand.name}`,
+    desc: `Order fresh ${lower} in ${brand.city} from ₹${from} with complimentary sambar and chutneys. 100% pure veg, delivered 8 am to 8 pm daily in Salt Lake, Lake Town, Dum Dum and more.`,
+    ogTitle: `${d.name} delivery in ${brand.city} · ${brand.name}`,
+    lds: [
+      {
+        '@context': 'https://schema.org', '@type': 'MenuSection', name: `${d.name} at ${brand.name}`, url: dishUrl(d), image: `${SITE}${photo}`,
+        hasMenuItem: items.map((i) => ({
+          '@type': 'MenuItem', name: i.name, suitableForDiet: 'https://schema.org/VegetarianDiet',
+          ...(dishDescription(i.name) && { description: dishDescription(i.name) }),
+          ...(dishPhoto(i.name) && { image: `${SITE}${dishPhoto(i.name)}` }),
+          offers: { '@type': 'Offer', price: i.price, priceCurrency: 'INR' },
+        })),
+        isPartOf: { '@id': `${SITE}/#restaurant` },
+      },
+      restaurantRef(),
+      crumbs([[brand.name, `${SITE}/`], ['Menu', `${SITE}/menu/`], [d.name, dishUrl(d)]]),
+      faqLd(dishFaqs),
+    ],
+    main: `      <section class="hero"><div class="container hero__inner">
+        <div class="hero__copy">
+          <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${brand.name}</a> › <a href="/menu/">Menu</a> › ${esc(d.name)}</nav>
+          <span class="eyebrow">100% pure veg · From ₹${from}</span>
+          <h1>${esc(d.name)} delivery in ${brand.city}</h1>
+          <p class="lead">${esc(d.intro)} Every plate comes with complimentary ${sides.full}.</p>
+          <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order ${esc(lower)}</a><a href="tel:${brand.phone}" class="btn btn--ghost">Call ${brand.phoneDisplay}</a></div>
+          <ul class="hero__badges"><li><strong>₹${brand.deliveryCharge}</strong> delivery</li><li><strong>₹${brand.minOrder}</strong> minimum order</li><li><strong>WhatsApp</strong> ordering</li><li><strong>8 am–8 pm</strong> daily</li></ul>
+        </div>
+        <div class="dish-hero"><img src="${photo}" alt="${esc(dishAlt(items[0].name))}" width="400" height="400" fetchpriority="high"></div>
+      </div></section>
+      <section class="area-menu"><div class="container">
+        <h2>${esc(d.name)} menu and prices</h2>
+        <div class="menu__panel"><ul class="menu__list">${items.map(liDesc).join('')}</ul></div>
+        <p class="menu__addons"><strong>${addOnsLabel}:</strong> ${addOns.map((a) => `${esc(a.name)} ₹${a.price}`).join(' · ')}</p>
+        <p><a href="/#menu" class="btn btn--primary">Start your order</a> <a href="/menu/" class="btn btn--ghost">See the full menu</a></p>
+      </div></section>
+      <section class="faq"><div class="container">
+        <h2>${esc(d.name)} questions</h2>
+        <div class="faq__list">${dishFaqs.map((f) => `<details class="faq__item card" open><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('')}</div>
+      </div></section>
+      <section class="area-nearby"><div class="container">
+        <h2>${esc(d.name)} delivered to</h2>
+        <ul class="area-links">${deliveryAreas.map((a) => `<li><a href="/delivery/${areaSlug(a)}/">${esc(a)}</a></li>`).join('')}</ul>
+        <h2>More from our kitchen</h2>
+        <ul class="area-links">${dishPages.filter((o) => o !== d).map((o) => `<li><a href="/dishes/${o.slug}/">${esc(o.name)} delivery in ${brand.city}</a></li>`).join('')}</ul>
+      </div></section>`,
+  })
+}
+
 const pages = {
   'menu/': layout({
     path: '/menu/',
@@ -236,6 +318,7 @@ const pages = {
         <h1>${brand.name} menu and prices</h1>
         <p class="lead">Every dish comes with 3 complimentary sides: ${sides.full}. Delivery is ₹${brand.deliveryCharge} on orders of ₹${brand.minOrder} or more, anywhere in our ${deliveryAreas.length} ${brand.city} delivery areas.</p>
         <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a></div>
+        <ul class="area-links">${dishPages.map((d) => `<li><a href="/dishes/${d.slug}/">${esc(d.name)}</a></li>`).join('')}</ul>
       </div></section>
       <section class="area-menu"><div class="container">
         ${fullMenu(liDesc)}
@@ -259,17 +342,35 @@ const pages = {
 }
 
 deliveryAreas.forEach((area, i) => { pages[`delivery/${areaSlug(area)}/`] = areaPage(area, i) })
+dishPages.forEach((d) => { pages[`dishes/${d.slug}/`] = dishPage(d) })
 for (const [path, html] of Object.entries(pages)) {
   const dir = new URL(`../dist/${path}`, import.meta.url)
   mkdirSync(dir, { recursive: true })
   writeFileSync(new URL('index.html', dir), html)
 }
 
-const urls = [`${SITE}/`, ...Object.keys(pages).map((p) => `${SITE}/${p}`)]
-const images = ['og-image.jpg', 'images/idli-plate.jpg', 'images/dosa-plate.jpg', 'images/logo.png']
+// Static 404 page, served by Vercel for any unknown URL (with a real 404 status).
+writeFileSync(dist('404.html'), layout({
+  path: '/404', title: `Page not found | ${brand.name}`, desc: `This page does not exist. See the ${brand.name} menu or order South Indian food in ${brand.city}.`,
+  ogTitle: brand.name, lds: [], robots: 'noindex', canonical: false,
+  main: `      <section class="hero"><div class="container">
+        <h1>Sorry, this page is not on the menu</h1>
+        <p class="lead">The page you were looking for has moved or never existed.</p>
+        <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a><a href="/menu/" class="btn btn--ghost">See the full menu</a></div>
+      </div></section>`,
+}))
+
+// Sitemap, with the photos each page shows so they can appear in Google Images.
+const allPhotos = [...new Set(menu.flatMap((m) => m.items.map((i) => dishPhoto(i.name)).filter(Boolean)))]
+const pageImages = {
+  '': ['/og-image.jpg', '/images/idli-plate.webp', '/images/dosa-plate.webp', ...showcaseSlides.map((s) => `/images/showcase/${s.id}-wide.webp`), ...allPhotos],
+  'menu/': allPhotos,
+  ...Object.fromEntries(dishPages.map((d) => [`dishes/${d.slug}/`, [...new Set(dishItems(d).map((i) => dishPhoto(i.name)).filter(Boolean))]])),
+}
+const urls = ['', ...Object.keys(pages)]
 writeFileSync(dist('sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
-${urls.map((u, i) => `  <url><loc>${u}</loc><lastmod>${today}</lastmod>${i ? '' : images.map((im) => `<image:image><image:loc>${SITE}/${im}</image:loc></image:image>`).join('')}</url>`).join('\n')}
+${urls.map((p) => `  <url><loc>${SITE}/${p}</loc><lastmod>${today}</lastmod>${(pageImages[p] || []).map((im) => `<image:image><image:loc>${SITE}${im}</image:loc></image:image>`).join('')}</url>`).join('\n')}
 </urlset>
 `)
 
@@ -291,6 +392,7 @@ writeFileSync(dist('llms.txt'), `# ${brand.name}
 - Payment: not taken on the website; confirmed with the order on WhatsApp
 - Delivery areas in ${brand.city}: ${deliveryAreas.join(', ')}
 - Area pages: ${deliveryAreas.map(areaUrl).join(' ')}
+- Dish pages: ${dishPages.map((d) => `${d.name}: ${dishUrl(d)}`).join(' · ')}
 
 ## Menu (prices in INR)
 ${menuText}
