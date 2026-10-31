@@ -27,9 +27,9 @@ export function buildOrderMessage(lines, form, orderCode) {
   const subtotal = cartSubtotal(lines)
   const total = subtotal + brand.deliveryCharge
   const labels = lineLabels(lines)
-  const rows = lines.flatMap((l) => {
+  const rows = lines.flatMap((l, i) => {
     const [dish, ...extras] = priceBreakdown(l)
-    const head = `• ${l.qty} x ${labels[l.key]} (₹${dish.each} each) = ₹${dish.amount}`
+    const head = `${i + 1}. ${l.qty} x ${labels[l.key]} (₹${dish.each} each) = ₹${dish.amount}`
     if (!extras.length) return [head]
     return [
       head,
