@@ -25,6 +25,12 @@ export const sides = {
   short: 'Complimentary: Sambar, Coconut Chutney, Red Chutney (onion-garlic)',
 }
 
+// Dishes shown in the Favourites quick-order strip, by their exact menu name.
+export const favourites = [
+  'Idli (3 pcs)', 'Vada (3 pcs)', 'Masala Dosa', 'Mysore Masala Dosa',
+  'Onion Tomato Uttapam', 'Fried Idli', 'Paneer Masala Dosa', "Idliyala's Special Dosa",
+]
+
 export const highlights = [
   { icon: '🌅', title: 'Made fresh daily', text: 'Batter, sambar and chutneys prepared fresh every day. Nothing sits overnight.' },
   { icon: '🍃', title: 'Authentic taste', text: 'Classic South Indian recipes, from a simple plain dosa to our loaded specials.' },

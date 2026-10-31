@@ -3,6 +3,7 @@ import { brand } from '../data'
 
 const links = [
   { href: '#menu', label: 'Menu' },
+  { href: '#how-it-works', label: 'How it works' },
   { href: '#delivery', label: 'Delivery' },
   { href: '#about', label: 'About' },
   { href: '#faq', label: 'FAQ' },
