@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { addOns, addOnsLabel, menu, sides } from '../data'
+import { addOns, addOnsLabel, brand, menu, sides } from '../data'
 import { itemCount } from '../cart'
 
 export default function Menu({ cart, onPick, onRemoveOne }) {
@@ -69,6 +69,7 @@ export default function Menu({ cart, onPick, onRemoveOne }) {
           </p>
         </div>
         ))}
+        <p className="menu__updated">Prices updated <time dateTime={brand.updated}>{brand.updatedLabel}</time></p>
         <p className="menu__more"><a href="/menu/">See the full menu with dish descriptions →</a></p>
       </div>
     </section>

@@ -162,6 +162,8 @@ a.cart-btn { text-decoration: none; }
 .reorder span { font-size: 0.88rem; color: var(--muted); }
 .done__share { color: var(--green); font-weight: 600; padding: 0.5rem 0; }
 .menu__more { text-align: center; margin: 1.25rem 0 0; }
+.menu__updated { text-align: center; margin: 1rem 0 0; font-size: 0.85rem; color: var(--muted); }
+.hero .menu__updated { text-align: left; margin: 0 0 1rem; }
 .menu__more a { color: var(--green); font-weight: 600; }
 .menu-item__info:has(.menu-item__desc), .menu-item__info:has(.menu-item__sides) { flex: 1; min-width: 0; row-gap: 0.15rem; }
 .menu-item .price { flex: none; }

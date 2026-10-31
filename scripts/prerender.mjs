@@ -93,9 +93,13 @@ const website = {
 const ld = (obj) => `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>`
 
 let html = readFileSync(dist('index.html'), 'utf8')
+const homePage = {
+  '@context': 'https://schema.org', '@type': 'WebPage', '@id': `${SITE}/#webpage`, url: `${SITE}/`, name: `${brand.name} | South Indian Food Delivery in ${brand.city}`,
+  inLanguage: 'en-IN', dateModified: brand.updated, isPartOf: { '@id': `${SITE}/#website` }, about: { '@id': `${SITE}/#restaurant` },
+}
 html = html
   .replace('<div id="root"></div>', `<div id="root">${render()}</div>`)
-  .replace('</head>', `    ${[restaurant, faqPage, website].map(ld).join('\n    ')}\n  </head>`)
+  .replace('</head>', `    ${[restaurant, homePage, faqPage, website].map(ld).join('\n    ')}\n  </head>`)
 writeFileSync(dist('index.html'), html)
 
 writeFileSync(dist('robots.txt'), `User-agent: *
@@ -115,6 +119,22 @@ Allow: /
 User-agent: PerplexityBot
 Allow: /
 User-agent: Google-Extended
+Allow: /
+User-agent: Perplexity-User
+Allow: /
+User-agent: Claude-User
+Allow: /
+User-agent: Applebot
+Allow: /
+User-agent: Applebot-Extended
+Allow: /
+User-agent: DuckAssistBot
+Allow: /
+User-agent: Bingbot
+Allow: /
+User-agent: meta-externalagent
+Allow: /
+User-agent: Amazonbot
 Allow: /
 
 Sitemap: ${SITE}/sitemap.xml
@@ -305,6 +325,7 @@ const pages = {
     ogTitle: `${brand.name} menu and prices`,
     lds: [
       { ...restaurantRef(), hasMenu: describedMenu },
+      { '@context': 'https://schema.org', '@type': 'WebPage', url: `${SITE}/menu/`, name: `${brand.name} menu and prices`, dateModified: brand.updated, about: { '@id': `${SITE}/#restaurant` } },
       crumbs([[brand.name, `${SITE}/`], ['Menu', `${SITE}/menu/`]]),
     ],
     main: `      <section class="hero"><div class="container">
@@ -312,6 +333,7 @@ const pages = {
         <span class="eyebrow">100% pure veg · ${brand.city}</span>
         <h1>${brand.name} menu and prices</h1>
         <p class="lead">Every dish comes with 3 complimentary sides: ${sides.full}. Delivery is ₹${brand.deliveryCharge} on orders of ₹${brand.minOrder} or more, anywhere in our ${deliveryAreas.length} ${brand.city} delivery areas.</p>
+        <p class="menu__updated">Prices updated <time datetime="${brand.updated}">${brand.updatedLabel}</time></p>
         <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a></div>
         <ul class="area-links">${dishPages.map((d) => `<li><a href="/dishes/${d.slug}/">${esc(d.name)}</a></li>`).join('')}</ul>
       </div></section>
@@ -374,6 +396,18 @@ writeFileSync(dist('llms.txt'), `# ${brand.name}
 
 > ${brand.name} (${brand.tagline}) is a South Indian food delivery kitchen in ${brand.city}, India, serving fresh idli, vada, dosa and uttapam. Every dish comes with complimentary ${sides.full}. All food is 100% pure vegetarian. Order online at ${SITE}/ or on WhatsApp/phone ${brand.phoneDisplay}.
 
+Last updated: ${brand.updated}
+
+## Quick facts
+- What: South Indian food delivery kitchen (idli, vada, dosa, uttapam, upma)
+- Where: ${brand.city}, West Bengal, India (delivery only, north and east ${brand.city})
+- Diet: 100% pure vegetarian
+- Hours: ${brand.hours.label}
+- Prices: ₹${Math.min(...prices)} to ₹${Math.max(...prices)} per dish; ₹${brand.minOrder} minimum order; ₹${brand.deliveryCharge} delivery charge
+- Free with every dish: ${sides.full}
+- How to order: on the website (order is sent on WhatsApp) or call/WhatsApp +91 ${brand.phoneDisplay}
+- Payment: arranged on WhatsApp when the order is confirmed; no online payment on the website
+
 ## Ordering and delivery
 - Menu: ${SITE}/menu/
 - Website: ${SITE}/ (pick dishes and add-ons, enter address; the order is sent on WhatsApp, no online payment)
@@ -395,6 +429,22 @@ ${addOns.map((a) => `- ${a.name}: ₹${a.price}`).join('\n')}
 ## FAQ
 ${faqs.map((f) => `**${f.q}**\n${f.a}`).join('\n\n')}
 `)
+
+// Tell Bing (and through it ChatGPT search and Copilot) about every page after a
+// production deploy, via IndexNow. Skipped for previews and local builds.
+if (process.env.VERCEL_ENV === 'production' && brand.indexNowKey) {
+  try {
+    const res = await fetch('https://api.indexnow.org/indexnow', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json; charset=utf-8' },
+      body: JSON.stringify({ host: new URL(SITE).host, key: brand.indexNowKey, keyLocation: `${SITE}/${brand.indexNowKey}.txt`, urlList: urls.map((p) => `${SITE}/${p}`) }),
+      signal: AbortSignal.timeout(10000),
+    })
+    console.log(`IndexNow: submitted ${urls.length} URLs (HTTP ${res.status})`)
+  } catch (e) {
+    console.log(`IndexNow: skipped (${e.message})`)
+  }
+}
 
 rmSync(new URL('../dist-ssr', import.meta.url), { recursive: true, force: true })
 console.log(`prerendered index.html, ${Object.keys(pages).length} static pages, robots.txt, sitemap.xml, llms.txt`)
