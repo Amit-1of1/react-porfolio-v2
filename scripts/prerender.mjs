@@ -186,7 +186,7 @@ function areaPage(area, i) {
   return layout({
     path: `/delivery/${areaSlug(area)}/`,
     title: `South Indian Food Delivery in ${area}, ${brand.city} | ${brand.name}`,
-    desc: `Order pure veg South Indian food in ${area}, ${brand.city}: soft idli, crispy vada, masala dosa and uttapam with free sambar and two chutneys. Home delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Order on WhatsApp.`,
+    desc: `Order pure veg South Indian food in ${area}, ${brand.city}: soft idli, crispy vada, masala dosa and uttapam with complimentary sambar and two chutneys. Home delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Order on WhatsApp.`,
     ogTitle: `South Indian food delivery in ${area} · ${brand.name}`,
     lds: [
       restaurantRef({ areaServed: { '@type': 'Place', name: `${area}, ${brand.city}` } }),

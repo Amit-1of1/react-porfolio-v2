@@ -27,7 +27,8 @@ export default function AddOnSheet({ item, onClose, onConfirm }) {
         <div className="sheet__head">
           <div>
             <h3>{item.name}</h3>
-            <p>₹{item.price} · comes with {sides.full}, free</p>
+            <p>₹{item.price}</p>
+            <p>{sides.short}</p>
           </div>
           <button className="icon-btn" onClick={onClose} aria-label="Close">✕</button>
         </div>

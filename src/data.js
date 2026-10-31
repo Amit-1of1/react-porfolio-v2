@@ -19,10 +19,10 @@ export const brand = {
   city: 'Kolkata',
 }
 
-// The three sides that come free with every dish.
+// The three complimentary sides that come with every dish.
 export const sides = {
   full: 'sambar, coconut chutney and a red chutney made with onion and garlic',
-  short: 'Free: sambar, coconut chutney, red chutney',
+  short: 'Complimentary: Sambar, Coconut Chutney, Red Chutney (onion-garlic)',
 }
 
 export const highlights = [
@@ -179,7 +179,7 @@ export const faqs = [
     a: 'No payment is taken on this website. Send your order on WhatsApp and we will confirm how to pay along with your delivery time.',
   },
   {
-    q: 'What comes free with every dish?',
+    q: 'What comes with every dish?',
     a: 'Every dish comes with three complimentary sides: sambar, coconut chutney and a red chutney made with onion and garlic. You can add Amul butter, cheese, paneer, schezwan or ghee to any dish except plain Idli, Vada and Upma, which are served as they are.',
   },
   {
