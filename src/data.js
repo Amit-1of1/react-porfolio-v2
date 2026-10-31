@@ -31,6 +31,14 @@ export const favourites = [
   'Onion Tomato Uttapam', 'Fried Idli', 'Paneer Masala Dosa', "Idliyala's Special Dosa",
 ]
 
+// Photos in the carousel above the facts strip. Each id needs
+// public/images/showcase/<id>-wide.webp (1600x563) and <id>-phone.webp (900x506).
+export const showcaseSlides = [
+  { id: 'idli', name: 'Idli (3 pcs)', alt: 'Three soft idlis on a banana leaf with sambar, coconut chutney and red chutney' },
+  { id: 'special-dosa', name: "Idliyala's Special Dosa", alt: "Idliyala's Special Dosa loaded with cheese, paneer and vegetables, cut into pieces" },
+  { id: 'fried-idli', name: 'Fried Idli', alt: 'Golden fried idli with curry leaves, sambar and chutneys' },
+]
+
 export const highlights = [
   { icon: '🌅', title: 'Made fresh daily', text: 'Batter, sambar and chutneys prepared fresh every day. Nothing sits overnight.' },
   { icon: '🍃', title: 'Authentic taste', text: 'Classic South Indian recipes, from a simple plain dosa to our loaded specials.' },
