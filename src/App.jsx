@@ -3,6 +3,9 @@ import { Analytics } from '@vercel/analytics/react'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import Highlights from './components/Highlights'
+import Showcase from './components/Showcase'
+import HowItWorks from './components/HowItWorks'
+import Favourites from './components/Favourites'
 import Menu from './components/Menu'
 import Delivery from './components/Delivery'
 import Reviews from './components/Reviews'
@@ -46,6 +49,7 @@ export default function App() {
   const closePick = useCallback(() => setPicking(null), [])
   const closeCart = useCallback(() => setCartOpen(false), [])
   const openCart = useCallback(() => setCartOpen(true), [])
+  const removeOne = useCallback((name) => setCart((c) => removeOneOf(c, name)), [])
 
   const count = cartCount(cart)
   const subtotal = cartSubtotal(cart)
@@ -55,8 +59,11 @@ export default function App() {
       <Navbar cartCount={count} onCartClick={openCart} />
       <main>
         <Hero onOrder={openCart} />
+        <Showcase />
+        <Favourites cart={cart} onPick={pick} onRemoveOne={removeOne} />
+        <HowItWorks onOrder={openCart} />
         <Highlights />
-        <Menu cart={cart} onPick={pick} onRemoveOne={(name) => setCart((c) => removeOneOf(c, name))} />
+        <Menu cart={cart} onPick={pick} onRemoveOne={removeOne} />
         <Delivery />
         <Reviews />
         <Faq />

@@ -10,7 +10,7 @@ export default function Menu({ cart, onPick, onRemoveOne }) {
       <div className="container">
         <div className="section-head">
           <span className="eyebrow">Our menu</span>
-          <h2>Pick your favourites</h2>
+          <h2>The full menu</h2>
           <p>Every dish comes with 3 complimentary sides: {sides.full}. Tap Add to put it in your order.</p>
         </div>
 
