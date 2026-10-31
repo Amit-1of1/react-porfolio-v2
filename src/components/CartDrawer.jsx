@@ -185,7 +185,7 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
                     <span className="drawer__amt">₹{lineTotal(l)}</span>
                   </div>
                   {!allowsAddOns(l.name) ? (
-                    <p className="chips__label">Served plain with sambar and chutney, no add-ons.</p>
+                    <p className="chips__label">Served plain with the free sambar and chutneys, no add-ons.</p>
                   ) : (
                     <>
                       {l.qty > 1 && (

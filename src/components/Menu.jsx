@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { addOns, addOnsLabel, menu } from '../data'
+import { addOns, addOnsLabel, menu, sides } from '../data'
 import { itemCount } from '../cart'
 
 export default function Menu({ cart, onPick, onRemoveOne }) {
@@ -11,7 +11,7 @@ export default function Menu({ cart, onPick, onRemoveOne }) {
         <div className="section-head">
           <span className="eyebrow">Our menu</span>
           <h2>Pick your favourites</h2>
-          <p>Every dish comes hot with sambar and coconut chutney. Tap Add to choose add-ons and put it in your order.</p>
+          <p>Every dish comes with 3 complimentary sides: {sides.full}. Tap Add to put it in your order.</p>
         </div>
 
         <div className="menu__tabs" role="tablist">
@@ -45,6 +45,7 @@ export default function Menu({ cart, onPick, onRemoveOne }) {
                       <span className="veg-dot" title="Vegetarian" aria-label="Vegetarian" />
                       <span className="menu-item__name">{it.name}</span>
                       {it.popular && <span className="tag">Popular</span>}
+                      <span className="menu-item__sides">{sides.short}</span>
                     </div>
                     <div className="menu-item__right">
                       <span className="price">₹{it.price}</span>

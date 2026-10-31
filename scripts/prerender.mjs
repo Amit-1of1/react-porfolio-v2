@@ -2,7 +2,7 @@
 // into dist/ so search engines and AI assistants can read everything without
 // running JavaScript. All content comes from src/data.js.
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
-import { addOns, addOnsLabel, areaSlug, brand, deliveryAreas, dishDescription, faqs, menu } from '../src/data.js'
+import { addOns, addOnsLabel, areaSlug, brand, deliveryAreas, dishDescription, faqs, menu, sides } from '../src/data.js'
 import { render } from '../dist-ssr/entry-server.js'
 
 const SITE = 'https://www.idliyala.com'
@@ -115,8 +115,8 @@ const popular = menu.flatMap((m) => m.items.filter((i) => i.popular))
 const areaUrl = (a) => `${SITE}/delivery/${areaSlug(a)}/`
 const nearby = (i) => [-3, -2, -1, 1, 2, 3].map((d) => deliveryAreas[(i + d + deliveryAreas.length) % deliveryAreas.length])
 
-const li = (it) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span></div><span class="price">₹${it.price}</span></li>`
-const liDesc = (it) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span>${dishDescription(it.name) ? `<span class="menu-item__desc">${esc(dishDescription(it.name))}</span>` : ''}</div><span class="price">₹${it.price}</span></li>`
+const li = (it) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span><span class="menu-item__sides">${sides.short}</span></div><span class="price">₹${it.price}</span></li>`
+const liDesc = (it) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span>${dishDescription(it.name) ? `<span class="menu-item__desc">${esc(dishDescription(it.name))}</span>` : ''}<span class="menu-item__sides">${sides.short}</span></div><span class="price">₹${it.price}</span></li>`
 const fullMenu = (row = li) => `${menu.map((m) => `<div class="menu__panel" id="${m.id}"><div class="menu__panel-head"><h3>${esc(m.category)}</h3><p>${esc(m.blurb)}</p></div><ul class="menu__list">${m.items.map(row).join('')}</ul></div>`).join('\n        ')}
         <p class="menu__addons"><strong>${addOnsLabel}:</strong> ${addOns.map((a) => `${esc(a.name)} ₹${a.price}`).join(' · ')}</p>`
 const crumbs = (items) => ({
@@ -186,7 +186,7 @@ function areaPage(area, i) {
   return layout({
     path: `/delivery/${areaSlug(area)}/`,
     title: `South Indian Food Delivery in ${area}, ${brand.city} | ${brand.name}`,
-    desc: `Order pure veg South Indian food in ${area}, ${brand.city}: soft idli, crispy vada, masala dosa and uttapam with sambar and chutney. Home delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Order on WhatsApp.`,
+    desc: `Order pure veg South Indian food in ${area}, ${brand.city}: soft idli, crispy vada, masala dosa and uttapam with free sambar and two chutneys. Home delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Order on WhatsApp.`,
     ogTitle: `South Indian food delivery in ${area} · ${brand.name}`,
     lds: [
       restaurantRef({ areaServed: { '@type': 'Place', name: `${area}, ${brand.city}` } }),
@@ -197,7 +197,7 @@ function areaPage(area, i) {
         <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${brand.name}</a> › <a href="/delivery/">Delivery areas</a> › ${esc(area)}</nav>
         <span class="eyebrow">100% pure veg · Home delivery in ${esc(area)}</span>
         <h1>South Indian food delivery in ${esc(area)}, ${brand.city}</h1>
-        <p class="lead">Craving soft idlis, crispy vadas or a golden masala dosa in ${esc(area)}? ${brand.name} cooks fresh South Indian food every day and delivers it hot to your door in ${esc(area)}, with sambar and coconut chutney on every plate.</p>
+        <p class="lead">Craving soft idlis, crispy vadas or a golden masala dosa in ${esc(area)}? ${brand.name} cooks fresh South Indian food every day and delivers it hot to your door in ${esc(area)}, with complimentary ${sides.full} on every plate.</p>
         <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a><a href="tel:${brand.phone}" class="btn btn--ghost">Call ${brand.phoneDisplay}</a></div>
         <ul class="hero__badges"><li><strong>₹${brand.deliveryCharge}</strong> delivery</li><li><strong>₹${brand.minOrder}</strong> minimum order</li><li><strong>WhatsApp</strong> ordering</li><li><strong>8 am–8 pm</strong> daily</li></ul>
       </div></section>
@@ -233,7 +233,7 @@ const pages = {
         <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${brand.name}</a> › Menu</nav>
         <span class="eyebrow">100% pure veg · ${brand.city}</span>
         <h1>${brand.name} menu and prices</h1>
-        <p class="lead">Every idli, vada, dosa and uttapam comes hot with sambar and coconut chutney. Delivery is ₹${brand.deliveryCharge} on orders of ₹${brand.minOrder} or more, anywhere in our ${deliveryAreas.length} ${brand.city} delivery areas.</p>
+        <p class="lead">Every dish comes with 3 complimentary sides: ${sides.full}. Delivery is ₹${brand.deliveryCharge} on orders of ₹${brand.minOrder} or more, anywhere in our ${deliveryAreas.length} ${brand.city} delivery areas.</p>
         <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a></div>
       </div></section>
       <section class="area-menu"><div class="container">
@@ -278,7 +278,7 @@ const menuText = menu
 
 writeFileSync(dist('llms.txt'), `# ${brand.name}
 
-> ${brand.name} (${brand.tagline}) is a South Indian food delivery kitchen in ${brand.city}, India, serving fresh idli, vada, dosa and uttapam with sambar and coconut chutney. All food is 100% pure vegetarian. Order online at ${SITE}/ or on WhatsApp/phone ${brand.phoneDisplay}.
+> ${brand.name} (${brand.tagline}) is a South Indian food delivery kitchen in ${brand.city}, India, serving fresh idli, vada, dosa and uttapam. Every dish comes with complimentary ${sides.full}. All food is 100% pure vegetarian. Order online at ${SITE}/ or on WhatsApp/phone ${brand.phoneDisplay}.
 
 ## Ordering and delivery
 - Menu: ${SITE}/menu/
