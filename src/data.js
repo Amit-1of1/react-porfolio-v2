@@ -11,8 +11,6 @@ export const brand = {
   phone: '+919903322982',
   whatsapp: '919903322982',
   deliveryCharge: 50,
-  // UPI account that receives online payments (from the PhonePe QR).
-  upi: { id: '9903284811@axl', payee: 'ANAND JHAWAR' },
   minOrder: 100,
   // Delivery hours, every day, e.g. { opens: '07:30', closes: '22:00' }. Left out of search data until set.
   hours: { opens: '08:00', closes: '20:00', label: '8 am to 8 pm, all 7 days' },
@@ -25,7 +23,7 @@ export const highlights = [
   { icon: '🌅', title: 'Made fresh daily', text: 'Batter, sambar and chutneys prepared fresh every day. Nothing sits overnight.' },
   { icon: '🍃', title: 'Authentic taste', text: 'Classic South Indian recipes, from a simple plain dosa to our loaded specials.' },
   { icon: '🛵', title: 'Home delivery', text: `Delivered hot across north and east Kolkata on orders of ₹100 and above.` },
-  { icon: '📱', title: 'Easy online ordering', text: 'Pick your dishes, pay by UPI and your order reaches us on WhatsApp.' },
+  { icon: '📱', title: 'Easy online ordering', text: 'Pick your dishes and send your order to us on WhatsApp in one tap.' },
 ]
 
 const item = (name, price, extra = {}) => ({ name, price, ...extra })
@@ -163,11 +161,11 @@ export const faqs = [
   },
   {
     q: 'How do I order?',
-    a: 'Add dishes and any add-ons on this website, enter your address, pay by UPI and your order is sent to our kitchen on WhatsApp. You can also call or WhatsApp us on 99033 22982.',
+    a: 'Add dishes and any add-ons on this website, enter your address and tap Send order: your order opens in WhatsApp, ready to send to our kitchen. You can also call or WhatsApp us on 99033 22982.',
   },
   {
     q: 'How can I pay?',
-    a: 'Pay online with any UPI app such as PhonePe, Google Pay or Paytm. Scan the QR or tap Pay at checkout, then enter the 12-digit UTR from your payment.',
+    a: 'No payment is taken on this website. Send your order on WhatsApp and we will confirm how to pay along with your delivery time.',
   },
   {
     q: 'What comes with the idli and dosa?',

@@ -7,15 +7,6 @@ export const makeOrderCode = () =>
 
 export const orderTotal = (lines) => cartSubtotal(lines) + brand.deliveryCharge
 
-// UPI deep link that opens the customer's UPI app with amount and note filled in.
-export const upiLink = (amount, orderCode) => {
-  const enc = (v) => encodeURIComponent(v)
-  // pa is left unencoded: some UPI apps reject "%40" in the VPA.
-  return `upi://pay?pa=${brand.upi.id}&pn=${enc(brand.upi.payee)}&am=${amount.toFixed(2)}&cu=INR&tn=${enc(`Idliyala ${orderCode}`)}`
-}
-
-export const isValidUtr = (utr) => /^\d{12}$/.test(utr)
-
 export const whatsappLink = (text) =>
   `https://wa.me/${brand.whatsapp}?text=${encodeURIComponent(text)}`
 
@@ -32,7 +23,7 @@ export const formatAddress = (a) =>
     .filter(Boolean)
     .join(', ')
 
-export function buildOrderMessage(lines, form, payment) {
+export function buildOrderMessage(lines, form, orderCode) {
   const subtotal = cartSubtotal(lines)
   const total = subtotal + brand.deliveryCharge
   const labels = lineLabels(lines)
@@ -45,7 +36,7 @@ export function buildOrderMessage(lines, form, payment) {
   })
   return [
     '*New order from idliyala.com*',
-    payment ? `Order ID: ${payment.orderCode}` : null,
+    orderCode ? `Order ID: ${orderCode}` : null,
     '',
     ...rows,
     '',
@@ -57,9 +48,6 @@ export function buildOrderMessage(lines, form, payment) {
     `*Phone:* +91 ${form.phone}`,
     `*Address:* ${formatAddress(form)}`,
     form.note.trim() ? `*Note:* ${form.note.trim()}` : null,
-    ...(payment
-      ? ['', '*Payment: Paid via UPI (check this UTR in PhonePe)*', `Amount: ₹${total}`, `To: ${brand.upi.id}`, `UTR / Txn ID: ${payment.utr}`]
-      : []),
   ]
     .filter((l) => l !== null)
     .join('\n')
@@ -77,7 +65,7 @@ export function validateOrderForm(f) {
   return e
 }
 
-// Row saved to the orders table when the customer moves to payment.
+// Row saved to the orders table when the customer sends the order.
 export function orderRecord(lines, form, orderCode) {
   const subtotal = cartSubtotal(lines)
   return {
