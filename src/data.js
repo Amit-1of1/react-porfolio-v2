@@ -6,7 +6,7 @@ export const brand = {
   tagline: 'Daily Fresh Idli',
   heroTitle: ['Soft idlis.', 'Crispy vadas.', 'Fresh every day.'],
   intro:
-    'Idliyala is a South Indian kitchen in Kolkata built around the classics: pillowy idlis, golden dosas, loaded uttapams and crunchy vadas, served hot with sambar and coconut chutney and delivered to your door.',
+    'Idliyala is a South Indian kitchen in Kolkata built around the classics: pillowy idlis, golden dosas, loaded uttapams and crunchy vadas, served hot with sambar, coconut chutney and our red onion-garlic chutney, and delivered to your door.',
   phoneDisplay: '99033 22982',
   phone: '+919903322982',
   whatsapp: '919903322982',
@@ -17,6 +17,12 @@ export const brand = {
   // Google Business Profile (Maps listing).
   googleMaps: 'https://maps.google.com/?cid=14104414144031816428',
   city: 'Kolkata',
+}
+
+// The three sides that come free with every dish.
+export const sides = {
+  full: 'sambar, coconut chutney and a red chutney made with onion and garlic',
+  short: 'Free: sambar, coconut chutney, red chutney',
 }
 
 export const highlights = [
@@ -32,7 +38,7 @@ export const menu = [
   {
     id: 'idli-vada',
     category: 'Idli & Vada',
-    blurb: 'Steamed soft, served with sambar and chutney.',
+    blurb: 'Steamed soft, served with sambar and both chutneys.',
     image: '/images/idli-plate.jpg',
     items: [
       item('Idli (3 pcs)', 50, { popular: true, noAddOns: true }),
@@ -173,8 +179,8 @@ export const faqs = [
     a: 'No payment is taken on this website. Send your order on WhatsApp and we will confirm how to pay along with your delivery time.',
   },
   {
-    q: 'What comes with the idli and dosa?',
-    a: 'Every idli, vada, dosa and uttapam comes hot with sambar and coconut chutney. You can add Amul butter, cheese, paneer, schezwan or ghee to any dish except plain Idli, Vada and Upma, which are served as they are.',
+    q: 'What comes free with every dish?',
+    a: 'Every dish comes with three complimentary sides: sambar, coconut chutney and a red chutney made with onion and garlic. You can add Amul butter, cheese, paneer, schezwan or ghee to any dish except plain Idli, Vada and Upma, which are served as they are.',
   },
   {
     q: 'Is the food vegetarian?',
@@ -189,12 +195,12 @@ export const areaSlug = (area) => area.toLowerCase().replace(/'/g, '').replace(/
 // search data so search engines and AI assistants know what each dish is.
 // "Butter ..." and "Ghee ..." variants reuse the base dish with a note.
 const dishInfo = {
-  'Idli (3 pcs)': 'Three soft steamed rice-and-lentil cakes with sambar and coconut chutney.',
-  'Vada (3 pcs)': 'Three crispy fried urad dal vadas (medu vada) with sambar and coconut chutney.',
+  'Idli (3 pcs)': 'Three soft steamed rice-and-lentil cakes.',
+  'Vada (3 pcs)': 'Three crispy fried urad dal vadas (medu vada).',
   'Masala Idli': 'Idli pieces tossed with onion, tomato and South Indian spices.',
   'Fried Idli': 'Idli pieces pan-fried until crisp outside and soft inside.',
   Upma: 'Savoury semolina (rava) cooked with mustard seeds, curry leaves and vegetables.',
-  'Plain Dosa': 'Thin, crisp rice-and-lentil crepe with sambar and coconut chutney.',
+  'Plain Dosa': 'Thin, crisp rice-and-lentil crepe.',
   'Onion Plain Dosa': 'Crisp dosa topped with chopped onions.',
   'Rava Plain Dosa': 'Lacy, extra-crisp dosa made with semolina batter.',
   'Paneer Plain Dosa': 'Crisp dosa topped with grated paneer.',
@@ -202,14 +208,14 @@ const dishInfo = {
   'Chilli Plain Dosa': 'Crisp dosa topped with green chillies.',
   'Mysore Plain Dosa': 'Crisp dosa spread with spicy red Mysore chutney.',
   'Schezwan Plain Dosa': 'Crisp dosa spread with spicy schezwan sauce.',
-  'Masala Dosa': 'Crisp dosa filled with spiced potato masala, served with sambar and coconut chutney.',
+  'Masala Dosa': 'Crisp dosa filled with spiced potato masala.',
   'Rava Masala Dosa': 'Lacy semolina dosa filled with spiced potato masala.',
   'Mysore Masala Dosa': 'Dosa spread with spicy red Mysore chutney and filled with potato masala.',
   'Garlic Masala Dosa': 'Masala dosa spread with a spicy garlic chutney.',
   'Dhaniya Masala Dosa': 'Masala dosa with fresh coriander (dhaniya).',
   'Schezwan Masala Dosa': 'Masala dosa spread with spicy schezwan sauce.',
   'Paneer Masala Dosa': 'Masala dosa with paneer added to the filling.',
-  'Plain Uttapam': 'Thick, fluffy rice-and-lentil pancake with sambar and coconut chutney.',
+  'Plain Uttapam': 'Thick, fluffy rice-and-lentil pancake.',
   'Masala Uttapam': 'Thick uttapam with spiced potato masala.',
   'Onion Uttapam': 'Thick uttapam topped with onions.',
   'Onion Tomato Uttapam': 'Thick uttapam topped with onions and tomatoes.',

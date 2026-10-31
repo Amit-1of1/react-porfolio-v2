@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { addOns } from '../data'
+import { addOns, sides } from '../data'
 import { addOnsPrice, maxOf } from '../cart'
 
 // Bottom sheet shown when a dish is added: pick add-ons and quantity.
@@ -27,7 +27,7 @@ export default function AddOnSheet({ item, onClose, onConfirm }) {
         <div className="sheet__head">
           <div>
             <h3>{item.name}</h3>
-            <p>₹{item.price} · with sambar and chutney</p>
+            <p>₹{item.price} · comes with {sides.full}, free</p>
           </div>
           <button className="icon-btn" onClick={onClose} aria-label="Close">✕</button>
         </div>
