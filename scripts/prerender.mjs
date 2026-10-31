@@ -115,7 +115,7 @@ const popular = menu.flatMap((m) => m.items.filter((i) => i.popular))
 const areaUrl = (a) => `${SITE}/delivery/${areaSlug(a)}/`
 const nearby = (i) => [-3, -2, -1, 1, 2, 3].map((d) => deliveryAreas[(i + d + deliveryAreas.length) % deliveryAreas.length])
 
-const img = (it) => (dishPhoto(it.name) ? `<img class="menu-item__img" src="${dishPhoto(it.name)}" alt="${esc(it.name)}" width="72" height="72" loading="lazy" decoding="async">` : '')
+const img = (it) => (dishPhoto(it.name) ? `<img class="menu-item__img" src="${dishPhoto(it.name)}" alt="${esc(it.name)}" width="132" height="132" loading="lazy" decoding="async">` : '')
 const li = (it) => `<li class="menu-item">${img(it)}<div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span><span class="menu-item__sides">${sides.short}</span></div><span class="price">₹${it.price}</span></li>`
 const liDesc = (it) => `<li class="menu-item">${img(it)}<div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span>${dishDescription(it.name) ? `<span class="menu-item__desc">${esc(dishDescription(it.name))}</span>` : ''}<span class="menu-item__sides">${sides.short}</span></div><span class="price">₹${it.price}</span></li>`
 const fullMenu = (row = li) => `${menu.map((m) => `<div class="menu__panel" id="${m.id}"><div class="menu__panel-head"><h3>${esc(m.category)}</h3><p>${esc(m.blurb)}</p></div><ul class="menu__list">${m.items.map(row).join('')}</ul></div>`).join('\n        ')}

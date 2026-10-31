@@ -42,7 +42,7 @@ export default function Menu({ cart, onPick, onRemoveOne }) {
                 const photo = dishPhoto(it.name)
                 return (
                   <li key={it.name} className="menu-item">
-                    {photo && <img className="menu-item__img" src={photo} alt={it.name} width="72" height="72" loading="lazy" decoding="async" />}
+                    {photo && <img className="menu-item__img" src={photo} alt={it.name} width="132" height="132" loading="lazy" decoding="async" />}
                     <div className="menu-item__info">
                       <span className="veg-dot" title="Vegetarian" aria-label="Vegetarian" />
                       <span className="menu-item__name">{it.name}</span>
