@@ -122,6 +122,7 @@ a.cart-btn { text-decoration: none; }
 .hero__img--dosa { width: 60%; right: 0; bottom: 0; transform: rotate(5deg); }
 
 .hero__title { margin-bottom: 0.6em; }
+.hero__title .eyebrow { display: block; font-family: var(--font-body); line-height: 1.4; }
 .hero__line { display: block; }
 .hero__line--2 { color: var(--orange); }
 .hero__line--3 { color: var(--brown); font-size: 0.82em; margin-top: 0.1em; }
@@ -156,21 +157,6 @@ a.cart-btn { text-decoration: none; }
   padding: 0.85rem 0; border-bottom: 1px solid var(--cream-2);
 }
 .menu-item:last-child { border-bottom: 0; }
-/* With a picture: name and price on the left, photo on the right with Add sitting on its bottom edge. */
-.menu-item__img { width: 132px; height: 132px; object-fit: cover; border-radius: 16px; background: var(--cream-2); box-shadow: 0 4px 12px rgba(60, 30, 10, 0.15); }
-.menu-item:has(.menu-item__img) {
-  display: grid; grid-template-columns: 1fr 132px; grid-template-rows: auto 1fr auto; grid-template-areas: "info img" "price img" ". add";
-  column-gap: 1rem; row-gap: 0.35rem; align-items: start; padding: 1.1rem 0;
-}
-.menu-item:has(.menu-item__img) .menu-item__img { grid-area: img; }
-.menu-item:has(.menu-item__img) .menu-item__info { grid-area: info; }
-.menu-item:has(.menu-item__img) .menu-item__right { display: contents; }
-.menu-item:has(.menu-item__img) .price { grid-area: price; text-align: left; min-width: 0; font-size: 1.05rem; }
-.menu-item:has(.menu-item__img) .add-btn,
-.menu-item:has(.menu-item__img) .stepper { grid-area: add; justify-self: center; margin-top: -1.6rem; position: relative; min-width: 96px; box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15); }
-.menu-item:has(.menu-item__img) .menu-item__name { font-size: 1.05rem; font-weight: 600; }
-.menu-item:has(.menu-item__img) .menu-item__sides,
-.menu-item:has(.menu-item__img) .menu-item__desc { padding-left: 0; }
 .menu-item__info { display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap; }
 .reorder { display: grid; gap: 0.5rem; padding: 1rem; width: 100%; color: var(--ink); }
 .reorder span { font-size: 0.88rem; color: var(--muted); }
@@ -302,7 +288,6 @@ a.cart-btn { text-decoration: none; }
 @keyframes rise { from { transform: translateY(24px); opacity: 0; } }
 .sheet__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 1rem; }
 .sheet__title { flex: 1; min-width: 0; }
-.sheet__img { width: 88px; height: 88px; flex: none; object-fit: cover; border-radius: 14px; }
 .sheet__head h3 { margin: 0 0 0.2rem; font-size: 1.35rem; }
 .sheet__head p { margin: 0; color: var(--muted); font-size: 0.9rem; }
 .sheet__label { font-weight: 600; color: var(--brown); margin-bottom: 0.5rem; font-size: 0.9rem; }
@@ -395,6 +380,9 @@ a.cart-btn { text-decoration: none; }
 .area-menu__full { margin-top: 2.5rem; }
 .area-links { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 0.6rem; }
 .area-links a { display: block; padding: 0.75rem 1rem; background: var(--white); border-radius: 12px; color: var(--green); font-weight: 600; text-decoration: none; box-shadow: var(--shadow); }
+.hero .area-links { margin-top: 1.5rem; }
+.area-nearby .area-links + h2 { margin-top: 2.5rem; }
+.footer__dishes { font-size: 0.9rem; }
 
 /* Showcase: big plate photo with a 2x2 / 4-up facts strip */
 .showcase { padding: 0 0 clamp(2.5rem, 6vw, 4rem); }
@@ -435,7 +423,6 @@ a.cart-btn { text-decoration: none; }
 /* Favourites quick order */
 .favs__grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.1rem; }
 .fav { overflow: hidden; display: flex; flex-direction: column; }
-.fav__img { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; }
 .fav__body { padding: 0.85rem 1rem 1rem; display: flex; flex-direction: column; gap: 0.6rem; flex: 1; }
 .fav__name { font-weight: 600; display: flex; align-items: center; gap: 0.45rem; flex: 1; }
 .fav__row { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; }
@@ -539,8 +526,6 @@ a.cart-btn { text-decoration: none; }
   .menu__panel-head h3 { font-size: 1.35rem; }
   .menu__panel-head p { font-size: 0.85rem; }
   .menu-item { align-items: center; gap: 0.6rem; padding: 0.75rem 0; }
-  .menu-item:has(.menu-item__img) { grid-template-columns: 1fr 116px; column-gap: 0.75rem; }
-  .menu-item:has(.menu-item__img) .menu-item__img { width: 116px; height: 116px; }
   .menu-item__name { font-size: 0.95rem; }
   .menu-item__right { gap: 0.6rem; }
   .price { min-width: 0; }

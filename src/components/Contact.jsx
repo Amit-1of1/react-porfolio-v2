@@ -5,7 +5,7 @@ export default function Contact({ onOrder }) {
   return (
     <section className="contact" id="contact">
       <div className="container contact__inner card">
-        <img src="/images/logo.png" alt="Idliyala logo" className="contact__logo" width="400" height="397" loading="lazy" />
+        <img src="/images/logo.webp" alt="Idliyala logo" className="contact__logo" width="400" height="397" loading="lazy" />
         <div>
           <span className="eyebrow">Hungry?</span>
           <h2>Order now, eat fresh</h2>
