@@ -1,5 +1,5 @@
 import { brand } from './data'
-import { addOnNames, cartSubtotal, lineLabels, lineTotal, unitPrice } from './cart'
+import { cartSubtotal, lineLabels, lineTotal, priceBreakdown, unitPrice } from './cart'
 
 // Short, readable order reference, e.g. IDL-M4K2Q7.
 export const makeOrderCode = () =>
@@ -28,11 +28,14 @@ export function buildOrderMessage(lines, form, orderCode) {
   const total = subtotal + brand.deliveryCharge
   const labels = lineLabels(lines)
   const rows = lines.flatMap((l) => {
-    const names = addOnNames(l)
     const head = `• ${l.qty} x ${labels[l.key]} = ₹${lineTotal(l)}`
-    if (!names.length) return [head]
-    const each = l.qty > 1 ? ` (on each plate, ₹${unitPrice(l)} per plate)` : ''
-    return [head, `   ↳ add-ons: ${names.join(', ')}${each}`]
+    const parts = priceBreakdown(l)
+    if (parts.length < 2) return [head]
+    return [
+      head,
+      ...parts.map((p) => `   ${p.addOn ? '+ ' : ''}${p.label}: ${p.detail ? `${p.detail} = ` : ''}₹${p.amount}`),
+      l.qty > 1 ? `   = ₹${unitPrice(l)} per plate × ${l.qty} plates` : null,
+    ].filter(Boolean)
   })
   return [
     '*New order from idliyala.com*',
