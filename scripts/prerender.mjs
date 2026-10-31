@@ -2,7 +2,7 @@
 // into dist/ so search engines and AI assistants can read everything without
 // running JavaScript. All content comes from src/data.js.
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
-import { addOns, areaSlug, brand, deliveryAreas, dishDescription, faqs, menu } from '../src/data.js'
+import { addOns, addOnsLabel, areaSlug, brand, deliveryAreas, dishDescription, faqs, menu } from '../src/data.js'
 import { render } from '../dist-ssr/entry-server.js'
 
 const SITE = 'https://www.idliyala.com'
@@ -118,7 +118,7 @@ const nearby = (i) => [-3, -2, -1, 1, 2, 3].map((d) => deliveryAreas[(i + d + de
 const li = (it) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span></div><span class="price">₹${it.price}</span></li>`
 const liDesc = (it) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Vegetarian"></span><span class="menu-item__name">${esc(it.name)}</span>${dishDescription(it.name) ? `<span class="menu-item__desc">${esc(dishDescription(it.name))}</span>` : ''}</div><span class="price">₹${it.price}</span></li>`
 const fullMenu = (row = li) => `${menu.map((m) => `<div class="menu__panel" id="${m.id}"><div class="menu__panel-head"><h3>${esc(m.category)}</h3><p>${esc(m.blurb)}</p></div><ul class="menu__list">${m.items.map(row).join('')}</ul></div>`).join('\n        ')}
-        <p class="menu__addons"><strong>Add-ons for any dish:</strong> ${addOns.map((a) => `${esc(a.name)} ₹${a.price}`).join(' · ')}</p>`
+        <p class="menu__addons"><strong>${addOnsLabel}:</strong> ${addOns.map((a) => `${esc(a.name)} ₹${a.price}`).join(' · ')}</p>`
 const crumbs = (items) => ({
   '@context': 'https://schema.org',
   '@type': 'BreadcrumbList',
@@ -294,7 +294,7 @@ writeFileSync(dist('llms.txt'), `# ${brand.name}
 ## Menu (prices in INR)
 ${menuText}
 
-### Add-ons (any dish, per portion)
+### Add-ons (per portion; any dish except plain Idli, Vada and Upma)
 ${addOns.map((a) => `- ${a.name}: ₹${a.price}`).join('\n')}
 
 ## FAQ

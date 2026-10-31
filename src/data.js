@@ -35,14 +35,14 @@ export const menu = [
     blurb: 'Steamed soft, served with sambar and chutney.',
     image: '/images/idli-plate.jpg',
     items: [
-      item('Idli (3 pcs)', 50, { popular: true }),
-      item('Vada (3 pcs)', 50),
+      item('Idli (3 pcs)', 50, { popular: true, noAddOns: true }),
+      item('Vada (3 pcs)', 50, { noAddOns: true }),
       item('Masala Idli', 70),
       item('Butter Masala Idli', 90),
       item('Fried Idli', 80),
       item('Butter Fried Idli', 100),
       item('Ghee Fried Idli', 100),
-      item('Upma', 60),
+      item('Upma', 60, { noAddOns: true }),
     ],
   },
   {
@@ -116,6 +116,11 @@ export const menu = [
   },
 ]
 
+// Plain Idli, Vada and Upma are served as they are: no add-ons.
+const noAddOnNames = new Set(menu.flatMap((m) => m.items.filter((i) => i.noAddOns).map((i) => i.name)))
+export const allowsAddOns = (name) => !noAddOnNames.has(name)
+export const addOnsLabel = 'Add-ons for any dish except plain Idli, Vada and Upma'
+
 // Extras a customer can add to any dish, priced per portion. Customers can add
 // as many portions of each as they like; set `max` on one to cap it.
 export const addOns = [
@@ -157,7 +162,7 @@ export const faqs = [
   },
   {
     q: 'What should I order at Idliyala?',
-    a: "Popular picks are Idli (3 pcs) for ₹50, Plain Dosa for ₹60, Masala Dosa for ₹70, Onion Tomato Uttapam for ₹75 and Idliyala's Special Dosa for ₹250. Add Amul butter, cheese or paneer to any dish.",
+    a: "Popular picks are Idli (3 pcs) for ₹50, Plain Dosa for ₹60, Masala Dosa for ₹70, Onion Tomato Uttapam for ₹75 and Idliyala's Special Dosa for ₹250. Add Amul butter, cheese or paneer to any dish except plain Idli, Vada and Upma.",
   },
   {
     q: 'How do I order?',
@@ -169,7 +174,7 @@ export const faqs = [
   },
   {
     q: 'What comes with the idli and dosa?',
-    a: 'Every idli, vada, dosa and uttapam comes hot with sambar and coconut chutney. You can add Amul butter, cheese, paneer, schezwan or ghee to any dish.',
+    a: 'Every idli, vada, dosa and uttapam comes hot with sambar and coconut chutney. You can add Amul butter, cheese, paneer, schezwan or ghee to any dish except plain Idli, Vada and Upma, which are served as they are.',
   },
   {
     q: 'Is the food vegetarian?',

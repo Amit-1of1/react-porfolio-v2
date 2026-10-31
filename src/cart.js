@@ -1,4 +1,4 @@
-import { addOns as ADD_ONS } from './data'
+import { addOns as ADD_ONS, allowsAddOns } from './data'
 
 // A cart is an array of lines. Each line is one dish with one set of add-ons:
 // { key, name, basePrice, addOns: { [addOnId]: portions }, qty }. The same
@@ -8,8 +8,10 @@ const byId = Object.fromEntries(ADD_ONS.map((a) => [a.id, a]))
 export const maxOf = (id) => byId[id].max || Infinity
 
 // Drops zero counts, clamps to each add-on's max and keeps the menu order.
-function normalize(counts) {
+// Dishes served plain never keep add-ons.
+function normalize(counts, name) {
   const out = {}
+  if (!allowsAddOns(name)) return out
   for (const a of ADD_ONS) {
     const n = Math.min(counts[a.id] || 0, maxOf(a.id))
     if (n > 0) out[a.id] = n
@@ -28,7 +30,7 @@ export const cartSubtotal = (cart) => cart.reduce((s, l) => s + lineTotal(l), 0)
 export const itemCount = (cart, name) => cart.filter((l) => l.name === name).reduce((s, l) => s + l.qty, 0)
 
 export function addItem(cart, item, counts = {}, qty = 1) {
-  const addOns = normalize(counts)
+  const addOns = normalize(counts, item.name)
   const key = lineKey(item.name, addOns)
   const existing = cart.find((l) => l.key === key)
   if (existing) return cart.map((l) => (l.key === key ? { ...l, qty: l.qty + qty } : l))
@@ -52,7 +54,7 @@ export function removeOneOf(cart, name) {
 export function setAddOn(cart, key, addOnId, portions) {
   const line = cart.find((l) => l.key === key)
   if (!line) return cart
-  const addOns = normalize({ ...line.addOns, [addOnId]: portions })
+  const addOns = normalize({ ...line.addOns, [addOnId]: portions }, line.name)
   const rest = cart.filter((l) => l.key !== key)
   const newKey = lineKey(line.name, addOns)
   const twin = rest.find((l) => l.key === newKey)

@@ -10,7 +10,7 @@ import Contact from './components/Contact'
 import Faq from './components/Faq'
 import Footer from './components/Footer'
 import CartDrawer, { LAST_ORDER_KEY } from './components/CartDrawer'
-import { menu } from './data'
+import { allowsAddOns, menu } from './data'
 import AddOnSheet from './components/AddOnSheet'
 import { addItem, cartCount, cartSubtotal, changeQty, removeOneOf, setAddOn, splitLine } from './cart'
 
@@ -26,7 +26,10 @@ export default function App() {
       const saved = JSON.parse(localStorage.getItem(LAST_ORDER_KEY) || 'null')
       // Re-price from today's menu and drop dishes that are no longer on it.
       const prices = new Map(menu.flatMap((m) => m.items.map((i) => [i.name, i.price])))
-      const lines = Array.isArray(saved) ? saved.filter((l) => prices.has(l.name)).map((l) => ({ ...l, basePrice: prices.get(l.name) })) : []
+      // Rebuilt through addItem so today's add-on rules apply too.
+      const lines = (Array.isArray(saved) ? saved : [])
+        .filter((l) => prices.has(l.name) && l.qty > 0)
+        .reduce((c, l) => addItem(c, { name: l.name, price: prices.get(l.name) }, l.addOns || {}, l.qty), [])
       if (lines.length) setLastOrder(lines)
     } catch { /* storage unavailable or bad data: no reorder */ }
   }, [])
@@ -34,6 +37,11 @@ export default function App() {
   const confirmPick = useCallback((item, ids, qty) => {
     setCart((c) => addItem(c, item, ids, qty))
     setPicking(null)
+  }, [])
+  // Dishes served plain skip the add-on sheet and go straight into the order.
+  const pick = useCallback((item) => {
+    if (allowsAddOns(item.name)) setPicking(item)
+    else setCart((c) => addItem(c, item))
   }, [])
   const closePick = useCallback(() => setPicking(null), [])
   const closeCart = useCallback(() => setCartOpen(false), [])
@@ -48,7 +56,7 @@ export default function App() {
       <main>
         <Hero onOrder={openCart} />
         <Highlights />
-        <Menu cart={cart} onPick={setPicking} onRemoveOne={(name) => setCart((c) => removeOneOf(c, name))} />
+        <Menu cart={cart} onPick={pick} onRemoveOne={(name) => setCart((c) => removeOneOf(c, name))} />
         <Delivery />
         <Reviews />
         <Faq />
@@ -73,7 +81,7 @@ export default function App() {
         onSetAddOn={(key, id, n) => setCart((c) => setAddOn(c, key, id, n))}
         onSplit={(key) => setCart((c) => splitLine(c, key))}
         onClear={() => setCart([])}
-        onPick={setPicking}
+        onPick={pick}
         lastOrder={lastOrder}
         onReorder={() => setCart(lastOrder)}
       />
