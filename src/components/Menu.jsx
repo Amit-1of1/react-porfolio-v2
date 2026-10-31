@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { addOns, menu } from '../data'
+import { addOns, addOnsLabel, menu } from '../data'
 import { itemCount } from '../cart'
 
 export default function Menu({ cart, onPick, onRemoveOne }) {
@@ -63,7 +63,7 @@ export default function Menu({ cart, onPick, onRemoveOne }) {
               })}
             </ul>
             <p className="menu__addons">
-              <strong>Add-ons for any dish:</strong>{' '}
+              <strong>{addOnsLabel}:</strong>{' '}
               {addOns.map((a) => `${a.name} ₹${a.price}`).join(' · ')}
           </p>
         </div>

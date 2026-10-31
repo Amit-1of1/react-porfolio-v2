@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { addOns, brand, deliveryAreas, menu } from '../data'
+import { addOns, allowsAddOns, brand, deliveryAreas, menu } from '../data'
 import { addOnNames, cartSubtotal, lineLabels, lineTotal, maxOf, unitPrice } from '../cart'
 import { buildOrderMessage, makeOrderCode, openWhatsApp, orderRecord, validateOrderForm, whatsappLink } from '../order'
 import { recordOrder } from '../api'
@@ -184,39 +184,45 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
                     </div>
                     <span className="drawer__amt">₹{lineTotal(l)}</span>
                   </div>
-                  {l.qty > 1 && (
-                    <button type="button" className="split-btn" onClick={() => onSplit(l.key)}>
-                      Want different add-ons on each plate? Split into {l.qty} separate plates
-                    </button>
-                  )}
-                  <p className="chips__label">
-                    {l.qty > 1 ? `Add-ons for each ${l.name} plate` : `Add-ons for this ${l.name}`}
-                  </p>
-                  <div className="chips" role="group" aria-label={`Add-ons for ${labels[l.key]}`}>
-                    {addOns.map((a) => {
-                      const n = l.addOns[a.id] || 0
-                      const short = a.name.replace('Amul ', '')
-                      if (n > 0) {
-                        return (
-                          <span key={a.id} className="chip chip--stepper is-on">
-                            <button type="button" onClick={() => onSetAddOn(l.key, a.id, n - 1)} aria-label={n === 1 ? `Remove ${short}` : `Less ${short}`}>{n === 1 ? '✕' : '−'}</button>
-                            {n}X {short} ₹{a.price * n}
-                            <button type="button" onClick={() => onSetAddOn(l.key, a.id, n + 1)} disabled={n >= maxOf(a.id)} aria-label={`More ${short}`}>+</button>
-                          </span>
-                        )
-                      }
-                      return (
-                        <button
-                          type="button"
-                          key={a.id}
-                          className="chip"
-                          onClick={() => onSetAddOn(l.key, a.id, 1)}
-                        >
-                          + {short} ₹{a.price}
+                  {!allowsAddOns(l.name) ? (
+                    <p className="chips__label">Served plain with sambar and chutney, no add-ons.</p>
+                  ) : (
+                    <>
+                      {l.qty > 1 && (
+                        <button type="button" className="split-btn" onClick={() => onSplit(l.key)}>
+                          Want different add-ons on each plate? Split into {l.qty} separate plates
                         </button>
-                      )
-                    })}
-                  </div>
+                      )}
+                      <p className="chips__label">
+                        {l.qty > 1 ? `Add-ons for each ${l.name} plate` : `Add-ons for this ${l.name}`}
+                      </p>
+                      <div className="chips" role="group" aria-label={`Add-ons for ${labels[l.key]}`}>
+                        {addOns.map((a) => {
+                          const n = l.addOns[a.id] || 0
+                          const short = a.name.replace('Amul ', '')
+                          if (n > 0) {
+                            return (
+                              <span key={a.id} className="chip chip--stepper is-on">
+                                <button type="button" onClick={() => onSetAddOn(l.key, a.id, n - 1)} aria-label={n === 1 ? `Remove ${short}` : `Less ${short}`}>{n === 1 ? '✕' : '−'}</button>
+                                {n}X {short} ₹{a.price * n}
+                                <button type="button" onClick={() => onSetAddOn(l.key, a.id, n + 1)} disabled={n >= maxOf(a.id)} aria-label={`More ${short}`}>+</button>
+                              </span>
+                            )
+                          }
+                          return (
+                            <button
+                              type="button"
+                              key={a.id}
+                              className="chip"
+                              onClick={() => onSetAddOn(l.key, a.id, 1)}
+                            >
+                              + {short} ₹{a.price}
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </>
+                  )}
                 </li>
               ))}
             </ul>
