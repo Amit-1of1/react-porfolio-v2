@@ -27,7 +27,6 @@ const restaurant = {
   servesCuisine: ['South Indian', 'Indian', 'Vegetarian'],
   priceRange: `₹${Math.min(...prices)}–₹${Math.max(...prices)}`,
   currenciesAccepted: 'INR',
-  paymentAccepted: 'UPI',
   acceptsReservations: false,
   ...(brand.hours && {
     openingHoursSpecification: {
@@ -181,13 +180,13 @@ ${main}
 function areaPage(area, i) {
   const areaFaqs = [
     { q: `Does Idliyala deliver South Indian food to ${area}?`, a: `Yes. Idliyala delivers fresh idli, vada, dosa and uttapam to ${area} and nearby areas like ${nearby(i).slice(2, 5).join(', ')}. Delivery is ₹${brand.deliveryCharge} on orders of ₹${brand.minOrder} or more.` },
-    { q: `How do I order idli or dosa in ${area}?`, a: `Pick your dishes on ${SITE.replace('https://', '')}, enter your ${area} address, pay by UPI and your order reaches our kitchen on WhatsApp. You can also call or WhatsApp ${brand.phoneDisplay}.` },
+    { q: `How do I order idli or dosa in ${area}?`, a: `Pick your dishes on ${SITE.replace('https://', '')}, enter your ${area} address and send the order to our kitchen on WhatsApp. You can also call or WhatsApp ${brand.phoneDisplay}.` },
     { q: `Is Idliyala pure vegetarian?`, a: `Yes. Everything is 100% pure vegetarian, with batter, sambar and chutneys made fresh every day.` },
   ]
   return layout({
     path: `/delivery/${areaSlug(area)}/`,
     title: `South Indian Food Delivery in ${area}, ${brand.city} | ${brand.name}`,
-    desc: `Order pure veg South Indian food in ${area}, ${brand.city}: soft idli, crispy vada, masala dosa and uttapam with sambar and chutney. Home delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Pay by UPI.`,
+    desc: `Order pure veg South Indian food in ${area}, ${brand.city}: soft idli, crispy vada, masala dosa and uttapam with sambar and chutney. Home delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Order on WhatsApp.`,
     ogTitle: `South Indian food delivery in ${area} · ${brand.name}`,
     lds: [
       restaurantRef({ areaServed: { '@type': 'Place', name: `${area}, ${brand.city}` } }),
@@ -200,7 +199,7 @@ function areaPage(area, i) {
         <h1>South Indian food delivery in ${esc(area)}, ${brand.city}</h1>
         <p class="lead">Craving soft idlis, crispy vadas or a golden masala dosa in ${esc(area)}? ${brand.name} cooks fresh South Indian food every day and delivers it hot to your door in ${esc(area)}, with sambar and coconut chutney on every plate.</p>
         <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a><a href="tel:${brand.phone}" class="btn btn--ghost">Call ${brand.phoneDisplay}</a></div>
-        <ul class="hero__badges"><li><strong>₹${brand.deliveryCharge}</strong> delivery</li><li><strong>₹${brand.minOrder}</strong> minimum order</li><li><strong>UPI</strong> payment</li><li><strong>8 am–8 pm</strong> daily</li></ul>
+        <ul class="hero__badges"><li><strong>₹${brand.deliveryCharge}</strong> delivery</li><li><strong>₹${brand.minOrder}</strong> minimum order</li><li><strong>WhatsApp</strong> ordering</li><li><strong>8 am–8 pm</strong> daily</li></ul>
       </div></section>
       <section class="area-menu"><div class="container">
         <h2>Popular in ${esc(area)}</h2>
@@ -283,12 +282,12 @@ writeFileSync(dist('llms.txt'), `# ${brand.name}
 
 ## Ordering and delivery
 - Menu: ${SITE}/menu/
-- Website: ${SITE}/ (pick dishes and add-ons, enter address, pay by UPI; the order is sent on WhatsApp)
+- Website: ${SITE}/ (pick dishes and add-ons, enter address; the order is sent on WhatsApp, no online payment)
 - Phone / WhatsApp: +91 ${brand.phoneDisplay}
 - Google Maps: ${brand.googleMaps}
 - Delivery hours: ${brand.hours.label}
 - Delivery charge: ₹${brand.deliveryCharge}. Minimum order: ₹${brand.minOrder}.
-- Payment: UPI (PhonePe, Google Pay, Paytm or any UPI app)
+- Payment: not taken on the website; confirmed with the order on WhatsApp
 - Delivery areas in ${brand.city}: ${deliveryAreas.join(', ')}
 - Area pages: ${deliveryAreas.map(areaUrl).join(' ')}
 

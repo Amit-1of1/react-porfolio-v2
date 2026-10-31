@@ -9,7 +9,7 @@ export default function Contact({ onOrder }) {
         <div>
           <span className="eyebrow">Hungry?</span>
           <h2>Order now, eat fresh</h2>
-          <p>Pick your dishes, pay by UPI and your order reaches our kitchen on WhatsApp. Questions first? Call or message us any time.</p>
+          <p>Pick your dishes and send your order straight to our kitchen on WhatsApp. Questions first? Call or message us any time.</p>
           <div className="hero__ctas">
             <button type="button" className="btn btn--primary" onClick={onOrder}>
               <span aria-hidden="true">🛒</span> Order now

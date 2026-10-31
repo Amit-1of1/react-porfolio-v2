@@ -2,8 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { addOns, brand, deliveryAreas, menu } from '../data'
 import { addOnNames, cartSubtotal, lineLabels, lineTotal, maxOf, unitPrice } from '../cart'
 import { buildOrderMessage, makeOrderCode, openWhatsApp, orderRecord, validateOrderForm, whatsappLink } from '../order'
-import { recordOrder, recordPayment } from '../api'
-import PaymentStep from './PaymentStep'
+import { recordOrder } from '../api'
 import { track } from '@vercel/analytics'
 
 const STORAGE_KEY = 'idliyala-customer'
@@ -39,7 +38,7 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
   const [form, setForm] = useState(loadSaved)
   const [errors, setErrors] = useState({})
   const [submitted, setSubmitted] = useState(false)
-  const [step, setStep] = useState('details') // details → pay → done
+  const [step, setStep] = useState('details') // details → done
   const [orderCode, setOrderCode] = useState('')
   const formRef = useRef(null)
   const panelRef = useRef(null)
@@ -70,24 +69,15 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
   const toTop = () => panelRef.current?.scrollTo({ top: 0 })
   const [lastMessage, setLastMessage] = useState('')
 
-  const handlePaid = async (utr) => {
-    await recordPayment(orderCode, utr)
-    try { localStorage.setItem(LAST_ORDER_KEY, JSON.stringify(lines)) } catch { /* storage unavailable: fine */ }
-    track('Order sent', { total: subtotal + brand.deliveryCharge })
-    const text = buildOrderMessage(lines, form, { orderCode, utr })
-    setLastMessage(whatsappLink(text))
-    openWhatsApp(text)
-    setStep('done')
-    toTop()
-  }
-
   const finish = () => {
     onClear()
     setStep('details')
     onClose()
   }
 
-  const handleSubmit = async (e) => {
+  // No payment on the site: the order goes straight to the kitchen on WhatsApp.
+  // Kept synchronous so the browser treats opening WhatsApp as a user action.
+  const handleSubmit = (e) => {
     e.preventDefault()
     setSubmitted(true)
     if (belowMin) return
@@ -103,11 +93,15 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
       const { note, ...keep } = form
       localStorage.setItem(STORAGE_KEY, JSON.stringify(keep))
     } catch { /* storage unavailable: fine */ }
-    track('Checkout started', { total: subtotal + brand.deliveryCharge })
     const code = makeOrderCode()
     setOrderCode(code)
     recordOrder(orderRecord(lines, form, code))
-    setStep('pay')
+    try { localStorage.setItem(LAST_ORDER_KEY, JSON.stringify(lines)) } catch { /* storage unavailable: fine */ }
+    track('Order sent', { total: subtotal + brand.deliveryCharge })
+    const text = buildOrderMessage(lines, form, code)
+    setLastMessage(whatsappLink(text))
+    openWhatsApp(text)
+    setStep('done')
     toTop()
   }
 
@@ -124,22 +118,15 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
       <div className="drawer__backdrop" onClick={onClose} />
       <aside ref={panelRef} className="drawer__panel" role="dialog" aria-modal="true" aria-label="Your order">
         <div className="drawer__head">
-          <h3>{step === 'pay' ? 'Payment' : step === 'done' ? 'Order sent' : 'Your order'}</h3>
+          <h3>{step === 'done' ? 'Order sent' : 'Your order'}</h3>
           <button className="icon-btn" onClick={onClose} aria-label="Close">✕</button>
         </div>
 
-        {step === 'pay' ? (
-          <PaymentStep
-            total={subtotal + brand.deliveryCharge}
-            orderCode={orderCode}
-            onBack={() => { setStep('details'); toTop() }}
-            onPaid={handlePaid}
-          />
-        ) : step === 'done' ? (
+        {step === 'done' ? (
           <div className="done">
             <div className="done__tick" aria-hidden="true">✓</div>
             <h4>Thank you, {form.name.split(' ')[0]}!</h4>
-            <p>Your order <strong>{orderCode}</strong> and payment details are ready in WhatsApp. Press <strong>send</strong> there and we&apos;ll confirm your delivery time.</p>
+            <p>Your order <strong>{orderCode}</strong> is ready in WhatsApp. Press <strong>send</strong> there and we&apos;ll confirm payment and your delivery time.</p>
             <a className="btn btn--ghost btn--block" href={lastMessage}>WhatsApp didn&apos;t open? Tap here</a>
             <a
               className="done__share"
@@ -173,7 +160,7 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
               ))}
             </ul>
             <a href="#menu" className="btn btn--ghost btn--block" onClick={onClose}>See the full menu</a>
-            <p className="drawer__hint">Minimum order ₹{brand.minOrder} · Delivery ₹{brand.deliveryCharge} · Pay by UPI</p>
+            <p className="drawer__hint">Minimum order ₹{brand.minOrder} · Delivery ₹{brand.deliveryCharge} · Order on WhatsApp</p>
           </div>
         ) : (
           <form ref={formRef} onSubmit={handleSubmit} noValidate>
@@ -285,9 +272,9 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
             </fieldset>
 
             <button type="submit" className="btn btn--whatsapp btn--block" disabled={belowMin}>
-              Continue to payment · ₹{subtotal + brand.deliveryCharge}
+              Send order on WhatsApp · ₹{subtotal + brand.deliveryCharge}
             </button>
-            <p className="drawer__hint">All fields marked * are required. Next: pay by UPI, then your order goes to us on WhatsApp.</p>
+            <p className="drawer__hint">All fields marked * are required. Your order opens in WhatsApp: press send and we&apos;ll confirm it. No payment is taken on this website.</p>
           </form>
         )}
       </aside>

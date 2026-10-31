@@ -7,8 +7,8 @@ const headers = () => ({
   Prefer: 'return=minimal',
 })
 
-// Both calls resolve to true/false and never throw: a recording hiccup must
-// not stop a customer from sending their order on WhatsApp.
+// Resolves to true/false and never throws: a recording hiccup must not stop
+// a customer from sending their order on WhatsApp.
 async function post(path, body) {
   if (!SUPABASE_URL || !SUPABASE_KEY) return false
   try {
@@ -20,6 +20,3 @@ async function post(path, body) {
 }
 
 export const recordOrder = (order) => post('orders', order)
-
-export const recordPayment = (orderCode, utr) =>
-  post('rpc/submit_payment', { p_order_code: orderCode, p_utr: utr })
