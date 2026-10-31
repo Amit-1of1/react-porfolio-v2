@@ -287,7 +287,7 @@ const pages = {
   'menu/': layout({
     path: '/menu/',
     title: `${brand.name} Menu & Prices | Idli, Dosa, Vada, Uttapam | Pure Veg, ${brand.city}`,
-    desc: `Full ${brand.name} menu with prices: idli from ₹50, plain dosa ₹60, masala dosa ₹70, uttapam from ₹60, plus Amul butter, cheese and paneer add-ons. 100% pure veg, delivered across ${brand.city}.`,
+    desc: `Full ${brand.name} menu with prices: idli from ₹50, plain dosa ₹60, masala dosa ₹70, uttapam from ₹60, plus Amul butter, cheese, paneer and extra sambar and chutney add-ons. 100% pure veg, delivered across ${brand.city}.`,
     ogTitle: `${brand.name} menu and prices`,
     lds: [
       { ...restaurantRef(), hasMenu: describedMenu },

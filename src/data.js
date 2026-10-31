@@ -155,6 +155,11 @@ export const addOns = [
   { id: 'paneer', name: 'Amul Paneer', price: 30 },
   { id: 'schezwan', name: 'Schezwan', price: 20 },
   { id: 'ghee', name: 'Ghee', price: 20 },
+  // Paid extras on top of the complimentary sambar and chutneys every dish gets.
+  { id: 'special-coconut-chutney', name: 'Special Coconut Chutney (100\u00a0ml)', price: 25 },
+  { id: 'extra-sambar', name: 'Extra Sambar (250\u00a0ml)', price: 20 },
+  { id: 'extra-coconut-chutney', name: 'Extra Coconut Chutney (150\u00a0ml)', price: 15 },
+  { id: 'extra-red-chutney', name: 'Extra Red Chutney (25\u00a0ml)', price: 10 },
 ]
 
 export const deliveryAreas = [
@@ -188,7 +193,7 @@ export const faqs = [
   },
   {
     q: 'What should I order at Idliyala?',
-    a: "Popular picks are Idli (3 pcs) for ₹50, Plain Dosa for ₹60, Masala Dosa for ₹70, Onion Tomato Uttapam for ₹75 and Idliyala's Special Dosa for ₹250. Add Amul butter, cheese or paneer to any dish except plain Idli, Vada and Upma.",
+    a: "Popular picks are Idli (3 pcs) for ₹50, Plain Dosa for ₹60, Masala Dosa for ₹70, Onion Tomato Uttapam for ₹75 and Idliyala's Special Dosa for ₹250. Add Amul butter, cheese or paneer, or extra sambar and chutneys, to any dish except plain Idli, Vada and Upma.",
   },
   {
     q: 'How do I order?',
@@ -200,7 +205,7 @@ export const faqs = [
   },
   {
     q: 'What comes with every dish?',
-    a: 'Every dish comes with three complimentary sides: sambar, coconut chutney and a red chutney made with onion and garlic. You can add Amul butter, cheese, paneer, schezwan or ghee to any dish except plain Idli, Vada and Upma, which are served as they are.',
+    a: 'Every dish comes with three complimentary sides: sambar, coconut chutney and a red chutney made with onion and garlic. You can add Amul butter, cheese, paneer, schezwan or ghee to any dish except plain Idli, Vada and Upma, which are served as they are. Want more on the side? Add Extra Sambar (250 ml) for ₹20, Extra Coconut Chutney (150 ml) for ₹15, Extra Red Chutney (25 ml) for ₹10 or our Special Coconut Chutney (100 ml) for ₹25.',
   },
   {
     q: 'How much does a South Indian breakfast for two cost?',
