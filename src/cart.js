@@ -23,6 +23,16 @@ const lineKey = (name, counts) => [name, ...Object.entries(counts).map(([id, n])
 export const addOnLabel = (id, n) => (n > 1 ? `${n}X ${byId[id].name}` : byId[id].name)
 export const addOnNames = (line) => Object.entries(line.addOns).map(([id, n]) => addOnLabel(id, n))
 export const addOnsPrice = (counts) => Object.entries(counts).reduce((s, [id, n]) => s + byId[id].price * n, 0)
+// How one plate's price is built: the dish, then each add-on with its own price.
+export const priceBreakdown = (line) => [
+  { label: line.name, amount: line.basePrice },
+  ...Object.entries(line.addOns).map(([id, n]) => ({
+    label: byId[id].name,
+    addOn: true,
+    detail: n > 1 ? `₹${byId[id].price} × ${n}` : null,
+    amount: byId[id].price * n,
+  })),
+]
 export const unitPrice = (line) => line.basePrice + addOnsPrice(line.addOns)
 export const lineTotal = (line) => unitPrice(line) * line.qty
 export const cartCount = (cart) => cart.reduce((s, l) => s + l.qty, 0)
