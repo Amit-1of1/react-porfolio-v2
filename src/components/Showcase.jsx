@@ -1,10 +1,8 @@
-import { brand, deliveryAreas, menu } from '../data'
-
-const cheapest = Math.min(...menu.flatMap((m) => m.items.map((i) => i.price)))
+import { brand, deliveryAreas } from '../data'
 
 const stats = [
   { icon: '🌱', big: '100%', small: 'pure veg' },
-  { icon: '₹', small: 'From', big: `₹${cheapest}`, flip: true },
+  { icon: '₹', small: 'Orders from', big: `₹${brand.minOrder}`, flip: true, note: `+ ₹${brand.deliveryCharge} delivery` },
   { icon: '🕗', big: '8 am – 8 pm', small: 'daily' },
   { icon: '📍', big: `${deliveryAreas.length}`, small: 'areas' },
 ]
@@ -30,7 +28,7 @@ export default function Showcase() {
             <li key={s.small}>
               <span className="showcase__icon" aria-hidden="true">{s.icon}</span>
               <span className="showcase__text">
-                {s.flip ? <><small>{s.small}</small><strong>{s.big}</strong></> : <><strong>{s.big}</strong><small>{s.small}</small></>}
+                {s.flip ? <><small>{s.small}</small><strong>{s.big}</strong>{s.note && <small>{s.note}</small>}</> : <><strong>{s.big}</strong><small>{s.small}</small></>}
               </span>
             </li>
           ))}
