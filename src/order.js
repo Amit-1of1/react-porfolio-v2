@@ -28,13 +28,16 @@ export function buildOrderMessage(lines, form, orderCode) {
   const total = subtotal + brand.deliveryCharge
   const labels = lineLabels(lines)
   const rows = lines.flatMap((l) => {
-    const head = `• ${l.qty} x ${labels[l.key]} = ₹${lineTotal(l)}`
-    const parts = priceBreakdown(l)
-    if (parts.length < 2) return [head]
+    const [dish, ...extras] = priceBreakdown(l)
+    const head = `• ${l.qty} x ${labels[l.key]} (₹${dish.each} each) = ₹${dish.amount}`
+    if (!extras.length) return [head]
     return [
       head,
-      ...parts.map((p) => `   ${p.addOn ? '+ ' : ''}${p.label}: ${p.detail ? `${p.detail} = ` : ''}₹${p.amount}`),
-      l.qty > 1 ? `   = ₹${unitPrice(l)} per plate × ${l.qty} plates` : null,
+      ...extras.flatMap((p) => [
+        `   + ${p.qty} x ${p.label} (₹${p.each} each) = ₹${p.amount}`,
+        p.note ? `      (${p.note})` : null,
+      ]),
+      `   Item total: ₹${lineTotal(l)}`,
     ].filter(Boolean)
   })
   return [

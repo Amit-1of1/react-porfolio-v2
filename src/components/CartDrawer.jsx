@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { addOns, allowsAddOns, brand, deliveryAreas, menu } from '../data'
-import { addOnNames, cartSubtotal, lineLabels, lineTotal, maxOf, priceBreakdown, unitPrice } from '../cart'
+import { addOnNames, cartSubtotal, lineLabels, lineTotal, maxOf, priceBreakdown } from '../cart'
 import { buildOrderMessage, makeOrderCode, openWhatsApp, orderRecord, validateOrderForm, whatsappLink } from '../order'
 import { recordOrder } from '../api'
 import { track } from '@vercel/analytics'
@@ -170,6 +170,7 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
                   <div className="drawer__row">
                     <div className="drawer__item">
                       <span className="drawer__name">{labels[l.key]}</span>
+                      <span className="drawer__each">₹{l.basePrice} each</span>
                     </div>
                     <div className="stepper stepper--sm">
                       <button type="button" onClick={() => onQty(l.key, -1)} aria-label={`Remove one ${l.name}`}>−</button>
@@ -178,28 +179,23 @@ export default function CartDrawer({ open, onClose, lines, onQty, onSetAddOn, on
                     </div>
                     <span className="drawer__amt">₹{lineTotal(l)}</span>
                   </div>
-                  {(Object.keys(l.addOns).length > 0 || l.qty > 1) && (
-                    <ul className="drawer__breakdown" aria-label={`Price of each ${l.name} plate`}>
+                  {Object.keys(l.addOns).length > 0 && (
+                    <ul className="drawer__breakdown" aria-label={`Price breakdown for ${labels[l.key]}`}>
                       {priceBreakdown(l).map((p) => (
                         <li key={p.label} className={p.addOn ? 'is-addon' : ''}>
-                          <span>{p.addOn ? '+ ' : ''}{p.label}{p.detail && <small> ({p.detail})</small>}</span>
+                          <span>
+                            {p.addOn ? '+ ' : ''}{p.qty} x {p.label} <small>(₹{p.each} each)</small>
+                            {p.note && <small className="drawer__breakdown-note">{p.note}</small>}
+                          </span>
                           <span>₹{p.amount}</span>
                         </li>
                       ))}
-                      {Object.keys(l.addOns).length > 0 && (
-                        <li className="drawer__breakdown-total">
-                          <span>{l.qty > 1 ? 'Each plate' : 'Item total'}</span>
-                          <span>₹{unitPrice(l)}</span>
-                        </li>
-                      )}
-                      {l.qty > 1 && (
-                        <li className="drawer__breakdown-total">
-                          <span>× {l.qty} plates</span>
-                          <span>₹{lineTotal(l)}</span>
-                        </li>
-                      )}
+                      <li className="drawer__breakdown-total">
+                        <span>Item total</span>
+                        <span>₹{lineTotal(l)}</span>
+                      </li>
                     </ul>
-                    )}
+                  )}
                   {!allowsAddOns(l.name) ? (
                     <p className="chips__label">Served plain with the complimentary sambar and chutneys, no add-ons.</p>
                   ) : (
