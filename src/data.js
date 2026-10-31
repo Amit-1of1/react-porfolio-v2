@@ -152,7 +152,7 @@ const dishLooks = [
 ]
 export const dishLook = (name) => dishLooks.find(([, re]) => re.test(name))?.[0] || null
 // Looks that have a picture so far.
-export const dishPhotoLooks = new Set([])
+export const dishPhotoLooks = new Set(['cheese-uttapam', 'fried-idli', 'idli', 'masala-dosa', 'masala-idli', 'masala-uttapam', 'mix-veg-uttapam', 'mysore-dosa', 'mysore-masala-dosa', 'onion-dosa', 'onion-tomato-uttapam', 'onion-uttapam', 'paneer-dosa', 'paneer-masala-dosa', 'plain-dosa', 'plain-uttapam', 'rava-masala-dosa', 'special-dosa', 'upma', 'vada'])
 export const dishPhoto = (name) => {
   const look = dishLook(name)
   return look && dishPhotoLooks.has(look) ? `/images/dishes/${look}.webp` : null
