@@ -8,7 +8,7 @@ export default function Footer() {
           <img src="/images/logo-mark.webp" alt="" width="36" height="32" />
           <span><strong>{brand.name}</strong>™ · {brand.tagline}</span>
         </div>
-        <p><a href="/menu/">Menu & prices</a> · <a href="/delivery/">Delivery areas</a></p>
+        <p><a href="/menu/">Menu & prices</a> · <a href="/delivery/">Delivery areas</a> · <a href="/about/">About</a> · <a href="/faq/">FAQ</a></p>
         <p className="footer__dishes">
           {dishPages.map((d, i) => <span key={d.slug}>{i > 0 && ' · '}<a href={`/dishes/${d.slug}/`}>{d.name} delivery</a></span>)}
         </p>

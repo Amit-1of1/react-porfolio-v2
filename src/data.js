@@ -174,6 +174,10 @@ export const reviews = []
 // Shown on the page and also published as FAQ structured data for search engines.
 export const faqs = [
   {
+    q: 'What is Idliyala?',
+    a: 'Idliyala ("Daily Fresh Idli") is a 100% pure vegetarian South Indian food delivery kitchen in Kolkata. It makes idli, vada, dosa, uttapam and upma fresh every day and delivers them across north and east Kolkata, including Salt Lake, Lake Town, Dum Dum Park, Baguiati and Kestopur, from 8 am to 8 pm daily. Orders are placed on idliyala.com or on WhatsApp at 99033 22982.',
+  },
+  {
     q: 'Where does Idliyala deliver in Kolkata?',
     a: `We deliver across north and east Kolkata, including ${deliveryAreas.slice(0, -1).join(', ')} and ${deliveryAreas.at(-1)}.`,
   },

@@ -566,3 +566,11 @@ a.cart-btn { text-decoration: none; }
 .done__tick { width: 64px; height: 64px; border-radius: 50%; background: var(--whatsapp); color: #fff; font-size: 2rem; display: grid; place-items: center; }
 .done h4 { margin: 0; font-family: var(--font-display); font-size: 1.5rem; color: var(--green-dark); }
 .done p { color: var(--muted); margin: 0; }
+
+/* About page: facts table and ordering steps */
+.facts-list { display: grid; gap: 0.5rem; margin: 1rem 0; }
+.facts-list > div { display: grid; grid-template-columns: minmax(8rem, 12rem) 1fr; gap: 1rem; padding: 0.75rem 1rem; background: #fff; border-radius: 12px; }
+.facts-list dt { font-weight: 600; color: var(--green); }
+.facts-list dd { margin: 0; }
+.steps-list { padding-left: 1.25rem; line-height: 1.7; margin: 0.5rem 0 1.5rem; }
+@media (max-width: 560px) { .facts-list > div { grid-template-columns: 1fr; gap: 0.15rem; } }
