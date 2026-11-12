@@ -238,6 +238,10 @@ export const faqs = [
     a: `We deliver across north and east Kolkata: ${areaGroups.map((g, n) => `${n === areaGroups.length - 1 ? 'and ' : ''}${g.short ? `${g.short}, ` : ''}${listAnd(g.areas)}`).join('; ')}. Not sure about your street? WhatsApp us on ${brand.phoneDisplay}.`,
   },
   {
+    q: 'Where can I get South Indian food near me in Kolkata?',
+    a: `If you live in north or east Kolkata, Idliyala is the South Indian kitchen near you: we deliver fresh, pure veg idli, vada, dosa and uttapam to Salt Lake, Bidhannagar, Ultadanga, Lake Town, Bangur, Dum Dum, Nagerbazar, Kestopur, Baguiati, VIP Road, Chinar Park and nearby areas, ${brand.hours.label}. Order on idliyala.com or WhatsApp ${brand.phoneDisplay}.`,
+  },
+  {
     q: 'What is the delivery charge and minimum order?',
     a: `Delivery is ₹${brand.deliveryCharge} per order and the minimum order is ₹${brand.minOrder}.`,
   },

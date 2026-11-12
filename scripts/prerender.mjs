@@ -4,6 +4,7 @@
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { addOns, addOnsLabel, areaFaqs, areaGroups, areaSlug, brand, deliveryAreas, dishDescription, dishPages, faqs, menu, showcaseSlides, sides } from '../src/data.js'
 import { render } from '../dist-ssr/entry-server.js'
+import { localNames, locales } from './i18n.mjs'
 
 const SITE = 'https://www.idliyala.com'
 const dist = (f) => new URL(`../dist/${f}`, import.meta.url)
@@ -33,6 +34,7 @@ const restaurant = {
   slogan: brand.tagline,
   description: brand.intro,
   url: `${SITE}/`,
+  alternateName: ['Idliyala Daily Fresh Idli', ...Object.values(locales).map((l) => l.brandName)],
   logo: `${SITE}/images/logo.png`,
   image: [`${SITE}/og-image.jpg`, `${SITE}/images/idli-plate.jpg`, `${SITE}/images/dosa-plate.jpg`],
   telephone: brand.phone,
@@ -119,6 +121,10 @@ const website = {
   alternateName: `${brand.name} ${brand.tagline}`, url: `${SITE}/`, inLanguage: 'en-IN', publisher: { '@id': `${SITE}/#restaurant` },
 }
 
+// The home page and its Hindi and Bengali versions point at each other, so Google
+// shows searchers the version in their language.
+const hreflangs = [['en-IN', '/'], ...Object.values(locales).map((l) => [l.lang, l.path]), ['x-default', '/']]
+  .map(([h, p]) => `<link rel="alternate" hreflang="${h}" href="${SITE}${p}" />`).join('\n    ')
 const ld = (obj) => `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>`
 
 let html = readFileSync(dist('index.html'), 'utf8')
@@ -128,7 +134,7 @@ const homePage = {
 }
 html = html
   .replace('<div id="root"></div>', `<div id="root">${render()}</div>`)
-  .replace('</head>', `    ${[restaurant, homePage, faqPage, website].map(ld).join('\n    ')}\n  </head>`)
+  .replace('</head>', `    ${hreflangs}\n    ${[restaurant, homePage, faqPage, website].map(ld).join('\n    ')}\n  </head>`)
 writeFileSync(dist('index.html'), html)
 
 writeFileSync(dist('robots.txt'), `User-agent: *
@@ -203,10 +209,10 @@ const faqLd = (list) => ({ '@context': 'https://schema.org', '@type': 'FAQPage',
 const FONTS = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap'
 
 // Shared shell for the static pages: same look as the app, no JavaScript needed.
-function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow, max-image-preview:large, max-snippet:-1', canonical = true }) {
+function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow, max-image-preview:large, max-snippet:-1', canonical = true, lang = 'en-IN', ogLocale = 'en_IN', orderLabel = 'Order now', alternates = false }) {
   const url = `${SITE}${path}`
   return `<!doctype html>
-<html lang="en-IN">
+<html lang="${lang}">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -215,6 +221,7 @@ function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow
     <meta name="robots" content="${robots}" />
     <meta name="theme-color" content="#2f6b3c" />
     ${canonical ? `<link rel="canonical" href="${url}" />` : ''}
+    ${alternates ? hreflangs : ''}
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
@@ -223,7 +230,7 @@ function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow
     <meta property="og:description" content="${esc(desc)}" />
     <meta property="og:url" content="${url}" />
     <meta property="og:image" content="${SITE}/og-image.jpg" />
-    <meta property="og:locale" content="en_IN" />
+    <meta property="og:locale" content="${ogLocale}" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -235,7 +242,7 @@ function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow
   <body>
     <header class="nav"><div class="container nav__inner">
       <a href="/" class="nav__brand"><img src="/images/logo-mark.webp" alt="Idliyala logo" width="72" height="65" /><span><strong>${brand.name}</strong><small>${brand.tagline}</small></span></a>
-      <a href="/#menu" class="cart-btn"><span aria-hidden="true">🛒</span><span class="cart-btn__label">Order now</span></a>
+      <a href="/#menu" class="cart-btn"><span aria-hidden="true">🛒</span><span class="cart-btn__label">${esc(orderLabel)}</span></a>
     </div></header>
     <main>
 ${main}
@@ -244,6 +251,7 @@ ${main}
       <div class="footer__brand"><img src="/images/logo-mark.webp" alt="" width="36" height="32" /><span><strong>${brand.name}</strong>™ · ${brand.tagline}</span></div>
       <p><a href="/menu/">Menu</a> · <a href="/delivery/">Delivery areas</a> · <a href="/about/">About</a> · <a href="/faq/">FAQ</a> · ${dishPages.map((d) => `<a href="/dishes/${d.slug}/">${esc(d.name)} delivery</a>`).join(' · ')}</p>
       <p>📞 <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> · <a href="${brand.googleMaps}" target="_blank" rel="noreferrer">Find us on Google</a></p>
+      <p><a href="/" hreflang="en">English</a> · ${Object.values(locales).map((l) => `<a href="${l.path}" hreflang="${l.lang.slice(0, 2)}" lang="${l.lang}">${l.label}</a>`).join(' · ')}</p>
     </div></footer>
   </body>
 </html>
@@ -478,6 +486,55 @@ ${faqGroups.map(([title, list]) => `      <section class="faq"><div class="conta
 })
 
 dishPages.forEach((d) => { pages[`dishes/${d.slug}/`] = dishPage(d) })
+
+// Hindi and Bengali home pages: the same facts, prices and areas in the reader's language.
+const menuItem = (name) => menu.flatMap((m) => m.items).find((i) => i.name === name)
+for (const [code, t] of Object.entries(locales)) {
+  const url = `${SITE}${t.path}`
+  const dishes = Object.entries(localNames.dishNames[code]).map(([en, local]) => ({ en, local, price: menuItem(en).price }))
+  pages[t.path.slice(1)] = layout({
+    path: t.path, title: t.title, desc: t.desc, ogTitle: t.ogTitle, lang: t.lang, ogLocale: t.ogLocale, orderLabel: t.orderNow, alternates: true,
+    lds: [
+      restaurantRef({ alternateName: t.brandName, areaServed: restaurant.areaServed, makesOffer: restaurant.makesOffer }),
+      { '@context': 'https://schema.org', '@type': 'WebPage', url, name: t.ogTitle, description: t.desc, inLanguage: t.lang, dateModified: brand.updated, about: { '@id': `${SITE}/#restaurant` } },
+      { ...faqLd(t.faqs), url, inLanguage: t.lang },
+    ],
+    main: `      <section class="hero"><div class="container">
+        <span class="eyebrow">${esc(t.eyebrow)}</span>
+        <h1>${esc(t.h1)}</h1>
+        <p class="lead">${esc(t.lead)}</p>
+        <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 ${esc(t.orderNow)}</a><a href="tel:${brand.phone}" class="btn btn--ghost">${esc(t.call)} ${brand.phoneDisplay}</a></div>
+      </div></section>
+      <section class="area-menu"><div class="container">
+        <h2>${esc(t.factsTitle)}</h2>
+        <dl class="facts-list">${t.facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+        <p class="menu__updated">${esc(t.checked)}: <time datetime="${brand.updated}">${brand.updated}</time></p>
+      </div></section>
+      <section class="area-menu"><div class="container">
+        <h2>${esc(t.dishesTitle)}</h2>
+        <div class="menu__panel"><ul class="menu__list">${dishes.map((d) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Veg"></span><span class="menu-item__name">${esc(d.local)}</span><span class="menu-item__desc" lang="en">${esc(d.en)}</span></div><span class="price">₹${d.price}</span></li>`).join('')}</ul></div>
+        <p>${esc(t.dishesNote)} <a href="/menu/">${esc(t.fullMenu)}</a></p>
+      </div></section>
+      <section class="area-nearby"><div class="container">
+        <h2>${esc(t.areasTitle)}</h2>
+        <p>${esc(t.areasLead)}</p>
+${areaGroups.map((g) => `        <div class="area-group">
+          <h3>${esc(localNames.groupNames[code][g.id])}</h3>
+          <ul class="area-links area-links--plain">${g.areas.map((a) => `<li><span>${esc(localNames.areaNames[code][a])}</span></li>`).join('')}</ul>
+        </div>`).join('\n')}
+        <p>${esc(t.areasAsk)}</p>
+      </div></section>
+      <section class="area-menu"><div class="container">
+        <h2>${esc(t.stepsTitle)}</h2>
+        <ol class="steps-list">${t.steps.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>
+        <p><a href="/#menu" class="btn btn--primary">🛒 ${esc(t.orderNow)}</a></p>
+      </div></section>
+      <section class="faq"><div class="container">
+        <h2>${esc(t.faqTitle)}</h2>
+        <div class="faq__list">${t.faqs.map((f) => `<details class="faq__item card" open><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('')}</div>
+      </div></section>`,
+  })
+}
 for (const [path, html] of Object.entries(pages)) {
   const dir = new URL(`../dist/${path}`, import.meta.url)
   mkdirSync(dir, { recursive: true })
@@ -537,6 +594,8 @@ Last updated: ${brand.updated}
 - Delivery areas page: ${SITE}/delivery/
 - About ${brand.name}: ${SITE}/about/
 - All questions and answers: ${SITE}/faq/
+- In Hindi (हिन्दी): ${SITE}/hi/ · In Bengali (বাংলা): ${SITE}/bn/
+- Name in Hindi: ${locales.hi.brandName}; in Bengali: ${locales.bn.brandName}
 - Dish pages: ${dishPages.map((d) => `${d.name}: ${dishUrl(d)}`).join(' · ')}
 
 ## Delivery areas in ${brand.city}
