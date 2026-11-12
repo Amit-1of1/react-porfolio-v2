@@ -373,7 +373,7 @@ const pages = {
         <span class="eyebrow">Home delivery · ${brand.city}</span>
         <h1>South Indian food delivery areas in ${brand.city}</h1>
         <p class="lead">${brand.name} delivers fresh, 100% pure veg idli, vada, dosa and uttapam to ${deliveryAreas.length} neighbourhoods in north and east ${brand.city}, ${brand.hours.label}. Delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Every dish comes with complimentary ${sides.full}.</p>
-        <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a><a href="tel:${brand.phone}" class="btn btn--ghost">Call ${brand.phoneDisplay}</a></div>
+        <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a><a href="tel:${brand.phone}" class="btn btn--ghost">Call ${brand.phoneDisplay}</a><a href="${brand.googleMaps}" class="btn btn--ghost" target="_blank" rel="noreferrer">📍 ${brand.name} on Google Maps</a></div>
       </div></section>
       <section class="area-nearby"><div class="container">
         <h2>Areas we deliver to</h2>
@@ -504,7 +504,7 @@ for (const [code, t] of Object.entries(locales)) {
         <span class="eyebrow">${esc(t.eyebrow)}</span>
         <h1>${esc(t.h1)}</h1>
         <p class="lead">${esc(t.lead)}</p>
-        <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 ${esc(t.orderNow)}</a><a href="tel:${brand.phone}" class="btn btn--ghost">${esc(t.call)} ${brand.phoneDisplay}</a></div>
+        <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 ${esc(t.orderNow)}</a><a href="tel:${brand.phone}" class="btn btn--ghost">${esc(t.call)} ${brand.phoneDisplay}</a><a href="${brand.googleMaps}" class="btn btn--ghost" target="_blank" rel="noreferrer">📍 Google Maps</a></div>
       </div></section>
       <section class="area-menu"><div class="container">
         <h2>${esc(t.factsTitle)}</h2>
