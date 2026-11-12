@@ -2,12 +2,27 @@
 // into dist/ so search engines and AI assistants can read everything without
 // running JavaScript. All content comes from src/data.js.
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
-import { addOns, addOnsLabel, areaSlug, brand, deliveryAreas, dishDescription, dishPages, faqs, menu, showcaseSlides, sides } from '../src/data.js'
+import { addOns, addOnsLabel, areaFaqs, areaGroups, areaSlug, brand, deliveryAreas, dishDescription, dishPages, faqs, menu, showcaseSlides, sides } from '../src/data.js'
 import { render } from '../dist-ssr/entry-server.js'
 
 const SITE = 'https://www.idliyala.com'
 const dist = (f) => new URL(`../dist/${f}`, import.meta.url)
 const prices = menu.flatMap((m) => m.items.map((i) => i.price))
+
+// Every delivery area must sit in exactly one group in src/data.js.
+const grouped = areaGroups.flatMap((g) => g.areas)
+for (const a of deliveryAreas) if (grouped.filter((x) => x === a).length !== 1) throw new Error(`Delivery area "${a}" must be in exactly one of areaGroups`)
+if (grouped.length !== deliveryAreas.length) throw new Error('areaGroups lists an area that is not in deliveryAreas')
+
+// Kolkata, tied to its Wikipedia and Wikidata entries so search engines and AI
+// assistants know exactly which city is meant, and each delivery area as a place in it.
+const cityLd = { '@type': 'City', name: brand.city, sameAs: ['https://en.wikipedia.org/wiki/Kolkata', 'https://www.wikidata.org/wiki/Q1348'] }
+const areaPlaces = areaGroups.flatMap((g) => g.areas.map((a) => ({
+  '@type': 'Place',
+  name: `${a}, ${brand.city}`,
+  ...(g.aka?.[a] && { alternateName: g.aka[a].map((n) => `${n}, ${brand.city}`) }),
+  containedInPlace: { '@type': 'City', name: brand.city },
+})))
 
 const restaurant = {
   '@context': 'https://schema.org',
@@ -45,15 +60,15 @@ const restaurant = {
     },
   }),
   address: { '@type': 'PostalAddress', addressLocality: brand.city, addressRegion: 'West Bengal', addressCountry: 'IN' },
-  areaServed: [{ '@type': 'City', name: brand.city }, ...deliveryAreas.map((a) => ({ '@type': 'Place', name: `${a}, ${brand.city}` }))],
-  keywords: 'south indian food delivery kolkata, idli, dosa, vada, uttapam, pure veg, salt lake, lake town',
+  areaServed: [cityLd, ...areaPlaces],
+  keywords: 'south indian food delivery kolkata, idli, dosa, vada, uttapam, pure veg, salt lake, bidhannagar, lake town, dum dum, vip road, kestopur, baguiati, chinar park',
   knowsAbout: ['Idli', 'Medu vada', 'Dosa', 'Masala dosa', 'Uttapam', 'Upma', 'Sambar', 'Coconut chutney', 'South Indian breakfast', 'Vegetarian food'],
   // Delivery terms (₹50 delivery, ₹100 minimum order) in a form answer engines can quote.
   makesOffer: {
     '@type': 'Offer',
     name: 'Home delivery',
     itemOffered: { '@type': 'Service', name: `South Indian food home delivery in ${brand.city}`, serviceType: 'Food delivery' },
-    areaServed: { '@type': 'City', name: brand.city },
+    areaServed: cityLd,
     priceSpecification: {
       '@type': 'DeliveryChargeSpecification',
       price: brand.deliveryCharge,
@@ -164,6 +179,7 @@ Sitemap: ${SITE}/sitemap.xml
 
 // One landing page per delivery area, so local searches like
 // "south indian food salt lake" have a page that answers them directly.
+const listAnd = (xs) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs.at(-1)}` : xs[0])
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 const cssHref = readdirSync(new URL('../dist/assets', import.meta.url)).find((f) => f.endsWith('.css'))
 const popular = menu.flatMap((m) => m.items.filter((i) => i.popular))
@@ -303,6 +319,7 @@ const deliveryFaqs = [
   { q: `Which areas of ${brand.city} does ${brand.name} deliver to?`, a: `${brand.name} delivers to ${deliveryAreas.slice(0, -1).join(', ')} and ${deliveryAreas.at(-1)}.` },
   { q: 'What is the delivery charge and minimum order?', a: `Delivery is ₹${brand.deliveryCharge} per order and the minimum order is ₹${brand.minOrder}.` },
   { q: 'What are the delivery hours?', a: `We deliver ${brand.hours.label}.` },
+  ...areaFaqs,
   { q: 'My area is not on the list. Can you still deliver?', a: `Message us on WhatsApp at ${brand.phoneDisplay} with your area and we will tell you if we can reach you.` },
   { q: 'How do I place an order?', a: `Pick your dishes on ${SITE.replace('https://', '')}, enter your address and send the order to our kitchen on WhatsApp. You can also call or WhatsApp ${brand.phoneDisplay}. No payment is taken on the website.` },
 ]
@@ -334,10 +351,15 @@ const pages = {
   }),
   'delivery/': layout({
     path: '/delivery/',
-    title: `South Indian Food Delivery Areas in ${brand.city} | ${brand.name}`,
-    desc: `${brand.name} delivers pure veg idli, dosa, vada and uttapam to ${deliveryAreas.length} areas in ${brand.city}, including ${deliveryAreas.slice(0, 6).join(', ')} and more.`,
+    title: `South Indian Food Delivery in Salt Lake, Lake Town & VIP Road | ${brand.name}`,
+    desc: `${brand.name} delivers pure veg idli, dosa, vada and uttapam to ${deliveryAreas.length} areas of north and east ${brand.city}: Salt Lake, Ultadanga, Lake Town, Bangur, Dum Dum, Nagerbazar, Kestopur, Baguiati, VIP Road and Chinar Park. ₹${brand.deliveryCharge} delivery, ${brand.hours.label}.`,
     ogTitle: `${brand.name} delivery areas in ${brand.city}`,
-    lds: [restaurantRef({ areaServed: restaurant.areaServed }), crumbs([[brand.name, `${SITE}/`], ['Delivery areas', `${SITE}/delivery/`]]), faqLd(deliveryFaqs)],
+    lds: [
+      restaurantRef({ areaServed: restaurant.areaServed, makesOffer: restaurant.makesOffer }),
+      { '@context': 'https://schema.org', '@type': 'WebPage', url: `${SITE}/delivery/`, name: `South Indian food delivery areas in ${brand.city}`, inLanguage: 'en-IN', dateModified: brand.updated, about: { '@id': `${SITE}/#restaurant` }, mentions: areaPlaces },
+      crumbs([[brand.name, `${SITE}/`], ['Delivery areas', `${SITE}/delivery/`]]),
+      faqLd(deliveryFaqs),
+    ],
     main: `      <section class="hero"><div class="container">
         <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${brand.name}</a> › Delivery areas</nav>
         <span class="eyebrow">Home delivery · ${brand.city}</span>
@@ -347,7 +369,13 @@ const pages = {
       </div></section>
       <section class="area-nearby"><div class="container">
         <h2>Areas we deliver to</h2>
-        <ul class="area-links area-links--plain">${deliveryAreas.map((a) => `<li id="${areaSlug(a)}"><span>${esc(a)}</span></li>`).join('')}</ul>
+        <p>All ${deliveryAreas.length} areas get the same terms: ₹${brand.deliveryCharge} delivery, ₹${brand.minOrder} minimum order, ${brand.hours.label}.</p>
+${areaGroups.map((g) => `        <div class="area-group" id="${g.id}">
+          <h3>${esc(g.name)}</h3>
+          <p>${brand.name} delivers across ${esc(g.where)}: ${esc(listAnd(g.areas))}.${g.aka ? ` Also searched as ${esc(listAnd(Object.values(g.aka).flat()))}.` : ''}</p>
+          <ul class="area-links area-links--plain">${g.areas.map((a) => `<li id="${areaSlug(a)}"><span>${esc(a)}</span></li>`).join('')}</ul>
+        </div>`).join('\n')}
+        <p>Near one of these but not sure we reach your street? WhatsApp us on <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> and we will tell you.</p>
       </div></section>
       <section class="area-menu"><div class="container">
         <h2>Popular dishes</h2>
@@ -409,7 +437,8 @@ pages['about/'] = layout({
         <h2>What we cook</h2>
         <ul class="area-links">${dishPages.map((d) => `<li><a href="/dishes/${d.slug}/">${esc(d.name)}</a></li>`).join('')}<li><a href="/menu/">Full menu and prices</a></li></ul>
         <h2>Where we deliver</h2>
-        <p>${deliveryAreas.slice(0, -1).map(esc).join(', ')} and ${esc(deliveryAreas.at(-1))}. <a href="/delivery/">Delivery areas and charges</a>.</p>
+        <dl class="facts-list">${areaGroups.map((g) => `<div><dt>${esc(g.name)}</dt><dd>${esc(listAnd(g.areas))}</dd></div>`).join('')}</dl>
+        <p><a href="/delivery/">Delivery areas and charges</a>.</p>
         <h2>Contact</h2>
         <p>Phone and WhatsApp: <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> · <a href="${brand.googleMaps}" target="_blank" rel="noreferrer">${brand.name} on Google Maps</a></p>
       </div></section>`,
@@ -419,7 +448,7 @@ pages['about/'] = layout({
 const faqGroups = [
   ['About Idliyala and the food', faqs],
   // The rest of the delivery questions repeat ones already in faqs.
-  ['Delivery', deliveryFaqs.filter((f) => f.q.startsWith('My area'))],
+  ['Delivery areas in Kolkata', [...areaFaqs, ...deliveryFaqs.filter((f) => f.q.startsWith('My area'))]],
 ]
 const allFaqs = faqGroups.flatMap(([, list]) => list)
 pages['faq/'] = layout({
@@ -505,11 +534,15 @@ Last updated: ${brand.updated}
 - Delivery hours: ${brand.hours.label}
 - Delivery charge: ₹${brand.deliveryCharge}. Minimum order: ₹${brand.minOrder}.
 - Payment: not taken on the website; confirmed with the order on WhatsApp
-- Delivery areas in ${brand.city}: ${deliveryAreas.join(', ')}
 - Delivery areas page: ${SITE}/delivery/
 - About ${brand.name}: ${SITE}/about/
 - All questions and answers: ${SITE}/faq/
 - Dish pages: ${dishPages.map((d) => `${d.name}: ${dishUrl(d)}`).join(' · ')}
+
+## Delivery areas in ${brand.city}
+${brand.name} delivers to ${deliveryAreas.length} neighbourhoods in north and east ${brand.city}, all on the same terms (₹${brand.deliveryCharge} delivery, ₹${brand.minOrder} minimum order, ${brand.hours.label}). It does not deliver outside these areas unless confirmed on WhatsApp.
+
+${areaGroups.map((g) => `### ${g.name}\n${g.areas.map((a) => `- ${a}${g.aka?.[a] ? ` (also written ${g.aka[a].join(', ')})` : ''}`).join('\n')}`).join('\n\n')}
 
 ## Menu (prices in INR)
 ${menuText}
@@ -518,7 +551,7 @@ ${menuText}
 ${addOns.map((a) => `- ${a.name}: ₹${a.price}`).join('\n')}
 
 ## FAQ
-${faqs.map((f) => `**${f.q}**\n${f.a}`).join('\n\n')}
+${[...faqs, ...areaFaqs].map((f) => `**${f.q}**\n${f.a}`).join('\n\n')}
 `)
 
 // Tell Bing (and through it ChatGPT search and Copilot) about every page after a

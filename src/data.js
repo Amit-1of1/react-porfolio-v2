@@ -167,6 +167,62 @@ export const deliveryAreas = [
   'Kalindi', 'Shyamnagar', 'Jessore Road', 'Nagerbazar',
 ]
 
+// The same delivery areas, grouped by the part of Kolkata they are in, with the
+// other spellings people type ("Baguihati", "Laketown"). Used on /delivery/, in
+// search data and in llms.txt so local and AI searches match every area.
+// Every name in deliveryAreas must appear in exactly one group.
+export const areaGroups = [
+  {
+    id: 'salt-lake',
+    ask: 'Salt Lake (Bidhannagar)',
+    name: 'Salt Lake (Bidhannagar)',
+    where: 'the Salt Lake satellite township in east Kolkata',
+    areas: ['Salt Lake', 'Bidhannagar'],
+    aka: { 'Salt Lake': ['Saltlake', 'Salt Lake City'], Bidhannagar: ['Bidhan Nagar'] },
+  },
+  {
+    id: 'ultadanga',
+    ask: 'Ultadanga, Kankurgachi and Phool Bagan',
+    name: 'Ultadanga, Kankurgachi and Phool Bagan',
+    where: 'the neighbourhoods between Salt Lake and central Kolkata',
+    areas: ['Ultadanga', 'Kankurgachi', 'Phool Bagan', 'Golaghata'],
+    aka: { Ultadanga: ['Ultodanga'], Kankurgachi: ['Kankurgachhi'], 'Phool Bagan': ['Phoolbagan', 'Phulbagan'] },
+  },
+  {
+    id: 'dum-dum',
+    short: 'on the Dum Dum side',
+    ask: 'Lake Town, Bangur and Dum Dum',
+    name: 'Lake Town, Bangur and Dum Dum',
+    where: 'the Lake Town, Bangur and Dum Dum side of north Kolkata, along Jessore Road',
+    areas: ['Lake Town', 'Bangur', 'Dum Dum Park', 'Kalindi', 'Shyamnagar', 'Nagerbazar', 'Jessore Road'],
+    aka: { 'Lake Town': ['Laketown'], Bangur: ['Bangur Avenue'], 'Dum Dum Park': ['Dumdum Park'], Nagerbazar: ['Nager Bazar'] },
+  },
+  {
+    id: 'vip-road',
+    short: 'along VIP Road',
+    ask: 'Kestopur, Baguiati and VIP Road',
+    name: 'VIP Road: Kestopur, Baguiati and the Airport side',
+    where: 'the stretch along VIP Road towards Kolkata Airport',
+    areas: ['Kestopur', 'Baguiati', 'Raghunathpur', 'Tegharia', "Haldiram's", 'Joda Mandir', 'Airport'],
+    aka: { Kestopur: ['Keshtopur'], Baguiati: ['Baguihati'], "Haldiram's": ['Haldiram VIP Road'], Airport: ['Kolkata Airport area'] },
+  },
+  {
+    id: 'chinar-park',
+    ask: 'Chinar Park and City Centre 2',
+    name: 'Chinar Park and City Centre 2',
+    where: 'the Rajarhat Main Road side, near City Centre 2',
+    areas: ['Chinar Park', 'CC-2'],
+    aka: { 'CC-2': ['City Centre 2', 'City Center 2'] },
+  },
+]
+
+// One question per group, e.g. "Does Idliyala deliver in Salt Lake?", answered plainly.
+const listAnd = (xs) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs.at(-1)}` : xs[0])
+export const areaFaqs = areaGroups.map((g) => ({
+  q: `Does Idliyala deliver South Indian food in ${g.ask}?`,
+  a: `Yes. Idliyala delivers fresh, 100% pure veg idli, vada, dosa and uttapam to ${listAnd(g.areas)}, ${brand.hours.label}. Delivery is ₹${brand.deliveryCharge} on orders of ₹${brand.minOrder} or more. Order on idliyala.com or WhatsApp ${brand.phoneDisplay}.`,
+}))
+
 // Real customer reviews only. The section stays hidden while this is empty.
 // Shape: { name: 'Customer name', rating: 5, text: 'Review text', source: 'Google' }
 export const reviews = []
@@ -179,7 +235,7 @@ export const faqs = [
   },
   {
     q: 'Where does Idliyala deliver in Kolkata?',
-    a: `We deliver across north and east Kolkata, including ${deliveryAreas.slice(0, -1).join(', ')} and ${deliveryAreas.at(-1)}.`,
+    a: `We deliver across north and east Kolkata: ${areaGroups.map((g, n) => `${n === areaGroups.length - 1 ? 'and ' : ''}${g.short ? `${g.short}, ` : ''}${listAnd(g.areas)}`).join('; ')}. Not sure about your street? WhatsApp us on ${brand.phoneDisplay}.`,
   },
   {
     q: 'What is the delivery charge and minimum order?',
