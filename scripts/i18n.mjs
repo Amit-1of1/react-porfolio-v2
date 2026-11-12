@@ -131,5 +131,102 @@ const bn = {
   checked: 'তথ্য যাচাই করা হয়েছে',
 }
 
-export const locales = { hi, bn }
+// Hinglish and Banglish: Hindi and Bengali typed in English letters, the way
+// most people in Kolkata actually search ("idli dosa ghar pe delivery",
+// "south indian khabar salt lake"). Not linked with hreflang, because Google
+// has no code for a language written in another script; the pages are linked
+// from every footer instead. Area and dish names stay in English.
+const hinglish = {
+  lang: 'hi-Latn', ogLocale: 'hi_IN', path: '/hinglish/', label: 'Hinglish', brandName: 'Idliyala', hreflang: false,
+  title: 'Idliyala | Kolkata mein South Indian khana home delivery · Idli, Dosa, Vada',
+  desc: `Kolkata mein fresh idli, vada, dosa aur uttapam ki ghar pe delivery. 100% veg. Salt Lake, Lake Town, Dum Dum, Baguiati, Kestopur aur VIP Road. Subah 8 se raat 8 baje, roz. WhatsApp pe order karo: ${ph}.`,
+  ogTitle: 'Idliyala · Kolkata mein idli dosa ghar pe delivery',
+  eyebrow: '100% veg · Kolkata',
+  h1: 'Kolkata mein South Indian khana, ghar pe delivery',
+  lead: `Idliyala ("Daily Fresh Idli") Kolkata ka South Indian kitchen hai. Hum roz fresh idli, vada, dosa, uttapam aur upma banate hain aur North aur East Kolkata mein aapke ghar tak garam-garam pahunchate hain. Har dish ke saath sambar, coconut chutney aur red chutney (pyaaz-lehsun wali) complimentary milti hai.`,
+  orderNow: 'Order karo', call: 'Call karo',
+  factsTitle: 'Ek nazar mein',
+  facts: [
+    ['Kya', 'South Indian food delivery kitchen: idli, vada, dosa, uttapam, upma'],
+    ['Khana', '100% veg. Batter, sambar aur chutney roz fresh banti hai.'],
+    ['Timing', 'Subah 8 baje se raat 8 baje tak, saaton din (Sunday ko bhi)'],
+    ['Delivery', `Delivery charge ₹${dc}, minimum order ₹${mo}`],
+    ['Order', `idliyala.com pe ya WhatsApp/phone ${ph}`],
+    ['Payment', 'Website pe koi payment nahi. WhatsApp pe order confirm hone pe payment decide hota hai.'],
+  ],
+  dishesTitle: 'Popular dishes aur rate',
+  dishesNote: 'Poora menu English mein hai, rate same hain.',
+  fullMenu: 'Poora menu aur rate',
+  areasTitle: 'Hum kahan delivery karte hain',
+  areasLead: `North aur East Kolkata ke in areas mein, sab jagah same terms: ₹${dc} delivery, ₹${mo} minimum order, subah 8 se raat 8 baje.`,
+  areasAsk: `Aapka area list mein nahi hai? WhatsApp pe ${ph} pe pooch lo.`,
+  stepsTitle: 'Order kaise karein',
+  steps: [
+    'idliyala.com pe apni dishes aur add-ons chuno.',
+    'Apna naam, phone number aur delivery address likho.',
+    '"Send order" dabao: order WhatsApp mein khulega, bas hamare kitchen ko bhej do.',
+    'Hum WhatsApp pe order, delivery time aur payment confirm karte hain aur garam khana pahunchate hain.',
+  ],
+  faqTitle: 'Aksar pooche jaane wale sawaal',
+  faqs: [
+    { q: 'Mere paas South Indian khana kahan milega? (South Indian food near me)', a: `Agar aap North ya East Kolkata mein ho, toh Idliyala aapke paas hi hai. Hum Salt Lake, Bidhannagar, Ultadanga, Lake Town, Bangur, Dum Dum, Nagerbazar, Kestopur, Baguiati, VIP Road aur Chinar Park mein fresh idli, vada, dosa aur uttapam ki home delivery karte hain, subah 8 se raat 8 baje tak. idliyala.com pe ya WhatsApp ${ph} pe order karo.` },
+    { q: 'Idliyala kya hai?', a: 'Idliyala ("Daily Fresh Idli") Kolkata ka 100% veg South Indian food delivery kitchen hai. Yahan idli, vada, dosa, uttapam aur upma roz fresh bante hain aur ghar tak deliver hote hain.' },
+    { q: 'Delivery charge aur minimum order kitna hai?', a: `Delivery charge ₹${dc} per order hai aur minimum order ₹${mo} ka hai.` },
+    { q: 'Delivery timing kya hai?', a: 'Hum subah 8 baje se raat 8 baje tak, hafte ke saaton din delivery karte hain, Sunday ko bhi.' },
+    { q: 'Kya breakfast ke liye idli dosa ghar pe mangwa sakte hain?', a: 'Haan. Order subah 8 baje se shuru hote hain, toh idli, vada, upma aur dosa breakfast mein garam pahunch sakte hain. Lunch aur shaam ke nashte ke liye bhi raat 8 baje tak order kar sakte ho.' },
+    { q: 'Sabse sasti dish kaunsi hai?', a: `Idli (3 pcs) aur Vada (3 pcs) ₹50 ke hain, Plain Dosa aur Plain Uttapam ₹60 ke. Minimum order ₹${mo} hai, matlab do plate se order ho jaata hai.` },
+    { q: 'Har dish ke saath kya milta hai?', a: 'Har dish ke saath teen cheezein complimentary milti hain: sambar, coconut chutney aur red chutney. Red chutney mein pyaaz aur lehsun hota hai.' },
+    { q: 'Kya khana veg hai?', a: 'Haan. Idliyala 100% veg kitchen hai. Dhyan dein: red chutney mein pyaaz aur lehsun hota hai.' },
+    { q: 'Order kaise karein aur payment kaise hoga?', a: `idliyala.com pe dishes chuno, address likho aur "Send order" dabao, order WhatsApp pe hamare paas aa jayega. ${ph} pe call ya WhatsApp bhi kar sakte ho. Website pe koi payment nahi liya jaata, payment WhatsApp pe decide hota hai.` },
+  ],
+  checked: 'Jaankari check ki gayi',
+}
+
+const banglish = {
+  lang: 'bn-Latn', ogLocale: 'bn_IN', path: '/banglish/', label: 'Banglish', brandName: 'Idliyala', hreflang: false,
+  title: 'Idliyala | Kolkata-y South Indian khabar home delivery · Idli, Dosa, Vada',
+  desc: `Kolkata-y tatka idli, vada, dosa ar uttapam-er home delivery. 100% veg. Salt Lake, Lake Town, Dum Dum, Baguiati, Kestopur o VIP Road. Roj sokal 8ta theke raat 8ta. WhatsApp-e order korun: ${ph}.`,
+  ogTitle: 'Idliyala · Kolkata-y idli dosa home delivery',
+  eyebrow: '100% veg · Kolkata',
+  h1: 'Kolkata-y South Indian khabar, barite delivery',
+  lead: `Idliyala ("Daily Fresh Idli") Kolkata-r ekta South Indian kitchen. Amra roj tatka idli, vada, dosa, uttapam ar upma banai ar North o East Kolkata-y apnar barite gorom gorom pouchhe di. Protiti dish-er sathe sambar, narkel chutney ar lal chutney (peyaj-roshun deoa) complimentary.`,
+  orderNow: 'Order korun', call: 'Phone korun',
+  factsTitle: 'Ek nojore',
+  facts: [
+    ['Ki', 'South Indian food delivery kitchen: idli, vada, dosa, uttapam, upma'],
+    ['Khabar', '100% veg (kono mach, mangsho ba dim nei; lal chutney-te peyaj-roshun ache). Batter, sambar ar chutney roj tatka banano hoy.'],
+    ['Somoy', 'Sokal 8ta theke raat 8ta, saptaher sat din (robibar-o)'],
+    ['Delivery', `Delivery charge ₹${dc}, minimum order ₹${mo}`],
+    ['Order', `idliyala.com-e othoba WhatsApp/phone ${ph}`],
+    ['Payment', 'Website-e kono payment nei. WhatsApp-e order confirm hole payment thik kora hoy.'],
+  ],
+  dishesTitle: 'Jonopriyo dish ar dam',
+  dishesNote: 'Puro menu English-e ache, dam ek.',
+  fullMenu: 'Puro menu ar dam',
+  areasTitle: 'Amra kothay delivery kori',
+  areasLead: `North o East Kolkata-r ei elaka gulote, sob jaygay ek shorto: ₹${dc} delivery, ₹${mo} minimum order, sokal 8ta theke raat 8ta.`,
+  areasAsk: `Apnar elaka list-e nei? WhatsApp-e ${ph} number-e jiggesh korun.`,
+  stepsTitle: 'Kibhabe order korben',
+  steps: [
+    'idliyala.com-e apnar dish ar add-on beche nin.',
+    'Apnar naam, phone number ar delivery-r thikana likhun.',
+    '"Send order" tipun: order WhatsApp-e khulbe, seta amader kitchen-e pathiye din.',
+    'Amra WhatsApp-e order, delivery-r somoy ar payment confirm kori ebong gorom khabar pouchhe di.',
+  ],
+  faqTitle: 'Praye jiggesh kora proshno',
+  faqs: [
+    { q: 'Amar kachhe South Indian khabar kothay pabo? (South Indian food near me)', a: `Apni North ba East Kolkata-y thakle Idliyala apnar kachhei. Amra Salt Lake, Bidhannagar, Ultadanga, Lake Town, Bangur, Dum Dum, Nagerbazar, Kestopur, Baguiati, VIP Road ar Chinar Park-e tatka idli, vada, dosa ar uttapam home delivery kori, sokal 8ta theke raat 8ta. idliyala.com-e ba WhatsApp ${ph}-e order korun.` },
+    { q: 'Idliyala ki?', a: 'Idliyala ("Daily Fresh Idli") Kolkata-r ekta 100% veg South Indian food delivery kitchen. Ekhane idli, vada, dosa, uttapam ar upma roj tatka banano hoy ar barite pouchhe deoa hoy.' },
+    { q: 'Delivery charge ar minimum order koto?', a: `Protiti order-e delivery charge ₹${dc} ar minimum order ₹${mo}.` },
+    { q: 'Delivery-r somoy kokhon?', a: 'Amra sokal 8ta theke raat 8ta porjonto, saptaher sat dini delivery kori, robibar-o.' },
+    { q: 'Jolkhabar-er jonno ki idli dosa barite anano jay?', a: 'Hyan. Sokal 8ta theke order neoa hoy, tai idli, vada, upma ar dosa sokaler jolkhabare gorom pouchhote pare. Dupur ar bikeler khabarer jonno-o raat 8ta porjonto order kora jay.' },
+    { q: 'Sobcheye kom damer dish konta?', a: `Idli (3 pcs) ar Vada (3 pcs) ₹50, Plain Dosa ar Plain Uttapam ₹60. Minimum order ₹${mo}, tai duto plate nilei order kora jay.` },
+    { q: 'Protiti dish-er sathe ki deoa hoy?', a: 'Protiti dish-er sathe tinte jinish complimentary: sambar, narkel chutney ar lal chutney. Lal chutney-te peyaj ar roshun ache.' },
+    { q: 'Khabar ki niramish?', a: 'Hyan, Idliyala 100% veg kitchen: kono mach, mangsho ba dim nei. Tobe lal chutney-te peyaj ar roshun deoa hoy.' },
+    { q: 'Kibhabe order korbo ar payment kibhabe hobe?', a: `idliyala.com-e dish beche thikana likhe "Send order" tipun, order WhatsApp-e amader kachhe chole asbe. ${ph} number-e phone ba WhatsApp-o korte paren. Website-e kono payment neoa hoy na, payment WhatsApp-e thik kora hoy.` },
+  ],
+  checked: 'Totthyo jachai kora hoyeche',
+}
+
+export const locales = { hi, bn, hinglish, banglish }
 export const localNames = { areaNames, groupNames, dishNames }
