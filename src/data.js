@@ -19,8 +19,8 @@ export const brand = {
   city: 'Kolkata',
   // Date the menu, prices and delivery details were last checked. Update it
   // whenever they change: it is shown on the site and given to search engines.
-  updated: '2026-10-31',
-  updatedLabel: '31 October 2026',
+  updated: '2026-11-12',
+  updatedLabel: '12 November 2026',
   // IndexNow key (public/<key>.txt): lets Bing, and so ChatGPT search, hear about updates quickly.
   indexNowKey: '427219c46dc3b3499a425a5c86c50086',
 }
@@ -34,7 +34,7 @@ export const sides = {
 // Dishes shown in the Favourites quick-order strip, by their exact menu name.
 export const favourites = [
   'Idli (3 pcs)', 'Vada (3 pcs)', 'Masala Dosa', 'Mysore Masala Dosa',
-  'Onion Tomato Uttapam', 'Fried Idli', 'Paneer Masala Dosa', "Idliyala's Special Dosa",
+  'Onion Tomato Uttapam', 'Fried Idli', 'Rava Masala Dosa', "Idliyala's Special Dosa",
 ]
 
 // Photos in the carousel above the facts strip. Each id needs
@@ -81,8 +81,6 @@ export const menu = [
       item('Onion Butter Plain Dosa', 90),
       item('Rava Plain Dosa', 80),
       item('Rava Butter Plain Dosa', 100),
-      item('Paneer Plain Dosa', 90),
-      item('Paneer Butter Plain Dosa', 110),
       item('Garlic Plain Dosa', 80),
       item('Chilli Plain Dosa', 65),
       item('Mysore Plain Dosa', 80),
@@ -105,7 +103,6 @@ export const menu = [
       item('Dhaniya Masala Dosa', 90),
       item('Ghee Masala Dosa', 90),
       item('Schezwan Masala Dosa', 90),
-      item('Paneer Masala Dosa', 100),
       item('Special Masala Dosa', 150),
       item('Pizza Dosa', 200),
       item("Idliyala's Special Dosa", 250, { popular: true }),
@@ -131,7 +128,6 @@ export const menu = [
       item('Butter Mix Veg Uttapam', 105),
       item('Cheese Masala Uttapam', 115),
       item('Butter Cheese Masala Uttapam', 135),
-      item('Paneer Cheese Uttapam', 145),
       item('Mysore Masala Uttapam', 120),
       item('Mysore Butter Masala Uttapam', 140),
       item('Coconut Uttapam', 90),
@@ -150,7 +146,6 @@ export const addOnsLabel = 'Add-ons for any dish except plain Idli, Vada and Upm
 export const addOns = [
   { id: 'butter', name: 'Amul Butter', price: 20 },
   { id: 'cheese', name: 'Amul Cheese', price: 25 },
-  { id: 'paneer', name: 'Amul Paneer', price: 30 },
   { id: 'schezwan', name: 'Schezwan', price: 20 },
   { id: 'ghee', name: 'Ghee', price: 20 },
   // Paid extras on top of the complimentary sambar and chutneys every dish gets.
@@ -255,7 +250,7 @@ export const faqs = [
   },
   {
     q: 'What should I order at Idliyala?',
-    a: "Popular picks are Idli (3 pcs) for ₹50, Plain Dosa for ₹60, Masala Dosa for ₹70, Onion Tomato Uttapam for ₹75 and Idliyala's Special Dosa for ₹250. Add Amul butter, cheese or paneer, or extra sambar and chutneys, to any dish except plain Idli, Vada and Upma.",
+    a: "Popular picks are Idli (3 pcs) for ₹50, Plain Dosa for ₹60, Masala Dosa for ₹70, Onion Tomato Uttapam for ₹75 and Idliyala's Special Dosa for ₹250. Add Amul butter or cheese, or extra sambar and chutneys, to any dish except plain Idli, Vada and Upma.",
   },
   {
     q: 'How do I order?',
@@ -267,7 +262,7 @@ export const faqs = [
   },
   {
     q: 'What comes with every dish?',
-    a: 'Every dish comes with three complimentary sides: sambar, coconut chutney and a red chutney made with onion and garlic. You can add Amul butter, cheese, paneer, schezwan or ghee to any dish except plain Idli, Vada and Upma, which are served as they are. Want more on the side? Add Extra Sambar (150 ml) for ₹25, Extra Coconut Chutney (100 ml) for ₹15, Extra Red Chutney (25 ml) for ₹10 or our Special Coconut Chutney (100 ml) for ₹25.',
+    a: 'Every dish comes with three complimentary sides: sambar, coconut chutney and a red chutney made with onion and garlic. You can add Amul butter, cheese, schezwan or ghee to any dish except plain Idli, Vada and Upma, which are served as they are. Want more on the side? Add Extra Sambar (150 ml) for ₹25, Extra Coconut Chutney (100 ml) for ₹15, Extra Red Chutney (25 ml) for ₹10 or our Special Coconut Chutney (100 ml) for ₹25.',
   },
   {
     q: 'How much does a South Indian breakfast for two cost?',
@@ -306,7 +301,6 @@ const dishInfo = {
   'Plain Dosa': 'Thin, crisp rice-and-lentil crepe.',
   'Onion Plain Dosa': 'Crisp dosa topped with chopped onions.',
   'Rava Plain Dosa': 'Lacy, extra-crisp dosa made with semolina batter.',
-  'Paneer Plain Dosa': 'Crisp dosa topped with grated paneer.',
   'Garlic Plain Dosa': 'Crisp dosa spread with a spicy garlic chutney.',
   'Chilli Plain Dosa': 'Crisp dosa topped with green chillies.',
   'Mysore Plain Dosa': 'Crisp dosa spread with spicy red Mysore chutney.',
@@ -317,7 +311,6 @@ const dishInfo = {
   'Garlic Masala Dosa': 'Masala dosa spread with a spicy garlic chutney.',
   'Dhaniya Masala Dosa': 'Masala dosa with fresh coriander (dhaniya).',
   'Schezwan Masala Dosa': 'Masala dosa spread with spicy schezwan sauce.',
-  'Paneer Masala Dosa': 'Masala dosa with paneer added to the filling.',
   'Plain Uttapam': 'Thick, fluffy rice-and-lentil pancake.',
   'Masala Uttapam': 'Thick uttapam with spiced potato masala.',
   'Onion Uttapam': 'Thick uttapam topped with onions.',
@@ -325,7 +318,6 @@ const dishInfo = {
   'Onion Chilli Uttapam': 'Thick uttapam topped with onions and green chillies.',
   'Mix Veg Uttapam': 'Thick uttapam topped with mixed vegetables.',
   'Cheese Masala Uttapam': 'Masala uttapam topped with cheese.',
-  'Paneer Cheese Uttapam': 'Thick uttapam topped with paneer and cheese.',
   'Mysore Masala Uttapam': 'Uttapam with spicy red Mysore chutney and potato masala.',
   'Coconut Uttapam': 'Thick uttapam topped with grated coconut.',
   'Tomato Uttapam': 'Thick uttapam topped with tomatoes.',
@@ -353,14 +345,14 @@ export const dishPages = [
   },
   {
     slug: 'dosa', name: 'Dosa', match: /Plain Dosa/,
-    intro: 'Thin, golden and crisp dosas made on the tawa to order: plain, onion, rava, paneer, garlic, Mysore and schezwan, from ₹60.',
+    intro: 'Thin, golden and crisp dosas made on the tawa to order: plain, onion, rava, garlic, Mysore and schezwan, from ₹60.',
   },
   {
     slug: 'masala-dosa', name: 'Masala Dosa', match: /Masala Dosa|Special Dosa|Pizza Dosa/,
-    intro: "Crisp dosa filled with our spiced potato masala, from the classic Masala Dosa at ₹70 to Mysore, rava, paneer and the loaded Idliyala's Special Dosa.",
+    intro: "Crisp dosa filled with our spiced potato masala, from the classic Masala Dosa at ₹70 to Mysore, rava and the loaded Idliyala's Special Dosa.",
   },
   {
     slug: 'uttapam', name: 'Uttapam', match: /Uttapam/,
-    intro: 'Thick, fluffy uttapam topped generously with onion, tomato, chilli, vegetables, cheese, paneer or coconut, from ₹60.',
+    intro: 'Thick, fluffy uttapam topped generously with onion, tomato, chilli, vegetables, cheese or coconut, from ₹60.',
   },
 ]

@@ -2,7 +2,7 @@ import { brand } from '../data'
 
 const steps = [
   { icon: '🍽️', title: 'Pick your dishes', text: 'Browse the menu or tap a favourite. Every dish comes with sambar and two chutneys.' },
-  { icon: '🧈', title: 'Make it yours', text: 'Add butter, cheese, paneer, ghee or Schezwan to any dish you like.' },
+  { icon: '🧈', title: 'Make it yours', text: 'Add butter, cheese, ghee or Schezwan to any dish you like.' },
   { icon: '💬', title: 'Send on WhatsApp', text: `Check your order and send it to us on WhatsApp in one tap. Minimum order ₹${brand.minOrder}.` },
   { icon: '🛵', title: 'We deliver it hot', text: `We confirm on WhatsApp and bring it fresh to your door. Delivery is ₹${brand.deliveryCharge}.` },
 ]
