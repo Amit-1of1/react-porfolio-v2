@@ -34,7 +34,7 @@ const restaurant = {
   slogan: brand.tagline,
   description: brand.intro,
   url: `${SITE}/`,
-  alternateName: ['Idliyala Daily Fresh Idli', locales.hi.brandName, locales.bn.brandName],
+  alternateName: ['Idliyala Daily Fresh Idli', ...Object.values(locales).filter((l) => l.brandName !== brand.name).map((l) => l.brandName)],
   logo: `${SITE}/images/logo.png`,
   image: [`${SITE}/og-image.jpg`, `${SITE}/images/idli-plate.jpg`, `${SITE}/images/dosa-plate.jpg`],
   telephone: brand.phone,
@@ -209,10 +209,10 @@ const faqLd = (list) => ({ '@context': 'https://schema.org', '@type': 'FAQPage',
 const FONTS = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap'
 
 // Shared shell for the static pages: same look as the app, no JavaScript needed.
-function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow, max-image-preview:large, max-snippet:-1', canonical = true, lang = 'en-IN', ogLocale = 'en_IN', orderLabel = 'Order now', alternates = false }) {
+function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow, max-image-preview:large, max-snippet:-1', canonical = true, lang = 'en-IN', dir = 'ltr', ogLocale = 'en_IN', orderLabel = 'Order now', alternates = false }) {
   const url = `${SITE}${path}`
   return `<!doctype html>
-<html lang="${lang}">
+<html lang="${lang}"${dir === 'rtl' ? ' dir="rtl"' : ''}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -494,7 +494,7 @@ for (const [code, t] of Object.entries(locales)) {
   const dishNames = localNames.dishNames[code] || Object.fromEntries(Object.keys(localNames.dishNames.hi).map((en) => [en, en]))
   const dishes = Object.entries(dishNames).map(([en, local]) => ({ en, local, price: menuItem(en).price }))
   pages[t.path.slice(1)] = layout({
-    path: t.path, title: t.title, desc: t.desc, ogTitle: t.ogTitle, lang: t.lang, ogLocale: t.ogLocale, orderLabel: t.orderNow, alternates: t.hreflang !== false,
+    path: t.path, title: t.title, desc: t.desc, ogTitle: t.ogTitle, lang: t.lang, dir: t.dir, ogLocale: t.ogLocale, orderLabel: t.orderNow, alternates: t.hreflang !== false,
     lds: [
       restaurantRef({ ...(t.brandName !== brand.name && { alternateName: t.brandName }), areaServed: restaurant.areaServed, makesOffer: restaurant.makesOffer }),
       { '@context': 'https://schema.org', '@type': 'WebPage', url, name: t.ogTitle, description: t.desc, inLanguage: t.lang, dateModified: brand.updated, about: { '@id': `${SITE}/#restaurant` } },
@@ -595,8 +595,8 @@ Last updated: ${brand.updated}
 - Delivery areas page: ${SITE}/delivery/
 - About ${brand.name}: ${SITE}/about/
 - All questions and answers: ${SITE}/faq/
-- In Hindi (हिन्दी): ${SITE}/hi/ · In Bengali (বাংলা): ${SITE}/bn/ · In Hinglish: ${SITE}/hinglish/ · In Banglish: ${SITE}/banglish/
-- Name in Hindi: ${locales.hi.brandName}; in Bengali: ${locales.bn.brandName}
+- Other languages: ${Object.values(locales).map((l) => `${l.label}: ${SITE}${l.path}`).join(' · ')}
+- Name in other scripts: ${Object.values(locales).filter((l) => l.brandName !== brand.name).map((l) => l.brandName).join(', ')}
 - Dish pages: ${dishPages.map((d) => `${d.name}: ${dishUrl(d)}`).join(' · ')}
 
 ## Delivery areas in ${brand.city}
