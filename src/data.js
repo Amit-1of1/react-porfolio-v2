@@ -16,6 +16,8 @@ export const brand = {
   hours: { opens: '08:00', closes: '20:00', label: '8 am to 8 pm, all 7 days' },
   // Google Business Profile (Maps listing).
   googleMaps: 'https://maps.google.com/?cid=14104414144031816428',
+  // "Ask for reviews" link from Google Business Profile (https://g.page/r/.../review). Until set, the button opens the Maps listing.
+  reviewLink: null,
   city: 'Kolkata',
   // Date the menu, prices and delivery details were last checked. Update it
   // whenever they change: it is shown on the site and given to search engines.
@@ -226,6 +228,14 @@ export const areaFaqs = areaGroups.map((g) => ({
 // Real customer reviews only. The section stays hidden while this is empty.
 // Shape: { name: 'Customer name', rating: 5, text: 'Review text', source: 'Google' }
 export const reviews = []
+
+// Layout-only placeholders shown on preview deployments while real reviews are
+// collected (never on the live site). Delete once `reviews` has real entries.
+export const sampleReviews = [
+  { name: '[First name]', area: '[Area]', rating: 5, text: '[Sample] The customer\'s real words go here, for example what they ordered and how it tasted.', source: 'Google', date: '[date]' },
+  { name: '[First name]', area: '[Area]', rating: 5, text: '[Sample] A second real review, shown exactly as the customer wrote it on Google.', source: 'Google', date: '[date]' },
+  { name: '[First name]', area: '[Area]', rating: 5, text: '[Sample] A third real review. Long reviews are trimmed with a "Read on Google" link.', source: 'Google', date: '[date]' },
+]
 
 // Shown on the page and also published as FAQ structured data for search engines.
 export const faqs = [
