@@ -2,12 +2,28 @@
 // into dist/ so search engines and AI assistants can read everything without
 // running JavaScript. All content comes from src/data.js.
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
-import { addOns, addOnsLabel, areaSlug, brand, deliveryAreas, dishDescription, dishPages, faqs, menu, showcaseSlides, sides } from '../src/data.js'
+import { addOns, addOnsLabel, areaFaqs, areaGroups, areaSlug, brand, deliveryAreas, dishDescription, dishPages, faqs, menu, showcaseSlides, sides } from '../src/data.js'
 import { render } from '../dist-ssr/entry-server.js'
+import { localNames, locales } from './i18n.mjs'
 
 const SITE = 'https://www.idliyala.com'
 const dist = (f) => new URL(`../dist/${f}`, import.meta.url)
 const prices = menu.flatMap((m) => m.items.map((i) => i.price))
+
+// Every delivery area must sit in exactly one group in src/data.js.
+const grouped = areaGroups.flatMap((g) => g.areas)
+for (const a of deliveryAreas) if (grouped.filter((x) => x === a).length !== 1) throw new Error(`Delivery area "${a}" must be in exactly one of areaGroups`)
+if (grouped.length !== deliveryAreas.length) throw new Error('areaGroups lists an area that is not in deliveryAreas')
+
+// Kolkata, tied to its Wikipedia and Wikidata entries so search engines and AI
+// assistants know exactly which city is meant, and each delivery area as a place in it.
+const cityLd = { '@type': 'City', name: brand.city, sameAs: ['https://en.wikipedia.org/wiki/Kolkata', 'https://www.wikidata.org/wiki/Q1348'] }
+const areaPlaces = areaGroups.flatMap((g) => g.areas.map((a) => ({
+  '@type': 'Place',
+  name: `${a}, ${brand.city}`,
+  ...(g.aka?.[a] && { alternateName: g.aka[a].map((n) => `${n}, ${brand.city}`) }),
+  containedInPlace: { '@type': 'City', name: brand.city },
+})))
 
 const restaurant = {
   '@context': 'https://schema.org',
@@ -18,6 +34,7 @@ const restaurant = {
   slogan: brand.tagline,
   description: brand.intro,
   url: `${SITE}/`,
+  alternateName: ['Idliyala Daily Fresh Idli', ...Object.values(locales).filter((l) => l.brandName !== brand.name).map((l) => l.brandName)],
   logo: `${SITE}/images/logo.png`,
   image: [`${SITE}/og-image.jpg`, `${SITE}/images/idli-plate.jpg`, `${SITE}/images/dosa-plate.jpg`],
   telephone: brand.phone,
@@ -45,15 +62,15 @@ const restaurant = {
     },
   }),
   address: { '@type': 'PostalAddress', addressLocality: brand.city, addressRegion: 'West Bengal', addressCountry: 'IN' },
-  areaServed: [{ '@type': 'City', name: brand.city }, ...deliveryAreas.map((a) => ({ '@type': 'Place', name: `${a}, ${brand.city}` }))],
-  keywords: 'south indian food delivery kolkata, idli, dosa, vada, uttapam, pure veg, salt lake, lake town',
+  areaServed: [cityLd, ...areaPlaces],
+  keywords: 'south indian food delivery kolkata, idli, dosa, vada, uttapam, pure veg, salt lake, bidhannagar, lake town, dum dum, vip road, kestopur, baguiati, chinar park',
   knowsAbout: ['Idli', 'Medu vada', 'Dosa', 'Masala dosa', 'Uttapam', 'Upma', 'Sambar', 'Coconut chutney', 'South Indian breakfast', 'Vegetarian food'],
   // Delivery terms (₹50 delivery, ₹100 minimum order) in a form answer engines can quote.
   makesOffer: {
     '@type': 'Offer',
     name: 'Home delivery',
     itemOffered: { '@type': 'Service', name: `South Indian food home delivery in ${brand.city}`, serviceType: 'Food delivery' },
-    areaServed: { '@type': 'City', name: brand.city },
+    areaServed: cityLd,
     priceSpecification: {
       '@type': 'DeliveryChargeSpecification',
       price: brand.deliveryCharge,
@@ -104,6 +121,10 @@ const website = {
   alternateName: `${brand.name} ${brand.tagline}`, url: `${SITE}/`, inLanguage: 'en-IN', publisher: { '@id': `${SITE}/#restaurant` },
 }
 
+// The home page and its Hindi and Bengali versions point at each other, so Google
+// shows searchers the version in their language.
+const hreflangs = [['en-IN', '/'], ...Object.values(locales).filter((l) => l.hreflang !== false).map((l) => [l.lang, l.path]), ['x-default', '/']]
+  .map(([h, p]) => `<link rel="alternate" hreflang="${h}" href="${SITE}${p}" />`).join('\n    ')
 const ld = (obj) => `<script type="application/ld+json">${JSON.stringify(obj).replace(/</g, '\\u003c')}</script>`
 
 let html = readFileSync(dist('index.html'), 'utf8')
@@ -113,7 +134,7 @@ const homePage = {
 }
 html = html
   .replace('<div id="root"></div>', `<div id="root">${render()}</div>`)
-  .replace('</head>', `    ${[restaurant, homePage, faqPage, website].map(ld).join('\n    ')}\n  </head>`)
+  .replace('</head>', `    ${hreflangs}\n    ${[restaurant, homePage, faqPage, website].map(ld).join('\n    ')}\n  </head>`)
 writeFileSync(dist('index.html'), html)
 
 writeFileSync(dist('robots.txt'), `User-agent: *
@@ -164,6 +185,7 @@ Sitemap: ${SITE}/sitemap.xml
 
 // One landing page per delivery area, so local searches like
 // "south indian food salt lake" have a page that answers them directly.
+const listAnd = (xs) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} and ${xs.at(-1)}` : xs[0])
 const esc = (t) => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 const cssHref = readdirSync(new URL('../dist/assets', import.meta.url)).find((f) => f.endsWith('.css'))
 const popular = menu.flatMap((m) => m.items.filter((i) => i.popular))
@@ -187,10 +209,10 @@ const faqLd = (list) => ({ '@context': 'https://schema.org', '@type': 'FAQPage',
 const FONTS = 'https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Inter:wght@400;500;600&display=swap'
 
 // Shared shell for the static pages: same look as the app, no JavaScript needed.
-function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow, max-image-preview:large, max-snippet:-1', canonical = true }) {
+function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow, max-image-preview:large, max-snippet:-1', canonical = true, lang = 'en-IN', dir = 'ltr', ogLocale = 'en_IN', orderLabel = 'Order now', alternates = false }) {
   const url = `${SITE}${path}`
   return `<!doctype html>
-<html lang="en-IN">
+<html lang="${lang}"${dir === 'rtl' ? ' dir="rtl"' : ''}>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
@@ -199,6 +221,7 @@ function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow
     <meta name="robots" content="${robots}" />
     <meta name="theme-color" content="#2f6b3c" />
     ${canonical ? `<link rel="canonical" href="${url}" />` : ''}
+    ${alternates ? hreflangs : ''}
     <link rel="icon" href="/favicon.ico" sizes="any" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta property="og:type" content="website" />
@@ -207,7 +230,7 @@ function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow
     <meta property="og:description" content="${esc(desc)}" />
     <meta property="og:url" content="${url}" />
     <meta property="og:image" content="${SITE}/og-image.jpg" />
-    <meta property="og:locale" content="en_IN" />
+    <meta property="og:locale" content="${ogLocale}" />
     <meta name="twitter:card" content="summary_large_image" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -219,7 +242,7 @@ function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow
   <body>
     <header class="nav"><div class="container nav__inner">
       <a href="/" class="nav__brand"><img src="/images/logo-mark.webp" alt="Idliyala logo" width="72" height="65" /><span><strong>${brand.name}</strong><small>${brand.tagline}</small></span></a>
-      <a href="/#menu" class="cart-btn"><span aria-hidden="true">🛒</span><span class="cart-btn__label">Order now</span></a>
+      <a href="/#menu" class="cart-btn"><span aria-hidden="true">🛒</span><span class="cart-btn__label">${esc(orderLabel)}</span></a>
     </div></header>
     <main>
 ${main}
@@ -228,6 +251,7 @@ ${main}
       <div class="footer__brand"><img src="/images/logo-mark.webp" alt="" width="36" height="32" /><span><strong>${brand.name}</strong>™ · ${brand.tagline}</span></div>
       <p><a href="/menu/">Menu</a> · <a href="/delivery/">Delivery areas</a> · <a href="/about/">About</a> · <a href="/faq/">FAQ</a> · ${dishPages.map((d) => `<a href="/dishes/${d.slug}/">${esc(d.name)} delivery</a>`).join(' · ')}</p>
       <p>📞 <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> · <a href="${brand.googleMaps}" target="_blank" rel="noreferrer">Find us on Google</a></p>
+      <p><a href="/" hreflang="en">English</a> · ${Object.values(locales).map((l) => `<a href="${l.path}" ${l.hreflang === false ? "" : `hreflang="${l.lang.slice(0, 2)}" `}lang="${l.lang}">${l.label}</a>`).join(' · ')}</p>
     </div></footer>
   </body>
 </html>
@@ -303,6 +327,7 @@ const deliveryFaqs = [
   { q: `Which areas of ${brand.city} does ${brand.name} deliver to?`, a: `${brand.name} delivers to ${deliveryAreas.slice(0, -1).join(', ')} and ${deliveryAreas.at(-1)}.` },
   { q: 'What is the delivery charge and minimum order?', a: `Delivery is ₹${brand.deliveryCharge} per order and the minimum order is ₹${brand.minOrder}.` },
   { q: 'What are the delivery hours?', a: `We deliver ${brand.hours.label}.` },
+  ...areaFaqs,
   { q: 'My area is not on the list. Can you still deliver?', a: `Message us on WhatsApp at ${brand.phoneDisplay} with your area and we will tell you if we can reach you.` },
   { q: 'How do I place an order?', a: `Pick your dishes on ${SITE.replace('https://', '')}, enter your address and send the order to our kitchen on WhatsApp. You can also call or WhatsApp ${brand.phoneDisplay}. No payment is taken on the website.` },
 ]
@@ -334,20 +359,31 @@ const pages = {
   }),
   'delivery/': layout({
     path: '/delivery/',
-    title: `South Indian Food Delivery Areas in ${brand.city} | ${brand.name}`,
-    desc: `${brand.name} delivers pure veg idli, dosa, vada and uttapam to ${deliveryAreas.length} areas in ${brand.city}, including ${deliveryAreas.slice(0, 6).join(', ')} and more.`,
+    title: `South Indian Food Delivery in Salt Lake, Lake Town & VIP Road | ${brand.name}`,
+    desc: `${brand.name} delivers pure veg idli, dosa, vada and uttapam to ${deliveryAreas.length} areas of north and east ${brand.city}: Salt Lake, Ultadanga, Lake Town, Bangur, Dum Dum, Nagerbazar, Kestopur, Baguiati, VIP Road and Chinar Park. ₹${brand.deliveryCharge} delivery, ${brand.hours.label}.`,
     ogTitle: `${brand.name} delivery areas in ${brand.city}`,
-    lds: [restaurantRef({ areaServed: restaurant.areaServed }), crumbs([[brand.name, `${SITE}/`], ['Delivery areas', `${SITE}/delivery/`]]), faqLd(deliveryFaqs)],
+    lds: [
+      restaurantRef({ areaServed: restaurant.areaServed, makesOffer: restaurant.makesOffer }),
+      { '@context': 'https://schema.org', '@type': 'WebPage', url: `${SITE}/delivery/`, name: `South Indian food delivery areas in ${brand.city}`, inLanguage: 'en-IN', dateModified: brand.updated, about: { '@id': `${SITE}/#restaurant` }, mentions: areaPlaces },
+      crumbs([[brand.name, `${SITE}/`], ['Delivery areas', `${SITE}/delivery/`]]),
+      faqLd(deliveryFaqs),
+    ],
     main: `      <section class="hero"><div class="container">
         <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${brand.name}</a> › Delivery areas</nav>
         <span class="eyebrow">Home delivery · ${brand.city}</span>
         <h1>South Indian food delivery areas in ${brand.city}</h1>
         <p class="lead">${brand.name} delivers fresh, 100% pure veg idli, vada, dosa and uttapam to ${deliveryAreas.length} neighbourhoods in north and east ${brand.city}, ${brand.hours.label}. Delivery ₹${brand.deliveryCharge}, minimum order ₹${brand.minOrder}. Every dish comes with complimentary ${sides.full}.</p>
-        <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a><a href="tel:${brand.phone}" class="btn btn--ghost">Call ${brand.phoneDisplay}</a></div>
+        <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 Order now</a><a href="tel:${brand.phone}" class="btn btn--ghost">Call ${brand.phoneDisplay}</a><a href="${brand.googleMaps}" class="btn btn--ghost" target="_blank" rel="noreferrer">📍 ${brand.name} on Google Maps</a></div>
       </div></section>
       <section class="area-nearby"><div class="container">
         <h2>Areas we deliver to</h2>
-        <ul class="area-links area-links--plain">${deliveryAreas.map((a) => `<li id="${areaSlug(a)}"><span>${esc(a)}</span></li>`).join('')}</ul>
+        <p>All ${deliveryAreas.length} areas get the same terms: ₹${brand.deliveryCharge} delivery, ₹${brand.minOrder} minimum order, ${brand.hours.label}.</p>
+${areaGroups.map((g) => `        <div class="area-group" id="${g.id}">
+          <h3>${esc(g.name)}</h3>
+          <p>${brand.name} delivers across ${esc(g.where)}: ${esc(listAnd(g.areas))}.${g.aka ? ` Also searched as ${esc(listAnd(Object.values(g.aka).flat()))}.` : ''}</p>
+          <ul class="area-links area-links--plain">${g.areas.map((a) => `<li id="${areaSlug(a)}"><span>${esc(a)}</span></li>`).join('')}</ul>
+        </div>`).join('\n')}
+        <p>Near one of these but not sure we reach your street? WhatsApp us on <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> and we will tell you.</p>
       </div></section>
       <section class="area-menu"><div class="container">
         <h2>Popular dishes</h2>
@@ -409,7 +445,8 @@ pages['about/'] = layout({
         <h2>What we cook</h2>
         <ul class="area-links">${dishPages.map((d) => `<li><a href="/dishes/${d.slug}/">${esc(d.name)}</a></li>`).join('')}<li><a href="/menu/">Full menu and prices</a></li></ul>
         <h2>Where we deliver</h2>
-        <p>${deliveryAreas.slice(0, -1).map(esc).join(', ')} and ${esc(deliveryAreas.at(-1))}. <a href="/delivery/">Delivery areas and charges</a>.</p>
+        <dl class="facts-list">${areaGroups.map((g) => `<div><dt>${esc(g.name)}</dt><dd>${esc(listAnd(g.areas))}</dd></div>`).join('')}</dl>
+        <p><a href="/delivery/">Delivery areas and charges</a>.</p>
         <h2>Contact</h2>
         <p>Phone and WhatsApp: <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> · <a href="${brand.googleMaps}" target="_blank" rel="noreferrer">${brand.name} on Google Maps</a></p>
       </div></section>`,
@@ -419,7 +456,7 @@ pages['about/'] = layout({
 const faqGroups = [
   ['About Idliyala and the food', faqs],
   // The rest of the delivery questions repeat ones already in faqs.
-  ['Delivery', deliveryFaqs.filter((f) => f.q.startsWith('My area'))],
+  ['Delivery areas in Kolkata', [...areaFaqs, ...deliveryFaqs.filter((f) => f.q.startsWith('My area'))]],
 ]
 const allFaqs = faqGroups.flatMap(([, list]) => list)
 pages['faq/'] = layout({
@@ -449,6 +486,56 @@ ${faqGroups.map(([title, list]) => `      <section class="faq"><div class="conta
 })
 
 dishPages.forEach((d) => { pages[`dishes/${d.slug}/`] = dishPage(d) })
+
+// Hindi and Bengali home pages: the same facts, prices and areas in the reader's language.
+const menuItem = (name) => menu.flatMap((m) => m.items).find((i) => i.name === name)
+for (const [code, t] of Object.entries(locales)) {
+  const url = `${SITE}${t.path}`
+  const dishNames = localNames.dishNames[code] || Object.fromEntries(Object.keys(localNames.dishNames.hi).map((en) => [en, en]))
+  const dishes = Object.entries(dishNames).map(([en, local]) => ({ en, local, price: menuItem(en).price }))
+  pages[t.path.slice(1)] = layout({
+    path: t.path, title: t.title, desc: t.desc, ogTitle: t.ogTitle, lang: t.lang, dir: t.dir, ogLocale: t.ogLocale, orderLabel: t.orderNow, alternates: t.hreflang !== false,
+    lds: [
+      restaurantRef({ ...(t.brandName !== brand.name && { alternateName: t.brandName }), areaServed: restaurant.areaServed, makesOffer: restaurant.makesOffer }),
+      { '@context': 'https://schema.org', '@type': 'WebPage', url, name: t.ogTitle, description: t.desc, inLanguage: t.lang, dateModified: brand.updated, about: { '@id': `${SITE}/#restaurant` } },
+      { ...faqLd(t.faqs), url, inLanguage: t.lang },
+    ],
+    main: `      <section class="hero"><div class="container">
+        <span class="eyebrow">${esc(t.eyebrow)}</span>
+        <h1>${esc(t.h1)}</h1>
+        <p class="lead">${esc(t.lead)}</p>
+        <div class="hero__ctas"><a href="/#menu" class="btn btn--primary">🛒 ${esc(t.orderNow)}</a><a href="tel:${brand.phone}" class="btn btn--ghost">${esc(t.call)} ${brand.phoneDisplay}</a><a href="${brand.googleMaps}" class="btn btn--ghost" target="_blank" rel="noreferrer">📍 Google Maps</a></div>
+      </div></section>
+      <section class="area-menu"><div class="container">
+        <h2>${esc(t.factsTitle)}</h2>
+        <dl class="facts-list">${t.facts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+        <p class="menu__updated">${esc(t.checked)}: <time datetime="${brand.updated}">${brand.updated}</time></p>
+      </div></section>
+      <section class="area-menu"><div class="container">
+        <h2>${esc(t.dishesTitle)}</h2>
+        <div class="menu__panel"><ul class="menu__list">${dishes.map((d) => `<li class="menu-item"><div class="menu-item__info"><span class="veg-dot" aria-label="Veg"></span><span class="menu-item__name">${esc(d.local)}</span>${d.local !== d.en ? `<span class="menu-item__desc" lang="en">${esc(d.en)}</span>` : ''}</div><span class="price">₹${d.price}</span></li>`).join('')}</ul></div>
+        <p>${esc(t.dishesNote)} <a href="/menu/">${esc(t.fullMenu)}</a></p>
+      </div></section>
+      <section class="area-nearby"><div class="container">
+        <h2>${esc(t.areasTitle)}</h2>
+        <p>${esc(t.areasLead)}</p>
+${areaGroups.map((g) => `        <div class="area-group">
+          <h3>${esc(localNames.groupNames[code]?.[g.id] || g.name)}</h3>
+          <ul class="area-links area-links--plain">${g.areas.map((a) => `<li><span>${esc(localNames.areaNames[code]?.[a] || a)}</span></li>`).join('')}</ul>
+        </div>`).join('\n')}
+        <p>${esc(t.areasAsk)}</p>
+      </div></section>
+      <section class="area-menu"><div class="container">
+        <h2>${esc(t.stepsTitle)}</h2>
+        <ol class="steps-list">${t.steps.map((x) => `<li>${esc(x)}</li>`).join('')}</ol>
+        <p><a href="/#menu" class="btn btn--primary">🛒 ${esc(t.orderNow)}</a></p>
+      </div></section>
+      <section class="faq"><div class="container">
+        <h2>${esc(t.faqTitle)}</h2>
+        <div class="faq__list">${t.faqs.map((f) => `<details class="faq__item card" open><summary>${esc(f.q)}</summary><p>${esc(f.a)}</p></details>`).join('')}</div>
+      </div></section>`,
+  })
+}
 for (const [path, html] of Object.entries(pages)) {
   const dir = new URL(`../dist/${path}`, import.meta.url)
   mkdirSync(dir, { recursive: true })
@@ -505,11 +592,17 @@ Last updated: ${brand.updated}
 - Delivery hours: ${brand.hours.label}
 - Delivery charge: ₹${brand.deliveryCharge}. Minimum order: ₹${brand.minOrder}.
 - Payment: not taken on the website; confirmed with the order on WhatsApp
-- Delivery areas in ${brand.city}: ${deliveryAreas.join(', ')}
 - Delivery areas page: ${SITE}/delivery/
 - About ${brand.name}: ${SITE}/about/
 - All questions and answers: ${SITE}/faq/
+- Other languages: ${Object.values(locales).map((l) => `${l.label}: ${SITE}${l.path}`).join(' · ')}
+- Name in other scripts: ${Object.values(locales).filter((l) => l.brandName !== brand.name).map((l) => l.brandName).join(', ')}
 - Dish pages: ${dishPages.map((d) => `${d.name}: ${dishUrl(d)}`).join(' · ')}
+
+## Delivery areas in ${brand.city}
+${brand.name} delivers to ${deliveryAreas.length} neighbourhoods in north and east ${brand.city}, all on the same terms (₹${brand.deliveryCharge} delivery, ₹${brand.minOrder} minimum order, ${brand.hours.label}). It does not deliver outside these areas unless confirmed on WhatsApp.
+
+${areaGroups.map((g) => `### ${g.name}\n${g.areas.map((a) => `- ${a}${g.aka?.[a] ? ` (also written ${g.aka[a].join(', ')})` : ''}`).join('\n')}`).join('\n\n')}
 
 ## Menu (prices in INR)
 ${menuText}
@@ -518,7 +611,7 @@ ${menuText}
 ${addOns.map((a) => `- ${a.name}: ₹${a.price}`).join('\n')}
 
 ## FAQ
-${faqs.map((f) => `**${f.q}**\n${f.a}`).join('\n\n')}
+${[...faqs, ...areaFaqs].map((f) => `**${f.q}**\n${f.a}`).join('\n\n')}
 `)
 
 // Tell Bing (and through it ChatGPT search and Copilot) about every page after a

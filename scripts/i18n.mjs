@@ -1,0 +1,418 @@
+// Landing pages in Hindi, Bengali, Urdu, Tamil, Telugu, Malayalam, Hinglish and Banglish (/hi/, /bn/, ...), so people who search in
+// their own language ("इडली डोसा होम डिलीवरी", "কলকাতায় ধোসা ডেলিভারি") and AI
+// assistants answering in Hindi or Bengali find the same facts as the English site.
+// Prices, hours, phone and charges come from src/data.js; only words live here.
+// Have a native speaker read any change before it goes live.
+import { brand } from '../src/data.js'
+
+const { deliveryCharge: dc, minOrder: mo, phoneDisplay: ph } = brand
+
+// Delivery areas in each script, keyed by their English name in deliveryAreas.
+const areaNames = {
+  hi: {
+    Bidhannagar: 'बिधाननगर', 'Salt Lake': 'सॉल्ट लेक', Ultadanga: 'उल्टाडांगा', Kankurgachi: 'कांकुड़गाछी', 'Phool Bagan': 'फूलबागान',
+    Golaghata: 'गोलाघाटा', 'Lake Town': 'लेक टाउन', Bangur: 'बांगुर', 'Dum Dum Park': 'दमदम पार्क', Kestopur: 'केष्टोपुर',
+    Baguiati: 'बागुईआटी', Raghunathpur: 'रघुनाथपुर', Tegharia: 'तेघरिया', "Haldiram's": 'हल्दीराम (VIP रोड)', Airport: 'एयरपोर्ट',
+    'Joda Mandir': 'जोड़ा मंदिर', 'Chinar Park': 'चिनार पार्क', 'CC-2': 'सिटी सेंटर 2 (CC-2)', Kalindi: 'कालिंदी', Shyamnagar: 'श्यामनगर',
+    'Jessore Road': 'जेसोर रोड', Nagerbazar: 'नागेरबाज़ार',
+  },
+  bn: {
+    Bidhannagar: 'বিধাননগর', 'Salt Lake': 'সল্টলেক', Ultadanga: 'উল্টোডাঙা', Kankurgachi: 'কাঁকুড়গাছি', 'Phool Bagan': 'ফুলবাগান',
+    Golaghata: 'গোলাঘাটা', 'Lake Town': 'লেক টাউন', Bangur: 'বাঙুর', 'Dum Dum Park': 'দমদম পার্ক', Kestopur: 'কেষ্টপুর',
+    Baguiati: 'বাগুইআটি', Raghunathpur: 'রঘুনাথপুর', Tegharia: 'তেঘরিয়া', "Haldiram's": 'হলদিরাম (ভিআইপি রোড)', Airport: 'এয়ারপোর্ট',
+    'Joda Mandir': 'জোড়ামন্দির', 'Chinar Park': 'চিনার পার্ক', 'CC-2': 'সিটি সেন্টার ২ (CC-2)', Kalindi: 'কালিন্দী', Shyamnagar: 'শ্যামনগর',
+    'Jessore Road': 'যশোর রোড', Nagerbazar: 'নাগেরবাজার',
+  },
+}
+
+// Area group headings, keyed by areaGroups[].id.
+const groupNames = {
+  hi: { 'salt-lake': 'सॉल्ट लेक (बिधाननगर)', ultadanga: 'उल्टाडांगा, कांकुड़गाछी और फूलबागान', 'dum-dum': 'लेक टाउन, बांगुर और दमदम', 'vip-road': 'VIP रोड: केष्टोपुर, बागुईआटी और एयरपोर्ट की तरफ़', 'chinar-park': 'चिनार पार्क और सिटी सेंटर 2' },
+  bn: { 'salt-lake': 'সল্টলেক (বিধাননগর)', ultadanga: 'উল্টোডাঙা, কাঁকুড়গাছি ও ফুলবাগান', 'dum-dum': 'লেক টাউন, বাঙুর ও দমদম', 'vip-road': 'ভিআইপি রোড: কেষ্টপুর, বাগুইআটি ও এয়ারপোর্টের দিক', 'chinar-park': 'চিনার পার্ক ও সিটি সেন্টার ২' },
+}
+
+// Popular dishes, by their exact English menu name.
+const dishNames = {
+  hi: { 'Idli (3 pcs)': 'इडली (3 पीस)', 'Vada (3 pcs)': 'वड़ा (3 पीस)', 'Plain Dosa': 'प्लेन डोसा', 'Masala Dosa': 'मसाला डोसा', 'Mysore Masala Dosa': 'मैसूर मसाला डोसा', 'Onion Tomato Uttapam': 'प्याज़ टमाटर उत्तपम', Upma: 'उपमा', "Idliyala's Special Dosa": 'इडलीयाला स्पेशल डोसा' },
+  bn: { 'Idli (3 pcs)': 'ইডলি (৩ পিস)', 'Vada (3 pcs)': 'বড়া (৩ পিস)', 'Plain Dosa': 'প্লেন ধোসা', 'Masala Dosa': 'মশলা ধোসা', 'Mysore Masala Dosa': 'মাইসোর মশলা ধোসা', 'Onion Tomato Uttapam': 'পেঁয়াজ টমেটো উত্তাপম', Upma: 'উপমা', "Idliyala's Special Dosa": 'ইডলিয়ালা স্পেশাল ধোসা' },
+}
+
+const hi = {
+  lang: 'hi-IN', ogLocale: 'hi_IN', path: '/hi/', label: 'हिन्दी', brandName: 'इडलीयाला',
+  title: 'इडलीयाला | कोलकाता में साउथ इंडियन खाना होम डिलीवरी · इडली, डोसा, वड़ा',
+  desc: `कोलकाता में ताज़ा इडली, वड़ा, डोसा और उत्तपम की होम डिलीवरी। 100% शाकाहारी। सॉल्ट लेक, लेक टाउन, दमदम, बागुईआटी, केष्टोपुर और VIP रोड। सुबह 8 से रात 8 बजे, हर दिन। WhatsApp पर ऑर्डर करें: ${ph}।`,
+  ogTitle: 'इडलीयाला · कोलकाता में इडली और डोसा होम डिलीवरी',
+  eyebrow: '100% शाकाहारी · कोलकाता',
+  h1: 'कोलकाता में साउथ इंडियन खाने की होम डिलीवरी',
+  lead: `इडलीयाला (Idliyala, "Daily Fresh Idli") कोलकाता की एक साउथ इंडियन किचन है। हम हर दिन ताज़ा इडली, वड़ा, डोसा, उत्तपम और उपमा बनाते हैं और उत्तर व पूर्व कोलकाता में आपके घर तक गरम पहुँचाते हैं। हर डिश के साथ सांभर, नारियल चटनी और लाल चटनी (प्याज़-लहसुन वाली) कॉम्प्लिमेंट्री मिलती है।`,
+  orderNow: 'ऑर्डर करें', call: 'कॉल करें',
+  factsTitle: 'एक नज़र में',
+  facts: [
+    ['क्या', 'साउथ इंडियन खाने की डिलीवरी किचन: इडली, वड़ा, डोसा, उत्तपम, उपमा'],
+    ['खाना', '100% शाकाहारी। बैटर, सांभर और चटनी रोज़ ताज़ा बनती है।'],
+    ['समय', 'सुबह 8 बजे से रात 8 बजे तक, सातों दिन (रविवार को भी)'],
+    ['डिलीवरी', `डिलीवरी चार्ज ₹${dc}, न्यूनतम ऑर्डर ₹${mo}`],
+    ['ऑर्डर', `idliyala.com पर या WhatsApp/फ़ोन ${ph}`],
+    ['भुगतान', 'वेबसाइट पर कोई भुगतान नहीं। WhatsApp पर ऑर्डर कन्फ़र्म होने पर भुगतान तय होता है।'],
+  ],
+  dishesTitle: 'लोकप्रिय डिश और दाम',
+  dishesNote: 'पूरा मेन्यू अंग्रेज़ी में है, दाम वही हैं।',
+  fullMenu: 'पूरा मेन्यू और दाम',
+  areasTitle: 'हम कहाँ डिलीवरी करते हैं',
+  areasLead: `उत्तर और पूर्व कोलकाता के इन इलाकों में, सब जगह एक ही शर्तें: ₹${dc} डिलीवरी, ₹${mo} न्यूनतम ऑर्डर, सुबह 8 से रात 8 बजे।`,
+  areasAsk: `आपका इलाका लिस्ट में नहीं है? WhatsApp पर ${ph} पर पूछें।`,
+  stepsTitle: 'ऑर्डर कैसे करें',
+  steps: [
+    'idliyala.com पर अपनी डिश और ऐड-ऑन चुनें।',
+    'अपना नाम, फ़ोन नंबर और डिलीवरी का पता लिखें।',
+    '"Send order" दबाएँ: आपका ऑर्डर WhatsApp में खुलेगा, उसे हमारी किचन को भेज दें।',
+    'हम WhatsApp पर ऑर्डर, डिलीवरी का समय और भुगतान कन्फ़र्म करते हैं और गरम खाना पहुँचाते हैं।',
+  ],
+  faqTitle: 'अक्सर पूछे जाने वाले सवाल',
+  faqs: [
+    { q: 'मेरे पास साउथ इंडियन खाना कहाँ मिलेगा?', a: `अगर आप उत्तर या पूर्व कोलकाता में हैं, तो इडलीयाला आपके पास ही है। हम सॉल्ट लेक, बिधाननगर, उल्टाडांगा, लेक टाउन, बांगुर, दमदम, नागेरबाज़ार, केष्टोपुर, बागुईआटी, VIP रोड और चिनार पार्क में ताज़ा इडली, वड़ा, डोसा और उत्तपम की होम डिलीवरी करते हैं, सुबह 8 से रात 8 बजे तक। idliyala.com पर या WhatsApp ${ph} पर ऑर्डर करें।` },
+    { q: 'इडलीयाला क्या है?', a: 'इडलीयाला ("Daily Fresh Idli") कोलकाता की 100% शाकाहारी साउथ इंडियन फ़ूड डिलीवरी किचन है। यहाँ इडली, वड़ा, डोसा, उत्तपम और उपमा रोज़ ताज़ा बनते हैं और घर तक पहुँचाए जाते हैं।' },
+    { q: 'डिलीवरी चार्ज और न्यूनतम ऑर्डर कितना है?', a: `डिलीवरी चार्ज ₹${dc} प्रति ऑर्डर है और न्यूनतम ऑर्डर ₹${mo} का है।` },
+    { q: 'डिलीवरी का समय क्या है?', a: 'हम सुबह 8 बजे से रात 8 बजे तक, हफ़्ते के सातों दिन डिलीवरी करते हैं, रविवार को भी।' },
+    { q: 'क्या नाश्ते के लिए इडली-डोसा घर मँगा सकते हैं?', a: 'हाँ। ऑर्डर सुबह 8 बजे से शुरू होते हैं, इसलिए इडली, वड़ा, उपमा और डोसा नाश्ते में गरम पहुँच सकते हैं। दोपहर और शाम के नाश्ते के लिए भी रात 8 बजे तक ऑर्डर कर सकते हैं।' },
+    { q: 'सबसे सस्ती डिश कौन-सी है?', a: `इडली (3 पीस) और वड़ा (3 पीस) ₹50 के हैं, प्लेन डोसा और प्लेन उत्तपम ₹60 के। न्यूनतम ऑर्डर ₹${mo} है, यानी दो प्लेट से ऑर्डर हो जाता है।` },
+    { q: 'हर डिश के साथ क्या मिलता है?', a: 'हर डिश के साथ तीन चीज़ें कॉम्प्लिमेंट्री मिलती हैं: सांभर, नारियल चटनी और लाल चटनी। लाल चटनी में प्याज़ और लहसुन होता है।' },
+    { q: 'क्या खाना शाकाहारी है?', a: 'हाँ। इडलीयाला 100% शाकाहारी किचन है। ध्यान दें: लाल चटनी में प्याज़ और लहसुन होता है।' },
+    { q: 'ऑर्डर कैसे करें और भुगतान कैसे होगा?', a: `idliyala.com पर डिश चुनें, पता लिखें और "Send order" दबाएँ, ऑर्डर WhatsApp पर हमारे पास आ जाएगा। आप ${ph} पर कॉल या WhatsApp भी कर सकते हैं। वेबसाइट पर कोई भुगतान नहीं लिया जाता, भुगतान WhatsApp पर तय होता है।` },
+  ],
+  langLinks: 'यह पेज इन भाषाओं में भी:',
+  checked: 'जानकारी जाँची गई',
+}
+
+const bn = {
+  lang: 'bn-IN', ogLocale: 'bn_IN', path: '/bn/', label: 'বাংলা', brandName: 'ইডলিয়ালা',
+  title: 'ইডলিয়ালা | কলকাতায় সাউথ ইন্ডিয়ান খাবার হোম ডেলিভারি · ইডলি, ধোসা, বড়া',
+  desc: `কলকাতায় টাটকা ইডলি, বড়া, ধোসা আর উত্তাপমের হোম ডেলিভারি। 100% ভেজ। সল্টলেক, লেক টাউন, দমদম, বাগুইআটি, কেষ্টপুর ও ভিআইপি রোড। প্রতিদিন সকাল 8টা থেকে রাত 8টা। WhatsApp-এ অর্ডার করুন: ${ph}।`,
+  ogTitle: 'ইডলিয়ালা · কলকাতায় ইডলি আর ধোসা হোম ডেলিভারি',
+  eyebrow: '100% ভেজ · কলকাতা',
+  h1: 'কলকাতায় সাউথ ইন্ডিয়ান খাবারের হোম ডেলিভারি',
+  lead: `ইডলিয়ালা (Idliyala, "Daily Fresh Idli") কলকাতার একটি সাউথ ইন্ডিয়ান কিচেন। আমরা প্রতিদিন টাটকা ইডলি, বড়া, ধোসা, উত্তাপম আর উপমা বানাই এবং উত্তর ও পূর্ব কলকাতায় আপনার বাড়িতে গরম গরম পৌঁছে দিই। প্রতিটি ডিশের সঙ্গে সম্বর, নারকেলের চাটনি আর লাল চাটনি (পেঁয়াজ-রসুন দেওয়া) কমপ্লিমেন্টারি।`,
+  orderNow: 'অর্ডার করুন', call: 'ফোন করুন',
+  factsTitle: 'এক নজরে',
+  facts: [
+    ['কী', 'সাউথ ইন্ডিয়ান খাবারের ডেলিভারি কিচেন: ইডলি, বড়া, ধোসা, উত্তাপম, উপমা'],
+    ['খাবার', '100% ভেজ (নিরামিষ, তবে লাল চাটনিতে পেঁয়াজ-রসুন আছে)। ব্যাটার, সম্বর আর চাটনি রোজ টাটকা বানানো হয়।'],
+    ['সময়', 'সকাল 8টা থেকে রাত 8টা, সপ্তাহের সাত দিন (রবিবারও)'],
+    ['ডেলিভারি', `ডেলিভারি চার্জ ₹${dc}, ন্যূনতম অর্ডার ₹${mo}`],
+    ['অর্ডার', `idliyala.com-এ অথবা WhatsApp/ফোন ${ph}`],
+    ['পেমেন্ট', 'ওয়েবসাইটে কোনো পেমেন্ট নেই। WhatsApp-এ অর্ডার কনফার্ম হলে পেমেন্ট ঠিক করা হয়।'],
+  ],
+  dishesTitle: 'জনপ্রিয় ডিশ ও দাম',
+  dishesNote: 'পুরো মেনু ইংরেজিতে আছে, দাম একই।',
+  fullMenu: 'পুরো মেনু ও দাম',
+  areasTitle: 'আমরা কোথায় ডেলিভারি করি',
+  areasLead: `উত্তর ও পূর্ব কলকাতার এই এলাকাগুলোতে, সব জায়গায় একই শর্ত: ₹${dc} ডেলিভারি, ₹${mo} ন্যূনতম অর্ডার, সকাল 8টা থেকে রাত 8টা।`,
+  areasAsk: `আপনার এলাকা তালিকায় নেই? WhatsApp-এ ${ph} নম্বরে জিজ্ঞেস করুন।`,
+  stepsTitle: 'কীভাবে অর্ডার করবেন',
+  steps: [
+    'idliyala.com-এ আপনার ডিশ আর অ্যাড-অন বেছে নিন।',
+    'আপনার নাম, ফোন নম্বর আর ডেলিভারির ঠিকানা লিখুন।',
+    '"Send order" টিপুন: অর্ডারটি WhatsApp-এ খুলবে, সেটা আমাদের কিচেনে পাঠিয়ে দিন।',
+    'আমরা WhatsApp-এ অর্ডার, ডেলিভারির সময় আর পেমেন্ট কনফার্ম করি এবং গরম খাবার পৌঁছে দিই।',
+  ],
+  faqTitle: 'প্রায়ই জিজ্ঞাসিত প্রশ্ন',
+  faqs: [
+    { q: 'আমার কাছাকাছি সাউথ ইন্ডিয়ান খাবার কোথায় পাব?', a: `আপনি উত্তর বা পূর্ব কলকাতায় থাকলে ইডলিয়ালা আপনার কাছেই। আমরা সল্টলেক, বিধাননগর, উল্টোডাঙা, লেক টাউন, বাঙুর, দমদম, নাগেরবাজার, কেষ্টপুর, বাগুইআটি, ভিআইপি রোড আর চিনার পার্কে টাটকা ইডলি, বড়া, ধোসা আর উত্তাপম হোম ডেলিভারি করি, সকাল 8টা থেকে রাত 8টা। idliyala.com-এ বা WhatsApp ${ph}-এ অর্ডার করুন।` },
+    { q: 'ইডলিয়ালা কী?', a: 'ইডলিয়ালা ("Daily Fresh Idli") কলকাতার একটি 100% ভেজ সাউথ ইন্ডিয়ান ফুড ডেলিভারি কিচেন। এখানে ইডলি, বড়া, ধোসা, উত্তাপম আর উপমা রোজ টাটকা বানানো হয় এবং বাড়িতে পৌঁছে দেওয়া হয়।' },
+    { q: 'ডেলিভারি চার্জ আর ন্যূনতম অর্ডার কত?', a: `প্রতি অর্ডারে ডেলিভারি চার্জ ₹${dc} এবং ন্যূনতম অর্ডার ₹${mo}।` },
+    { q: 'ডেলিভারির সময় কখন?', a: 'আমরা সকাল 8টা থেকে রাত 8টা পর্যন্ত, সপ্তাহের সাত দিনই ডেলিভারি করি, রবিবারও।' },
+    { q: 'জলখাবারের জন্য কি ইডলি-ধোসা বাড়িতে আনানো যায়?', a: 'হ্যাঁ। সকাল 8টা থেকে অর্ডার নেওয়া হয়, তাই ইডলি, বড়া, উপমা আর ধোসা সকালের জলখাবারে গরম পৌঁছতে পারে। দুপুর আর বিকেলের খাবারের জন্যও রাত 8টা পর্যন্ত অর্ডার করা যায়।' },
+    { q: 'সবচেয়ে কম দামের ডিশ কোনটা?', a: `ইডলি (৩ পিস) আর বড়া (৩ পিস) ₹50, প্লেন ধোসা আর প্লেন উত্তাপম ₹60। ন্যূনতম অর্ডার ₹${mo}, তাই দুটো প্লেট নিলেই অর্ডার করা যায়।` },
+    { q: 'প্রতিটি ডিশের সঙ্গে কী দেওয়া হয়?', a: 'প্রতিটি ডিশের সঙ্গে তিনটি জিনিস কমপ্লিমেন্টারি: সম্বর, নারকেলের চাটনি আর লাল চাটনি। লাল চাটনিতে পেঁয়াজ আর রসুন আছে।' },
+    { q: 'খাবার কি নিরামিষ?', a: 'হ্যাঁ, ইডলিয়ালা 100% ভেজ কিচেন: কোনো মাছ, মাংস বা ডিম নেই। তবে লাল চাটনিতে পেঁয়াজ আর রসুন দেওয়া হয়।' },
+    { q: 'কীভাবে অর্ডার করব আর পেমেন্ট কীভাবে হবে?', a: `idliyala.com-এ ডিশ বেছে ঠিকানা লিখে "Send order" টিপুন, অর্ডার WhatsApp-এ আমাদের কাছে চলে আসবে। ${ph} নম্বরে ফোন বা WhatsApp-ও করতে পারেন। ওয়েবসাইটে কোনো পেমেন্ট নেওয়া হয় না, পেমেন্ট WhatsApp-এ ঠিক করা হয়।` },
+  ],
+  langLinks: 'এই পেজ অন্য ভাষায়:',
+  checked: 'তথ্য যাচাই করা হয়েছে',
+}
+
+// Hinglish and Banglish: Hindi and Bengali typed in English letters, the way
+// most people in Kolkata actually search ("idli dosa ghar pe delivery",
+// "south indian khabar salt lake"). Not linked with hreflang, because Google
+// has no code for a language written in another script; the pages are linked
+// from every footer instead. Area and dish names stay in English.
+const hinglish = {
+  lang: 'hi-Latn', ogLocale: 'hi_IN', path: '/hinglish/', label: 'Hinglish', brandName: 'Idliyala', hreflang: false,
+  title: 'Idliyala | Kolkata mein South Indian khana home delivery · Idli, Dosa, Vada',
+  desc: `Kolkata mein fresh idli, vada, dosa aur uttapam ki ghar pe delivery. 100% veg. Salt Lake, Lake Town, Dum Dum, Baguiati, Kestopur aur VIP Road. Subah 8 se raat 8 baje, roz. WhatsApp pe order karo: ${ph}.`,
+  ogTitle: 'Idliyala · Kolkata mein idli dosa ghar pe delivery',
+  eyebrow: '100% veg · Kolkata',
+  h1: 'Kolkata mein South Indian khana, ghar pe delivery',
+  lead: `Idliyala ("Daily Fresh Idli") Kolkata ka South Indian kitchen hai. Hum roz fresh idli, vada, dosa, uttapam aur upma banate hain aur North aur East Kolkata mein aapke ghar tak garam-garam pahunchate hain. Har dish ke saath sambar, coconut chutney aur red chutney (pyaaz-lehsun wali) complimentary milti hai.`,
+  orderNow: 'Order karo', call: 'Call karo',
+  factsTitle: 'Ek nazar mein',
+  facts: [
+    ['Kya', 'South Indian food delivery kitchen: idli, vada, dosa, uttapam, upma'],
+    ['Khana', '100% veg. Batter, sambar aur chutney roz fresh banti hai.'],
+    ['Timing', 'Subah 8 baje se raat 8 baje tak, saaton din (Sunday ko bhi)'],
+    ['Delivery', `Delivery charge ₹${dc}, minimum order ₹${mo}`],
+    ['Order', `idliyala.com pe ya WhatsApp/phone ${ph}`],
+    ['Payment', 'Website pe koi payment nahi. WhatsApp pe order confirm hone pe payment decide hota hai.'],
+  ],
+  dishesTitle: 'Popular dishes aur rate',
+  dishesNote: 'Poora menu English mein hai, rate same hain.',
+  fullMenu: 'Poora menu aur rate',
+  areasTitle: 'Hum kahan delivery karte hain',
+  areasLead: `North aur East Kolkata ke in areas mein, sab jagah same terms: ₹${dc} delivery, ₹${mo} minimum order, subah 8 se raat 8 baje.`,
+  areasAsk: `Aapka area list mein nahi hai? WhatsApp pe ${ph} pe pooch lo.`,
+  stepsTitle: 'Order kaise karein',
+  steps: [
+    'idliyala.com pe apni dishes aur add-ons chuno.',
+    'Apna naam, phone number aur delivery address likho.',
+    '"Send order" dabao: order WhatsApp mein khulega, bas hamare kitchen ko bhej do.',
+    'Hum WhatsApp pe order, delivery time aur payment confirm karte hain aur garam khana pahunchate hain.',
+  ],
+  faqTitle: 'Aksar pooche jaane wale sawaal',
+  faqs: [
+    { q: 'Mere paas South Indian khana kahan milega? (South Indian food near me)', a: `Agar aap North ya East Kolkata mein ho, toh Idliyala aapke paas hi hai. Hum Salt Lake, Bidhannagar, Ultadanga, Lake Town, Bangur, Dum Dum, Nagerbazar, Kestopur, Baguiati, VIP Road aur Chinar Park mein fresh idli, vada, dosa aur uttapam ki home delivery karte hain, subah 8 se raat 8 baje tak. idliyala.com pe ya WhatsApp ${ph} pe order karo.` },
+    { q: 'Idliyala kya hai?', a: 'Idliyala ("Daily Fresh Idli") Kolkata ka 100% veg South Indian food delivery kitchen hai. Yahan idli, vada, dosa, uttapam aur upma roz fresh bante hain aur ghar tak deliver hote hain.' },
+    { q: 'Delivery charge aur minimum order kitna hai?', a: `Delivery charge ₹${dc} per order hai aur minimum order ₹${mo} ka hai.` },
+    { q: 'Delivery timing kya hai?', a: 'Hum subah 8 baje se raat 8 baje tak, hafte ke saaton din delivery karte hain, Sunday ko bhi.' },
+    { q: 'Kya breakfast ke liye idli dosa ghar pe mangwa sakte hain?', a: 'Haan. Order subah 8 baje se shuru hote hain, toh idli, vada, upma aur dosa breakfast mein garam pahunch sakte hain. Lunch aur shaam ke nashte ke liye bhi raat 8 baje tak order kar sakte ho.' },
+    { q: 'Sabse sasti dish kaunsi hai?', a: `Idli (3 pcs) aur Vada (3 pcs) ₹50 ke hain, Plain Dosa aur Plain Uttapam ₹60 ke. Minimum order ₹${mo} hai, matlab do plate se order ho jaata hai.` },
+    { q: 'Har dish ke saath kya milta hai?', a: 'Har dish ke saath teen cheezein complimentary milti hain: sambar, coconut chutney aur red chutney. Red chutney mein pyaaz aur lehsun hota hai.' },
+    { q: 'Kya khana veg hai?', a: 'Haan. Idliyala 100% veg kitchen hai. Dhyan dein: red chutney mein pyaaz aur lehsun hota hai.' },
+    { q: 'Order kaise karein aur payment kaise hoga?', a: `idliyala.com pe dishes chuno, address likho aur "Send order" dabao, order WhatsApp pe hamare paas aa jayega. ${ph} pe call ya WhatsApp bhi kar sakte ho. Website pe koi payment nahi liya jaata, payment WhatsApp pe decide hota hai.` },
+  ],
+  checked: 'Jaankari check ki gayi',
+}
+
+const banglish = {
+  lang: 'bn-Latn', ogLocale: 'bn_IN', path: '/banglish/', label: 'Banglish', brandName: 'Idliyala', hreflang: false,
+  title: 'Idliyala | Kolkata-y South Indian khabar home delivery · Idli, Dosa, Vada',
+  desc: `Kolkata-y tatka idli, vada, dosa ar uttapam-er home delivery. 100% veg. Salt Lake, Lake Town, Dum Dum, Baguiati, Kestopur o VIP Road. Roj sokal 8ta theke raat 8ta. WhatsApp-e order korun: ${ph}.`,
+  ogTitle: 'Idliyala · Kolkata-y idli dosa home delivery',
+  eyebrow: '100% veg · Kolkata',
+  h1: 'Kolkata-y South Indian khabar, barite delivery',
+  lead: `Idliyala ("Daily Fresh Idli") Kolkata-r ekta South Indian kitchen. Amra roj tatka idli, vada, dosa, uttapam ar upma banai ar North o East Kolkata-y apnar barite gorom gorom pouchhe di. Protiti dish-er sathe sambar, narkel chutney ar lal chutney (peyaj-roshun deoa) complimentary.`,
+  orderNow: 'Order korun', call: 'Phone korun',
+  factsTitle: 'Ek nojore',
+  facts: [
+    ['Ki', 'South Indian food delivery kitchen: idli, vada, dosa, uttapam, upma'],
+    ['Khabar', '100% veg (kono mach, mangsho ba dim nei; lal chutney-te peyaj-roshun ache). Batter, sambar ar chutney roj tatka banano hoy.'],
+    ['Somoy', 'Sokal 8ta theke raat 8ta, saptaher sat din (robibar-o)'],
+    ['Delivery', `Delivery charge ₹${dc}, minimum order ₹${mo}`],
+    ['Order', `idliyala.com-e othoba WhatsApp/phone ${ph}`],
+    ['Payment', 'Website-e kono payment nei. WhatsApp-e order confirm hole payment thik kora hoy.'],
+  ],
+  dishesTitle: 'Jonopriyo dish ar dam',
+  dishesNote: 'Puro menu English-e ache, dam ek.',
+  fullMenu: 'Puro menu ar dam',
+  areasTitle: 'Amra kothay delivery kori',
+  areasLead: `North o East Kolkata-r ei elaka gulote, sob jaygay ek shorto: ₹${dc} delivery, ₹${mo} minimum order, sokal 8ta theke raat 8ta.`,
+  areasAsk: `Apnar elaka list-e nei? WhatsApp-e ${ph} number-e jiggesh korun.`,
+  stepsTitle: 'Kibhabe order korben',
+  steps: [
+    'idliyala.com-e apnar dish ar add-on beche nin.',
+    'Apnar naam, phone number ar delivery-r thikana likhun.',
+    '"Send order" tipun: order WhatsApp-e khulbe, seta amader kitchen-e pathiye din.',
+    'Amra WhatsApp-e order, delivery-r somoy ar payment confirm kori ebong gorom khabar pouchhe di.',
+  ],
+  faqTitle: 'Praye jiggesh kora proshno',
+  faqs: [
+    { q: 'Amar kachhe South Indian khabar kothay pabo? (South Indian food near me)', a: `Apni North ba East Kolkata-y thakle Idliyala apnar kachhei. Amra Salt Lake, Bidhannagar, Ultadanga, Lake Town, Bangur, Dum Dum, Nagerbazar, Kestopur, Baguiati, VIP Road ar Chinar Park-e tatka idli, vada, dosa ar uttapam home delivery kori, sokal 8ta theke raat 8ta. idliyala.com-e ba WhatsApp ${ph}-e order korun.` },
+    { q: 'Idliyala ki?', a: 'Idliyala ("Daily Fresh Idli") Kolkata-r ekta 100% veg South Indian food delivery kitchen. Ekhane idli, vada, dosa, uttapam ar upma roj tatka banano hoy ar barite pouchhe deoa hoy.' },
+    { q: 'Delivery charge ar minimum order koto?', a: `Protiti order-e delivery charge ₹${dc} ar minimum order ₹${mo}.` },
+    { q: 'Delivery-r somoy kokhon?', a: 'Amra sokal 8ta theke raat 8ta porjonto, saptaher sat dini delivery kori, robibar-o.' },
+    { q: 'Jolkhabar-er jonno ki idli dosa barite anano jay?', a: 'Hyan. Sokal 8ta theke order neoa hoy, tai idli, vada, upma ar dosa sokaler jolkhabare gorom pouchhote pare. Dupur ar bikeler khabarer jonno-o raat 8ta porjonto order kora jay.' },
+    { q: 'Sobcheye kom damer dish konta?', a: `Idli (3 pcs) ar Vada (3 pcs) ₹50, Plain Dosa ar Plain Uttapam ₹60. Minimum order ₹${mo}, tai duto plate nilei order kora jay.` },
+    { q: 'Protiti dish-er sathe ki deoa hoy?', a: 'Protiti dish-er sathe tinte jinish complimentary: sambar, narkel chutney ar lal chutney. Lal chutney-te peyaj ar roshun ache.' },
+    { q: 'Khabar ki niramish?', a: 'Hyan, Idliyala 100% veg kitchen: kono mach, mangsho ba dim nei. Tobe lal chutney-te peyaj ar roshun deoa hoy.' },
+    { q: 'Kibhabe order korbo ar payment kibhabe hobe?', a: `idliyala.com-e dish beche thikana likhe "Send order" tipun, order WhatsApp-e amader kachhe chole asbe. ${ph} number-e phone ba WhatsApp-o korte paren. Website-e kono payment neoa hoy na, payment WhatsApp-e thik kora hoy.` },
+  ],
+  checked: 'Totthyo jachai kora hoyeche',
+}
+
+// Urdu, Tamil, Telugu and Malayalam pages. Area names stay in English letters,
+// the way people in Kolkata write them; dish names are in each script.
+const ta = {
+  lang: 'ta-IN', ogLocale: 'ta_IN', path: '/ta/', label: 'தமிழ்', brandName: 'இட்லியாலா',
+  title: 'Idliyala | கொல்கத்தாவில் தென்னிந்திய உணவு ஹோம் டெலிவரி · இட்லி, தோசை, வடை',
+  desc: `கொல்கத்தாவில் சுடச்சுட இட்லி, வடை, தோசை, ஊத்தப்பம் வீட்டுக்கே டெலிவரி. 100% சைவம். Salt Lake, Lake Town, Dum Dum, Baguiati, Kestopur, VIP Road. தினமும் காலை 8 முதல் இரவு 8 வரை. WhatsApp-ல் ஆர்டர் செய்யுங்கள்: ${ph}.`,
+  ogTitle: 'Idliyala · கொல்கத்தாவில் இட்லி, தோசை ஹோம் டெலிவரி',
+  eyebrow: '100% சைவம் · கொல்கத்தா',
+  h1: 'கொல்கத்தாவில் தென்னிந்திய உணவு, வீட்டுக்கே டெலிவரி',
+  lead: 'Idliyala ("Daily Fresh Idli") கொல்கத்தாவில் உள்ள ஒரு தென்னிந்திய கிச்சன். நாங்கள் தினமும் புதிதாக இட்லி, வடை, தோசை, ஊத்தப்பம், உப்புமா செய்து, வடக்கு மற்றும் கிழக்கு கொல்கத்தாவில் உங்கள் வீட்டுக்கே சூடாகக் கொண்டு வருகிறோம். ஒவ்வொரு உணவுடனும் சாம்பார், தேங்காய் சட்னி, சிவப்பு சட்னி (வெங்காயம்-பூண்டு சேர்த்தது) காம்ப்ளிமென்டரியாக வரும்.',
+  orderNow: 'ஆர்டர் செய்யுங்கள்', call: 'அழைக்கவும்',
+  factsTitle: 'ஒரு பார்வையில்',
+  facts: [
+    ['என்ன', 'தென்னிந்திய உணவு டெலிவரி கிச்சன்: இட்லி, வடை, தோசை, ஊத்தப்பம், உப்புமா'],
+    ['உணவு', '100% சைவம். மாவு, சாம்பார், சட்னி தினமும் புதிதாகத் தயாரிக்கப்படுகின்றன.'],
+    ['நேரம்', 'காலை 8 முதல் இரவு 8 வரை, வாரத்தின் 7 நாட்களும் (ஞாயிறு உட்பட)'],
+    ['டெலிவரி', `டெலிவரி கட்டணம் ₹${dc}, குறைந்தபட்ச ஆர்டர் ₹${mo}`],
+    ['ஆர்டர்', `idliyala.com அல்லது WhatsApp/போன் ${ph}`],
+    ['பணம்', 'இணையதளத்தில் பணம் செலுத்த வேண்டாம். WhatsApp-ல் ஆர்டர் உறுதியானதும் பணம் செலுத்தும் முறை சொல்லப்படும்.'],
+  ],
+  dishesTitle: 'பிரபலமான உணவுகளும் விலையும்', dishesNote: 'முழு மெனு ஆங்கிலத்தில் உள்ளது, விலை அதேதான்.', fullMenu: 'முழு மெனு மற்றும் விலை',
+  areasTitle: 'நாங்கள் டெலிவரி செய்யும் பகுதிகள்',
+  areasLead: `வடக்கு மற்றும் கிழக்கு கொல்கத்தாவின் இந்தப் பகுதிகள் அனைத்திலும் ஒரே நிபந்தனை: ₹${dc} டெலிவரி, ₹${mo} குறைந்தபட்ச ஆர்டர், காலை 8 முதல் இரவு 8 வரை.`,
+  areasAsk: `உங்கள் பகுதி பட்டியலில் இல்லையா? WhatsApp-ல் ${ph} என்ற எண்ணில் கேளுங்கள்.`,
+  stepsTitle: 'ஆர்டர் செய்வது எப்படி',
+  steps: [
+    'idliyala.com-ல் உங்களுக்கு வேண்டிய உணவுகளையும் ஆட்-ஆன்களையும் தேர்ந்தெடுங்கள்.',
+    'உங்கள் பெயர், போன் நம்பர், டெலிவரி முகவரியை எழுதுங்கள்.',
+    '"Send order" அழுத்துங்கள்: ஆர்டர் WhatsApp-ல் திறக்கும், அதை எங்கள் கிச்சனுக்கு அனுப்புங்கள்.',
+    'நாங்கள் WhatsApp-ல் ஆர்டர், டெலிவரி நேரம், பணம் செலுத்தும் முறையை உறுதி செய்து, சூடாக டெலிவரி செய்கிறோம்.',
+  ],
+  faqTitle: 'அடிக்கடி கேட்கப்படும் கேள்விகள்',
+  faqs: [
+    { q: 'எனக்கு அருகில் தென்னிந்திய உணவு எங்கே கிடைக்கும்? (South Indian food near me)', a: `நீங்கள் வடக்கு அல்லது கிழக்கு கொல்கத்தாவில் இருந்தால், Idliyala உங்கள் அருகிலேயே உள்ளது. Salt Lake, Bidhannagar, Ultadanga, Lake Town, Bangur, Dum Dum, Nagerbazar, Kestopur, Baguiati, VIP Road, Chinar Park ஆகிய பகுதிகளுக்கு புதிய இட்லி, வடை, தோசை, ஊத்தப்பம் காலை 8 முதல் இரவு 8 வரை டெலிவரி செய்கிறோம். idliyala.com அல்லது WhatsApp ${ph}-ல் ஆர்டர் செய்யுங்கள்.` },
+    { q: 'Idliyala என்றால் என்ன?', a: 'Idliyala ("Daily Fresh Idli") கொல்கத்தாவில் உள்ள 100% சைவ தென்னிந்திய உணவு டெலிவரி கிச்சன். இங்கே இட்லி, வடை, தோசை, ஊத்தப்பம், உப்புமா தினமும் புதிதாகச் செய்து வீட்டுக்கே டெலிவரி செய்யப்படுகிறது.' },
+    { q: 'டெலிவரி கட்டணம் மற்றும் குறைந்தபட்ச ஆர்டர் எவ்வளவு?', a: `ஒவ்வொரு ஆர்டருக்கும் டெலிவரி கட்டணம் ₹${dc}, குறைந்தபட்ச ஆர்டர் ₹${mo}.` },
+    { q: 'டெலிவரி நேரம் என்ன?', a: 'காலை 8 மணி முதல் இரவு 8 மணி வரை, வாரத்தின் 7 நாட்களும் டெலிவரி செய்கிறோம், ஞாயிற்றுக்கிழமையும்.' },
+    { q: 'காலை டிபனுக்கு இட்லி, தோசை வீட்டுக்கு ஆர்டர் செய்யலாமா?', a: 'ஆம். காலை 8 மணி முதல் ஆர்டர் எடுக்கப்படுகிறது, எனவே இட்லி, வடை, உப்புமா, தோசை காலை டிபனுக்கு சூடாக வந்து சேரும். மதிய உணவுக்கும் மாலை டிபனுக்கும் இரவு 8 மணி வரை ஆர்டர் செய்யலாம்.' },
+    { q: 'மிகக் குறைந்த விலை உணவு எது?', a: `இட்லி (3) மற்றும் வடை (3) ₹50, பிளெயின் தோசை மற்றும் பிளெயின் ஊத்தப்பம் ₹60. குறைந்தபட்ச ஆர்டர் ₹${mo}, அதனால் இரண்டு பிளேட் போதும்.` },
+    { q: 'ஒவ்வொரு உணவுடனும் என்ன வரும்?', a: 'ஒவ்வொரு உணவுடனும் மூன்று காம்ப்ளிமென்டரி சைடுகள்: சாம்பார், தேங்காய் சட்னி, சிவப்பு சட்னி. சிவப்பு சட்னியில் வெங்காயமும் பூண்டும் உள்ளன.' },
+    { q: 'உணவு சைவமா?', a: 'ஆம். Idliyala 100% சைவ கிச்சன். குறிப்பு: சிவப்பு சட்னியில் வெங்காயமும் பூண்டும் உள்ளன.' },
+    { q: 'எப்படி ஆர்டர் செய்வது, பணம் எப்படி செலுத்துவது?', a: `idliyala.com-ல் உணவைத் தேர்ந்தெடுத்து, முகவரியை எழுதி "Send order" அழுத்துங்கள், ஆர்டர் WhatsApp-ல் எங்களுக்கு வந்துவிடும். ${ph} எண்ணில் அழைக்கலாம் அல்லது WhatsApp செய்யலாம். இணையதளத்தில் பணம் வாங்கப்படுவதில்லை, பணம் செலுத்தும் முறை WhatsApp-ல் உறுதி செய்யப்படும்.` },
+  ],
+  checked: 'தகவல் சரிபார்க்கப்பட்டது',
+}
+
+const te = {
+  lang: 'te-IN', ogLocale: 'te_IN', path: '/te/', label: 'తెలుగు', brandName: 'ఇడ్లీయాలా',
+  title: 'Idliyala | కోల్‌కతాలో సౌత్ ఇండియన్ ఫుడ్ హోమ్ డెలివరీ · ఇడ్లీ, దోసె, వడ',
+  desc: `కోల్‌కతాలో వేడివేడి ఇడ్లీ, వడ, దోసె, ఊతప్పం ఇంటికే డెలివరీ. 100% శాకాహారం. Salt Lake, Lake Town, Dum Dum, Baguiati, Kestopur, VIP Road. ప్రతిరోజూ ఉదయం 8 నుండి రాత్రి 8 వరకు. WhatsAppలో ఆర్డర్ చేయండి: ${ph}.`,
+  ogTitle: 'Idliyala · కోల్‌కతాలో ఇడ్లీ, దోసె హోమ్ డెలివరీ',
+  eyebrow: '100% శాకాహారం · కోల్‌కతా',
+  h1: 'కోల్‌కతాలో సౌత్ ఇండియన్ ఫుడ్, ఇంటికే డెలివరీ',
+  lead: 'Idliyala ("Daily Fresh Idli") కోల్‌కతాలోని ఒక సౌత్ ఇండియన్ కిచెన్. మేము ప్రతిరోజూ తాజాగా ఇడ్లీ, వడ, దోసె, ఊతప్పం, ఉప్మా తయారు చేసి, ఉత్తర మరియు తూర్పు కోల్‌కతాలో మీ ఇంటికే వేడిగా అందిస్తాం. ప్రతి వంటకంతో పాటు సాంబార్, కొబ్బరి చట్నీ, ఎర్ర చట్నీ (ఉల్లిపాయ-వెల్లుల్లితో) కాంప్లిమెంటరీగా వస్తాయి.',
+  orderNow: 'ఆర్డర్ చేయండి', call: 'కాల్ చేయండి',
+  factsTitle: 'ఒక్క చూపులో',
+  facts: [
+    ['ఏమిటి', 'సౌత్ ఇండియన్ ఫుడ్ డెలివరీ కిచెన్: ఇడ్లీ, వడ, దోసె, ఊతప్పం, ఉప్మా'],
+    ['ఆహారం', '100% శాకాహారం. పిండి, సాంబార్, చట్నీలు రోజూ తాజాగా తయారవుతాయి.'],
+    ['సమయం', 'ఉదయం 8 నుండి రాత్రి 8 వరకు, వారంలో 7 రోజులూ (ఆదివారం కూడా)'],
+    ['డెలివరీ', `డెలివరీ ఛార్జ్ ₹${dc}, కనీస ఆర్డర్ ₹${mo}`],
+    ['ఆర్డర్', `idliyala.com లో లేదా WhatsApp/ఫోన్ ${ph}`],
+    ['చెల్లింపు', 'వెబ్‌సైట్‌లో చెల్లింపు లేదు. WhatsAppలో ఆర్డర్ కన్ఫర్మ్ అయ్యాక చెల్లింపు విధానం చెబుతాం.'],
+  ],
+  dishesTitle: 'పాపులర్ వంటకాలు, ధరలు', dishesNote: 'పూర్తి మెనూ ఇంగ్లీష్‌లో ఉంది, ధరలు అవే.', fullMenu: 'పూర్తి మెనూ, ధరలు',
+  areasTitle: 'మేము డెలివరీ చేసే ప్రాంతాలు',
+  areasLead: `ఉత్తర మరియు తూర్పు కోల్‌కతాలోని ఈ ప్రాంతాలన్నింటిలో ఒకే నిబంధనలు: ₹${dc} డెలివరీ, ₹${mo} కనీస ఆర్డర్, ఉదయం 8 నుండి రాత్రి 8 వరకు.`,
+  areasAsk: `మీ ప్రాంతం లిస్ట్‌లో లేదా? WhatsAppలో ${ph} కి అడగండి.`,
+  stepsTitle: 'ఆర్డర్ ఎలా చేయాలి',
+  steps: [
+    'idliyala.com లో మీకు కావలసిన వంటకాలు, యాడ్-ఆన్‌లు ఎంచుకోండి.',
+    'మీ పేరు, ఫోన్ నంబర్, డెలివరీ అడ్రస్ రాయండి.',
+    '"Send order" నొక్కండి: ఆర్డర్ WhatsAppలో తెరుచుకుంటుంది, దాన్ని మా కిచెన్‌కు పంపండి.',
+    'మేము WhatsAppలో ఆర్డర్, డెలివరీ సమయం, చెల్లింపును కన్ఫర్మ్ చేసి వేడిగా డెలివరీ చేస్తాం.',
+  ],
+  faqTitle: 'తరచుగా అడిగే ప్రశ్నలు',
+  faqs: [
+    { q: 'నా దగ్గరలో సౌత్ ఇండియన్ ఫుడ్ ఎక్కడ దొరుకుతుంది? (South Indian food near me)', a: `మీరు ఉత్తర లేదా తూర్పు కోల్‌కతాలో ఉంటే, Idliyala మీ దగ్గరలోనే ఉంది. Salt Lake, Bidhannagar, Ultadanga, Lake Town, Bangur, Dum Dum, Nagerbazar, Kestopur, Baguiati, VIP Road, Chinar Park ప్రాంతాలకు తాజా ఇడ్లీ, వడ, దోసె, ఊతప్పం ఉదయం 8 నుండి రాత్రి 8 వరకు డెలివరీ చేస్తాం. idliyala.com లో లేదా WhatsApp ${ph} లో ఆర్డర్ చేయండి.` },
+    { q: 'Idliyala అంటే ఏమిటి?', a: 'Idliyala ("Daily Fresh Idli") కోల్‌కతాలోని 100% శాకాహార సౌత్ ఇండియన్ ఫుడ్ డెలివరీ కిచెన్. ఇక్కడ ఇడ్లీ, వడ, దోసె, ఊతప్పం, ఉప్మా రోజూ తాజాగా తయారు చేసి ఇంటికే డెలివరీ చేస్తారు.' },
+    { q: 'డెలివరీ ఛార్జ్, కనీస ఆర్డర్ ఎంత?', a: `ప్రతి ఆర్డర్‌కు డెలివరీ ఛార్జ్ ₹${dc}, కనీస ఆర్డర్ ₹${mo}.` },
+    { q: 'డెలివరీ సమయం ఏమిటి?', a: 'ఉదయం 8 నుండి రాత్రి 8 వరకు, వారంలో 7 రోజులూ డెలివరీ చేస్తాం, ఆదివారం కూడా.' },
+    { q: 'బ్రేక్‌ఫాస్ట్‌కి ఇడ్లీ, దోసె ఇంటికి తెప్పించుకోవచ్చా?', a: 'అవును. ఉదయం 8 నుండి ఆర్డర్లు తీసుకుంటాం, కాబట్టి ఇడ్లీ, వడ, ఉప్మా, దోసె బ్రేక్‌ఫాస్ట్‌కి వేడిగా చేరతాయి. మధ్యాహ్నం, సాయంత్రం టిఫిన్ కోసం కూడా రాత్రి 8 వరకు ఆర్డర్ చేయవచ్చు.' },
+    { q: 'అతి తక్కువ ధర వంటకం ఏది?', a: `ఇడ్లీ (3) మరియు వడ (3) ₹50, ప్లెయిన్ దోసె మరియు ప్లెయిన్ ఊతప్పం ₹60. కనీస ఆర్డర్ ₹${mo}, కాబట్టి రెండు ప్లేట్లు చాలు.` },
+    { q: 'ప్రతి వంటకంతో ఏమి వస్తుంది?', a: 'ప్రతి వంటకంతో మూడు కాంప్లిమెంటరీ సైడ్స్: సాంబార్, కొబ్బరి చట్నీ, ఎర్ర చట్నీ. ఎర్ర చట్నీలో ఉల్లిపాయ, వెల్లుల్లి ఉంటాయి.' },
+    { q: 'ఆహారం శాకాహారమేనా?', a: 'అవును. Idliyala 100% శాకాహార కిచెన్. గమనిక: ఎర్ర చట్నీలో ఉల్లిపాయ, వెల్లుల్లి ఉంటాయి.' },
+    { q: 'ఎలా ఆర్డర్ చేయాలి, చెల్లింపు ఎలా?', a: `idliyala.com లో వంటకాలు ఎంచుకుని, అడ్రస్ రాసి "Send order" నొక్కండి, ఆర్డర్ WhatsAppలో మాకు వస్తుంది. ${ph} కి కాల్ లేదా WhatsApp కూడా చేయవచ్చు. వెబ్‌సైట్‌లో చెల్లింపు తీసుకోము, చెల్లింపు WhatsAppలో కన్ఫర్మ్ చేస్తాం.` },
+  ],
+  checked: 'సమాచారం తనిఖీ చేయబడింది',
+}
+
+const ml = {
+  lang: 'ml-IN', ogLocale: 'ml_IN', path: '/ml/', label: 'മലയാളം', brandName: 'ഇഡ്ഡലിയാല',
+  title: 'Idliyala | കൊൽക്കത്തയിൽ സൗത്ത് ഇന്ത്യൻ ഫുഡ് ഹോം ഡെലിവറി · ഇഡ്ഡലി, ദോശ, വട',
+  desc: `കൊൽക്കത്തയിൽ ചൂടുള്ള ഇഡ്ഡലി, വട, ദോശ, ഊത്തപ്പം വീട്ടിലെത്തിക്കുന്നു. 100% വെജിറ്റേറിയൻ. Salt Lake, Lake Town, Dum Dum, Baguiati, Kestopur, VIP Road. എല്ലാ ദിവസവും രാവിലെ 8 മുതൽ രാത്രി 8 വരെ. WhatsApp-ൽ ഓർഡർ ചെയ്യൂ: ${ph}.`,
+  ogTitle: 'Idliyala · കൊൽക്കത്തയിൽ ഇഡ്ഡലി, ദോശ ഹോം ഡെലിവറി',
+  eyebrow: '100% വെജിറ്റേറിയൻ · കൊൽക്കത്ത',
+  h1: 'കൊൽക്കത്തയിൽ സൗത്ത് ഇന്ത്യൻ ഭക്ഷണം, വീട്ടിലേക്ക് ഡെലിവറി',
+  lead: 'Idliyala ("Daily Fresh Idli") കൊൽക്കത്തയിലെ ഒരു സൗത്ത് ഇന്ത്യൻ കിച്ചൺ ആണ്. ഞങ്ങൾ എല്ലാ ദിവസവും പുതുതായി ഇഡ്ഡലി, വട, ദോശ, ഊത്തപ്പം, ഉപ്പുമാവ് ഉണ്ടാക്കി, വടക്കും കിഴക്കും കൊൽക്കത്തയിൽ നിങ്ങളുടെ വീട്ടിലേക്ക് ചൂടോടെ എത്തിക്കുന്നു. ഓരോ വിഭവത്തിനൊപ്പവും സാമ്പാർ, തേങ്ങാ ചട്ണി, ചുവന്ന ചട്ണി (ഉള്ളിയും വെളുത്തുള്ളിയും ചേർത്തത്) കോംപ്ലിമെന്ററിയായി ലഭിക്കും.',
+  orderNow: 'ഓർഡർ ചെയ്യൂ', call: 'വിളിക്കൂ',
+  factsTitle: 'ഒറ്റനോട്ടത്തിൽ',
+  facts: [
+    ['എന്ത്', 'സൗത്ത് ഇന്ത്യൻ ഫുഡ് ഡെലിവറി കിച്ചൺ: ഇഡ്ഡലി, വട, ദോശ, ഊത്തപ്പം, ഉപ്പുമാവ്'],
+    ['ഭക്ഷണം', '100% വെജിറ്റേറിയൻ. മാവ്, സാമ്പാർ, ചട്ണി എല്ലാ ദിവസവും പുതുതായി ഉണ്ടാക്കുന്നു.'],
+    ['സമയം', 'രാവിലെ 8 മുതൽ രാത്രി 8 വരെ, ആഴ്ചയിൽ 7 ദിവസവും (ഞായറാഴ്ചയും)'],
+    ['ഡെലിവറി', `ഡെലിവറി ചാർജ് ₹${dc}, മിനിമം ഓർഡർ ₹${mo}`],
+    ['ഓർഡർ', `idliyala.com വഴിയോ WhatsApp/ഫോൺ ${ph} വഴിയോ`],
+    ['പേയ്മെന്റ്', 'വെബ്സൈറ്റിൽ പേയ്മെന്റ് ഇല്ല. WhatsApp-ൽ ഓർഡർ കൺഫേം ചെയ്യുമ്പോൾ പേയ്മെന്റ് രീതി അറിയിക്കും.'],
+  ],
+  dishesTitle: 'ജനപ്രിയ വിഭവങ്ങളും വിലയും', dishesNote: 'മുഴുവൻ മെനു ഇംഗ്ലീഷിലാണ്, വില ഒന്നുതന്നെ.', fullMenu: 'മുഴുവൻ മെനുവും വിലയും',
+  areasTitle: 'ഞങ്ങൾ ഡെലിവറി ചെയ്യുന്ന സ്ഥലങ്ങൾ',
+  areasLead: `വടക്കും കിഴക്കും കൊൽക്കത്തയിലെ ഈ സ്ഥലങ്ങളിലെല്ലാം ഒരേ നിബന്ധനകൾ: ₹${dc} ഡെലിവറി, ₹${mo} മിനിമം ഓർഡർ, രാവിലെ 8 മുതൽ രാത്രി 8 വരെ.`,
+  areasAsk: `നിങ്ങളുടെ സ്ഥലം ലിസ്റ്റിൽ ഇല്ലേ? WhatsApp-ൽ ${ph} എന്ന നമ്പറിൽ ചോദിക്കൂ.`,
+  stepsTitle: 'എങ്ങനെ ഓർഡർ ചെയ്യാം',
+  steps: [
+    'idliyala.com-ൽ നിങ്ങൾക്ക് വേണ്ട വിഭവങ്ങളും ആഡ്-ഓണുകളും തിരഞ്ഞെടുക്കൂ.',
+    'നിങ്ങളുടെ പേര്, ഫോൺ നമ്പർ, ഡെലിവറി വിലാസം എഴുതൂ.',
+    '"Send order" അമർത്തൂ: ഓർഡർ WhatsApp-ൽ തുറക്കും, അത് ഞങ്ങളുടെ കിച്ചണിലേക്ക് അയക്കൂ.',
+    'ഞങ്ങൾ WhatsApp-ൽ ഓർഡർ, ഡെലിവറി സമയം, പേയ്മെന്റ് എന്നിവ കൺഫേം ചെയ്ത് ചൂടോടെ എത്തിക്കും.',
+  ],
+  faqTitle: 'പതിവ് ചോദ്യങ്ങൾ',
+  faqs: [
+    { q: 'എന്റെ അടുത്ത് സൗത്ത് ഇന്ത്യൻ ഭക്ഷണം എവിടെ കിട്ടും? (South Indian food near me)', a: `നിങ്ങൾ വടക്കോ കിഴക്കോ കൊൽക്കത്തയിലാണെങ്കിൽ, Idliyala നിങ്ങളുടെ അടുത്തുതന്നെയുണ്ട്. Salt Lake, Bidhannagar, Ultadanga, Lake Town, Bangur, Dum Dum, Nagerbazar, Kestopur, Baguiati, VIP Road, Chinar Park എന്നിവിടങ്ങളിൽ പുതിയ ഇഡ്ഡലി, വട, ദോശ, ഊത്തപ്പം രാവിലെ 8 മുതൽ രാത്രി 8 വരെ ഡെലിവറി ചെയ്യുന്നു. idliyala.com വഴിയോ WhatsApp ${ph} വഴിയോ ഓർഡർ ചെയ്യൂ.` },
+    { q: 'Idliyala എന്താണ്?', a: 'Idliyala ("Daily Fresh Idli") കൊൽക്കത്തയിലെ 100% വെജിറ്റേറിയൻ സൗത്ത് ഇന്ത്യൻ ഫുഡ് ഡെലിവറി കിച്ചൺ ആണ്. ഇവിടെ ഇഡ്ഡലി, വട, ദോശ, ഊത്തപ്പം, ഉപ്പുമാവ് എല്ലാ ദിവസവും പുതുതായി ഉണ്ടാക്കി വീട്ടിലെത്തിക്കുന്നു.' },
+    { q: 'ഡെലിവറി ചാർജും മിനിമം ഓർഡറും എത്ര?', a: `ഓരോ ഓർഡറിനും ഡെലിവറി ചാർജ് ₹${dc}, മിനിമം ഓർഡർ ₹${mo}.` },
+    { q: 'ഡെലിവറി സമയം എപ്പോഴാണ്?', a: 'രാവിലെ 8 മുതൽ രാത്രി 8 വരെ, ആഴ്ചയിൽ 7 ദിവസവും ഡെലിവറി ചെയ്യുന്നു, ഞായറാഴ്ചയും.' },
+    { q: 'പ്രാതലിന് ഇഡ്ഡലിയും ദോശയും വീട്ടിലേക്ക് ഓർഡർ ചെയ്യാമോ?', a: 'ഉവ്വ്. രാവിലെ 8 മുതൽ ഓർഡർ എടുക്കുന്നു, അതിനാൽ ഇഡ്ഡലി, വട, ഉപ്പുമാവ്, ദോശ പ്രാതലിന് ചൂടോടെ എത്തും. ഉച്ചയ്ക്കും വൈകുന്നേരത്തെ പലഹാരത്തിനും രാത്രി 8 വരെ ഓർഡർ ചെയ്യാം.' },
+    { q: 'ഏറ്റവും വില കുറഞ്ഞ വിഭവം ഏതാണ്?', a: `ഇഡ്ഡലി (3), വട (3) എന്നിവയ്ക്ക് ₹50, പ്ലെയിൻ ദോശയ്ക്കും പ്ലെയിൻ ഊത്തപ്പത്തിനും ₹60. മിനിമം ഓർഡർ ₹${mo} ആയതിനാൽ രണ്ട് പ്ലേറ്റ് മതി.` },
+    { q: 'ഓരോ വിഭവത്തിനൊപ്പവും എന്ത് ലഭിക്കും?', a: 'ഓരോ വിഭവത്തിനൊപ്പവും മൂന്ന് കോംപ്ലിമെന്ററി സൈഡുകൾ: സാമ്പാർ, തേങ്ങാ ചട്ണി, ചുവന്ന ചട്ണി. ചുവന്ന ചട്ണിയിൽ ഉള്ളിയും വെളുത്തുള്ളിയും ഉണ്ട്.' },
+    { q: 'ഭക്ഷണം വെജിറ്റേറിയൻ ആണോ?', a: 'അതെ. Idliyala 100% വെജിറ്റേറിയൻ കിച്ചൺ ആണ്. ശ്രദ്ധിക്കുക: ചുവന്ന ചട്ണിയിൽ ഉള്ളിയും വെളുത്തുള്ളിയും ഉണ്ട്.' },
+    { q: 'എങ്ങനെ ഓർഡർ ചെയ്യാം, പേയ്മെന്റ് എങ്ങനെ?', a: `idliyala.com-ൽ വിഭവങ്ങൾ തിരഞ്ഞെടുത്ത്, വിലാസം എഴുതി "Send order" അമർത്തൂ, ഓർഡർ WhatsApp-ൽ ഞങ്ങൾക്ക് ലഭിക്കും. ${ph} എന്ന നമ്പറിൽ വിളിക്കുകയോ WhatsApp ചെയ്യുകയോ ആവാം. വെബ്സൈറ്റിൽ പേയ്മെന്റ് എടുക്കുന്നില്ല, പേയ്മെന്റ് WhatsApp-ൽ കൺഫേം ചെയ്യും.` },
+  ],
+  checked: 'വിവരങ്ങൾ പരിശോധിച്ചത്',
+}
+
+const ur = {
+  lang: 'ur-IN', ogLocale: 'ur_IN', path: '/ur/', label: 'اردو', brandName: 'اڈلی یالا', dir: 'rtl',
+  title: 'Idliyala | کولکتہ میں ساؤتھ انڈین کھانا ہوم ڈیلیوری · اڈلی، ڈوسا، وڑا',
+  desc: `کولکتہ میں تازہ اڈلی، وڑا، ڈوسا اور اتپم کی گھر پر ڈیلیوری۔ 100% ویجیٹیرین۔ Salt Lake، Lake Town، Dum Dum، Baguiati، Kestopur اور VIP Road۔ روزانہ صبح 8 سے رات 8 بجے تک۔ WhatsApp پر آرڈر کریں: ${ph}`,
+  ogTitle: 'Idliyala · کولکتہ میں اڈلی اور ڈوسا ہوم ڈیلیوری',
+  eyebrow: '100% ویجیٹیرین · کولکتہ',
+  h1: 'کولکتہ میں ساؤتھ انڈین کھانے کی ہوم ڈیلیوری',
+  lead: 'Idliyala ("Daily Fresh Idli") کولکتہ کا ایک ساؤتھ انڈین کچن ہے۔ ہم ہر روز تازہ اڈلی، وڑا، ڈوسا، اتپم اور اپما بناتے ہیں اور شمالی و مشرقی کولکتہ میں آپ کے گھر تک گرم گرم پہنچاتے ہیں۔ ہر ڈش کے ساتھ سانبھر، ناریل کی چٹنی اور لال چٹنی (پیاز لہسن والی) کمپلیمنٹری ملتی ہے۔',
+  orderNow: 'آرڈر کریں', call: 'کال کریں',
+  factsTitle: 'ایک نظر میں',
+  facts: [
+    ['کیا', 'ساؤتھ انڈین فوڈ ڈیلیوری کچن: اڈلی، وڑا، ڈوسا، اتپم، اپما'],
+    ['کھانا', '100% ویجیٹیرین (گوشت، مچھلی یا انڈا نہیں)۔ بیٹر، سانبھر اور چٹنی روز تازہ بنتی ہے۔'],
+    ['وقت', 'صبح 8 بجے سے رات 8 بجے تک، ہفتے کے ساتوں دن (اتوار کو بھی)'],
+    ['ڈیلیوری', `ڈیلیوری چارج ₹${dc}، کم از کم آرڈر ₹${mo}`],
+    ['آرڈر', `idliyala.com پر یا WhatsApp/فون ${ph}`],
+    ['ادائیگی', 'ویب سائٹ پر کوئی ادائیگی نہیں۔ WhatsApp پر آرڈر کنفرم ہونے پر ادائیگی طے ہوتی ہے۔'],
+  ],
+  dishesTitle: 'مقبول ڈشز اور قیمتیں', dishesNote: 'پورا مینو انگریزی میں ہے، قیمتیں وہی ہیں۔', fullMenu: 'پورا مینو اور قیمتیں',
+  areasTitle: 'ہم کہاں ڈیلیوری کرتے ہیں',
+  areasLead: `شمالی اور مشرقی کولکتہ کے ان علاقوں میں، ہر جگہ ایک ہی شرائط: ₹${dc} ڈیلیوری، ₹${mo} کم از کم آرڈر، صبح 8 سے رات 8 بجے تک۔`,
+  areasAsk: `آپ کا علاقہ لسٹ میں نہیں؟ WhatsApp پر ${ph} پر پوچھیں۔`,
+  stepsTitle: 'آرڈر کیسے کریں',
+  steps: [
+    'idliyala.com پر اپنی ڈشز اور ایڈ آن چنیں۔',
+    'اپنا نام، فون نمبر اور ڈیلیوری کا پتہ لکھیں۔',
+    '"Send order" دبائیں: آپ کا آرڈر WhatsApp میں کھلے گا، اسے ہمارے کچن کو بھیج دیں۔',
+    'ہم WhatsApp پر آرڈر، ڈیلیوری کا وقت اور ادائیگی کنفرم کرتے ہیں اور گرم کھانا پہنچاتے ہیں۔',
+  ],
+  faqTitle: 'اکثر پوچھے جانے والے سوالات',
+  faqs: [
+    { q: 'میرے قریب ساؤتھ انڈین کھانا کہاں ملے گا؟ (South Indian food near me)', a: `اگر آپ شمالی یا مشرقی کولکتہ میں ہیں تو Idliyala آپ کے قریب ہی ہے۔ ہم Salt Lake، Bidhannagar، Ultadanga، Lake Town، Bangur، Dum Dum، Nagerbazar، Kestopur، Baguiati، VIP Road اور Chinar Park میں تازہ اڈلی، وڑا، ڈوسا اور اتپم کی ہوم ڈیلیوری کرتے ہیں، صبح 8 سے رات 8 بجے تک۔ idliyala.com پر یا WhatsApp ${ph} پر آرڈر کریں۔` },
+    { q: 'Idliyala کیا ہے؟', a: 'Idliyala ("Daily Fresh Idli") کولکتہ کا 100% ویجیٹیرین ساؤتھ انڈین فوڈ ڈیلیوری کچن ہے۔ یہاں اڈلی، وڑا، ڈوسا، اتپم اور اپما روز تازہ بنتے ہیں اور گھر تک پہنچائے جاتے ہیں۔' },
+    { q: 'ڈیلیوری چارج اور کم از کم آرڈر کتنا ہے؟', a: `ڈیلیوری چارج ₹${dc} فی آرڈر ہے اور کم از کم آرڈر ₹${mo} کا ہے۔` },
+    { q: 'ڈیلیوری کا وقت کیا ہے؟', a: 'ہم صبح 8 بجے سے رات 8 بجے تک، ہفتے کے ساتوں دن ڈیلیوری کرتے ہیں، اتوار کو بھی۔' },
+    { q: 'کیا ناشتے کے لیے اڈلی ڈوسا گھر منگوا سکتے ہیں؟', a: 'جی ہاں۔ آرڈر صبح 8 بجے سے شروع ہوتے ہیں، اس لیے اڈلی، وڑا، اپما اور ڈوسا ناشتے میں گرم پہنچ سکتے ہیں۔ دوپہر اور شام کے ناشتے کے لیے بھی رات 8 بجے تک آرڈر کر سکتے ہیں۔' },
+    { q: 'سب سے سستی ڈش کون سی ہے؟', a: `اڈلی (3 پیس) اور وڑا (3 پیس) ₹50 کے ہیں، پلین ڈوسا اور پلین اتپم ₹60 کے۔ کم از کم آرڈر ₹${mo} ہے، یعنی دو پلیٹ سے آرڈر ہو جاتا ہے۔` },
+    { q: 'ہر ڈش کے ساتھ کیا ملتا ہے؟', a: 'ہر ڈش کے ساتھ تین چیزیں کمپلیمنٹری ملتی ہیں: سانبھر، ناریل کی چٹنی اور لال چٹنی۔ لال چٹنی میں پیاز اور لہسن ہوتا ہے۔' },
+    { q: 'کیا کھانا ویجیٹیرین ہے؟', a: 'جی ہاں۔ Idliyala 100% ویجیٹیرین کچن ہے، یہاں گوشت، مچھلی یا انڈا نہیں۔ لال چٹنی میں پیاز اور لہسن ہوتا ہے۔' },
+    { q: 'آرڈر کیسے کریں اور ادائیگی کیسے ہوگی؟', a: `idliyala.com پر ڈشز چنیں، پتہ لکھیں اور "Send order" دبائیں، آرڈر WhatsApp پر ہمارے پاس آ جائے گا۔ آپ ${ph} پر کال یا WhatsApp بھی کر سکتے ہیں۔ ویب سائٹ پر کوئی ادائیگی نہیں لی جاتی، ادائیگی WhatsApp پر طے ہوتی ہے۔` },
+  ],
+  checked: 'معلومات کی جانچ',
+}
+
+const moreDishNames = {
+  ur: { 'Idli (3 pcs)': 'اڈلی (3 پیس)', 'Vada (3 pcs)': 'وڑا (3 پیس)', 'Plain Dosa': 'پلین ڈوسا', 'Masala Dosa': 'مسالہ ڈوسا', 'Mysore Masala Dosa': 'میسور مسالہ ڈوسا', 'Onion Tomato Uttapam': 'پیاز ٹماٹر اتپم', Upma: 'اپما', "Idliyala's Special Dosa": 'Idliyala اسپیشل ڈوسا' },
+  ta: { 'Idli (3 pcs)': 'இட்லி (3)', 'Vada (3 pcs)': 'வடை (3)', 'Plain Dosa': 'பிளெயின் தோசை', 'Masala Dosa': 'மசாலா தோசை', 'Mysore Masala Dosa': 'மைசூர் மசாலா தோசை', 'Onion Tomato Uttapam': 'வெங்காயம் தக்காளி ஊத்தப்பம்', Upma: 'உப்புமா', "Idliyala's Special Dosa": 'Idliyala ஸ்பெஷல் தோசை' },
+  te: { 'Idli (3 pcs)': 'ఇడ్లీ (3)', 'Vada (3 pcs)': 'వడ (3)', 'Plain Dosa': 'ప్లెయిన్ దోసె', 'Masala Dosa': 'మసాలా దోసె', 'Mysore Masala Dosa': 'మైసూర్ మసాలా దోసె', 'Onion Tomato Uttapam': 'ఉల్లిపాయ టమాటా ఊతప్పం', Upma: 'ఉప్మా', "Idliyala's Special Dosa": 'Idliyala స్పెషల్ దోసె' },
+  ml: { 'Idli (3 pcs)': 'ഇഡ്ഡലി (3)', 'Vada (3 pcs)': 'വട (3)', 'Plain Dosa': 'പ്ലെയിൻ ദോശ', 'Masala Dosa': 'മസാല ദോശ', 'Mysore Masala Dosa': 'മൈസൂർ മസാല ദോശ', 'Onion Tomato Uttapam': 'ഉള്ളി തക്കാളി ഊത്തപ്പം', Upma: 'ഉപ്പുമാവ്', "Idliyala's Special Dosa": 'Idliyala സ്പെഷ്യൽ ദോശ' },
+}
+Object.assign(dishNames, moreDishNames)
+
+export const locales = { hi, bn, ur, ta, te, ml, hinglish, banglish }
+export const localNames = { areaNames, groupNames, dishNames }

@@ -390,6 +390,9 @@ a.cart-btn { text-decoration: none; }
 .area-links--plain span { padding: 0.55rem 0.8rem; font-size: 0.92rem; }
 .hero .area-links { margin-top: 1.5rem; }
 .area-nearby .area-links + h2 { margin-top: 2.5rem; }
+.area-group { margin-top: 2rem; }
+.area-group h3 { margin-bottom: 0.4rem; }
+.area-group p { margin: 0 0 0.8rem; }
 .footer__dishes { font-size: 0.9rem; }
 
 /* Showcase: big plate photo with a 2x2 / 4-up facts strip */
