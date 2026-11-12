@@ -215,17 +215,6 @@ a.cart-btn { text-decoration: none; }
 .review blockquote { margin: 0.6rem 0 1rem; }
 .review figcaption { font-weight: 600; color: var(--brown); }
 .review figcaption span { font-weight: 400; color: var(--muted); }
-.review { position: relative; display: flex; flex-direction: column; gap: 0.6rem; border-radius: 20px; }
-.review__tag { position: absolute; top: -10px; right: 14px; background: var(--yellow); color: var(--brown); font-weight: 700; font-size: 0.75rem; padding: 0.25rem 0.6rem; border-radius: 999px; }
-.review__who { display: flex; align-items: center; gap: 0.8rem; }
-.review__who img { width: 84px; height: 84px; flex: none; filter: drop-shadow(0 4px 6px rgba(107, 68, 40, 0.15)); }
-.review__who strong { display: block; color: var(--ink); }
-.review__who small { color: var(--muted); }
-.review blockquote { margin: 0; line-height: 1.5; }
-.review blockquote::before { content: '\201C'; font-family: var(--font-display); font-size: 2.4rem; line-height: 0; vertical-align: -0.9rem; color: var(--yellow); margin-right: 0.15rem; }
-.review figcaption { margin-top: auto; font-weight: 400; font-size: 0.82rem; color: var(--muted); }
-.reviews__ctas { display: flex; gap: 0.7rem; flex-wrap: wrap; margin-top: 1.6rem; }
-.reviews__sample { background: #fff3c4; border: 2px dashed var(--orange); color: var(--brown); padding: 0.6rem 1rem; border-radius: 12px; font-size: 0.9rem; }
 
 /* Contact */
 .contact__inner { display: grid; grid-template-columns: 220px 1fr; gap: 2.5rem; align-items: center; padding: clamp(1.5rem, 4vw, 3rem); }
