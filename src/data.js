@@ -25,6 +25,24 @@ export const brand = {
   indexNowKey: '427219c46dc3b3499a425a5c86c50086',
 }
 
+// Official profiles of Idliyala on other sites (Google, Bing, Apple Maps, Justdial,
+// Instagram, Facebook...). Add each one here as soon as it is live: they become
+// the "sameAs" links in search data, the footer and llms.txt, which tells Google
+// and AI assistants that all these listings are the same business.
+// Shape: { name: 'Instagram', url: 'https://www.instagram.com/idliyala/' }
+export const profiles = [
+  { name: 'Google Maps', url: brand.googleMaps },
+]
+
+// Ready-made descriptions of Idliyala, word for word the same everywhere: the
+// /press/ page, directory listings and social profiles. Keep listings consistent
+// with these (same name, phone and hours) so search engines trust them.
+export const blurbs = {
+  short: 'Pure veg South Indian food delivery in Kolkata: fresh idli, vada, dosa and uttapam, 8 am to 8 pm daily.',
+  medium:
+    'Idliyala (Daily Fresh Idli) is a 100% pure vegetarian South Indian kitchen in Kolkata. We deliver fresh idli, vada, dosa, uttapam and upma across Salt Lake, Lake Town, Dum Dum, VIP Road and nearby areas, 8 am to 8 pm daily. Order on idliyala.com or WhatsApp 99033 22982.',
+}
+
 // The three complimentary sides that come with every dish.
 export const sides = {
   full: 'sambar, coconut chutney and a red chutney made with onion and garlic',
@@ -271,7 +289,7 @@ export const faqs = [
   },
   {
     q: 'How much does a South Indian breakfast for two cost?',
-    a: 'A typical order of 2 plates of Idli (3 pcs) at ₹50 each and 1 Masala Dosa at ₹70 comes to ₹170, plus ₹50 delivery, so ₹220 in total. Sambar, coconut chutney and red chutney are included free with every dish.',
+    a: 'A typical order of 2 plates of Idli (3 pcs) at ₹50 each and 1 Masala Dosa at ₹70 comes to ₹170, plus ₹50 delivery, so ₹220 in total. Sambar, coconut chutney and red chutney come complimentary with every dish.',
   },
   {
     q: 'What is the cheapest dish at Idliyala?',
