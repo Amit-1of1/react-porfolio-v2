@@ -2,7 +2,7 @@
 // into dist/ so search engines and AI assistants can read everything without
 // running JavaScript. All content comes from src/data.js.
 import { mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
-import { addOns, addOnsLabel, areaFaqs, areaGroups, areaSlug, brand, deliveryAreas, dishDescription, dishPages, faqs, menu, showcaseSlides, sides } from '../src/data.js'
+import { addOns, addOnsLabel, areaFaqs, areaGroups, areaSlug, blurbs, brand, deliveryAreas, dishDescription, dishPages, faqs, menu, profiles, showcaseSlides, sides } from '../src/data.js'
 import { render } from '../dist-ssr/entry-server.js'
 import { localNames, locales } from './i18n.mjs'
 
@@ -30,12 +30,11 @@ const restaurant = {
   '@type': 'Restaurant',
   '@id': `${SITE}/#restaurant`,
   name: brand.name,
-  alternateName: `${brand.name} - ${brand.tagline}`,
   slogan: brand.tagline,
   description: brand.intro,
   url: `${SITE}/`,
   alternateName: ['Idliyala Daily Fresh Idli', ...Object.values(locales).filter((l) => l.brandName !== brand.name).map((l) => l.brandName)],
-  logo: `${SITE}/images/logo.png`,
+  logo: { '@type': 'ImageObject', url: `${SITE}/images/logo.png`, width: 400, height: 397 },
   image: [`${SITE}/og-image.jpg`, `${SITE}/images/idli-plate.jpg`, `${SITE}/images/dosa-plate.jpg`],
   telephone: brand.phone,
   contactPoint: {
@@ -48,7 +47,8 @@ const restaurant = {
   },
   menu: `${SITE}/menu/`,
   hasMap: brand.googleMaps,
-  sameAs: [brand.googleMaps],
+  // Every official listing of the business (Google, Bing, Justdial, Instagram...), from profiles in src/data.js.
+  sameAs: profiles.map((p) => p.url),
   servesCuisine: ['South Indian', 'Indian', 'Vegetarian'],
   priceRange: `₹${Math.min(...prices)}–₹${Math.max(...prices)}`,
   currenciesAccepted: 'INR',
@@ -130,7 +130,7 @@ const ld = (obj) => `<script type="application/ld+json">${JSON.stringify(obj).re
 let html = readFileSync(dist('index.html'), 'utf8')
 const homePage = {
   '@context': 'https://schema.org', '@type': 'WebPage', '@id': `${SITE}/#webpage`, url: `${SITE}/`, name: `${brand.name} | South Indian Food Delivery in ${brand.city}`,
-  inLanguage: 'en-IN', dateModified: brand.updated, isPartOf: { '@id': `${SITE}/#website` }, about: { '@id': `${SITE}/#restaurant` },
+  description: blurbs.medium, inLanguage: 'en-IN', dateModified: brand.updated, isPartOf: { '@id': `${SITE}/#website` }, about: { '@id': `${SITE}/#restaurant` },
 }
 html = html
   .replace('<div id="root"></div>', `<div id="root">${render()}</div>`)
@@ -202,7 +202,7 @@ const crumbs = (items) => ({
 const restaurantRef = (extra = {}) => ({
   '@context': 'https://schema.org', '@type': 'Restaurant', '@id': `${SITE}/#restaurant`, name: brand.name, url: `${SITE}/`,
   telephone: brand.phone, servesCuisine: restaurant.servesCuisine, image: `${SITE}/og-image.jpg`, address: restaurant.address,
-  menu: `${SITE}/menu/`, hasMap: brand.googleMaps, openingHoursSpecification: restaurant.openingHoursSpecification, ...extra,
+  menu: `${SITE}/menu/`, hasMap: brand.googleMaps, sameAs: restaurant.sameAs, openingHoursSpecification: restaurant.openingHoursSpecification, ...extra,
 })
 const faqLd = (list) => ({ '@context': 'https://schema.org', '@type': 'FAQPage', mainEntity: list.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })) })
 
@@ -230,8 +230,14 @@ function layout({ path, title, desc, ogTitle, lds, main, robots = 'index, follow
     <meta property="og:description" content="${esc(desc)}" />
     <meta property="og:url" content="${url}" />
     <meta property="og:image" content="${SITE}/og-image.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="${brand.name} logo with idli, vada and dosa plates" />
     <meta property="og:locale" content="${ogLocale}" />
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${esc(ogTitle)}" />
+    <meta name="twitter:description" content="${esc(desc)}" />
+    <meta name="twitter:image" content="${SITE}/og-image.jpg" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="${FONTS}" rel="stylesheet" media="print" onload="this.media='all'" />
@@ -249,8 +255,9 @@ ${main}
     </main>
     <footer class="footer"><div class="container footer__inner">
       <div class="footer__brand"><img src="/images/logo-mark.webp" alt="" width="36" height="32" /><span><strong>${brand.name}</strong>™ · ${brand.tagline}</span></div>
-      <p><a href="/menu/">Menu</a> · <a href="/delivery/">Delivery areas</a> · <a href="/about/">About</a> · <a href="/faq/">FAQ</a> · ${dishPages.map((d) => `<a href="/dishes/${d.slug}/">${esc(d.name)} delivery</a>`).join(' · ')}</p>
-      <p>📞 <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> · <a href="${brand.googleMaps}" target="_blank" rel="noreferrer">Find us on Google</a></p>
+      <p><a href="/menu/">Menu</a> · <a href="/delivery/">Delivery areas</a> · <a href="/about/">About</a> · <a href="/faq/">FAQ</a> · <a href="/press/">Press &amp; link to us</a> · ${dishPages.map((d) => `<a href="/dishes/${d.slug}/">${esc(d.name)} delivery</a>`).join(' · ')}</p>
+      <p>📞 <a href="tel:${brand.phone}">${brand.phoneDisplay}</a> · ${brand.city} · ${brand.hours.label}</p>
+      <p>Find ${brand.name} on ${profiles.map((p) => `<a href="${esc(p.url)}" target="_blank" rel="noreferrer me">${esc(p.name)}</a>`).join(' · ')}</p>
       <p><a href="/" hreflang="en">English</a> · ${Object.values(locales).map((l) => `<a href="${l.path}" ${l.hreflang === false ? "" : `hreflang="${l.lang.slice(0, 2)}" `}lang="${l.lang}">${l.label}</a>`).join(' · ')}</p>
     </div></footer>
   </body>
@@ -406,7 +413,7 @@ const facts = [
   ['Hours', brand.hours.label],
   ['Prices', `₹${Math.min(...prices)} to ₹${Math.max(...prices)} per dish`],
   ['Delivery', `₹${brand.deliveryCharge} per order, minimum order ₹${brand.minOrder}`],
-  ['Free with every dish', sides.full],
+  ['Complimentary with every dish', sides.full],
   ['How to order', `On ${SITE.replace('https://', '')} (the order is sent on WhatsApp) or call/WhatsApp ${brand.phoneDisplay}`],
   ['Payment', 'Not taken on the website. Confirmed with your order on WhatsApp'],
 ]
@@ -462,7 +469,7 @@ const allFaqs = faqGroups.flatMap(([, list]) => list)
 pages['faq/'] = layout({
   path: '/faq/',
   title: `${brand.name} FAQ | Delivery, Prices, Hours & Ordering | ${brand.city}`,
-  desc: `Answers about ${brand.name}: delivery areas in ${brand.city}, ₹${brand.deliveryCharge} delivery and ₹${brand.minOrder} minimum order, hours (${brand.hours.label}), prices, what comes free with every dish, and how to order on WhatsApp.`,
+  desc: `Answers about ${brand.name}: delivery areas in ${brand.city}, ₹${brand.deliveryCharge} delivery and ₹${brand.minOrder} minimum order, hours (${brand.hours.label}), prices, what comes complimentary with every dish, and how to order on WhatsApp.`,
   ogTitle: `${brand.name} questions and answers`,
   lds: [
     { ...faqLd(allFaqs), url: `${SITE}/faq/`, name: `${brand.name} FAQ`, inLanguage: 'en-IN', dateModified: brand.updated, about: { '@id': `${SITE}/#restaurant` } },
@@ -482,6 +489,74 @@ ${faqGroups.map(([title, list]) => `      <section class="faq"><div class="conta
       </div></section>`).join('\n')}
       <section class="area-menu"><div class="container">
         <p><a href="/#menu" class="btn btn--primary">🛒 Start your order</a> <a href="/menu/" class="btn btn--ghost">See the full menu</a></p>
+      </div></section>`,
+})
+
+// Press kit: the official name, contact details, descriptions, logo and photos in
+// one place, so bloggers, journalists and directories copy them word for word.
+// Consistent details across the web are what local search and AI assistants trust.
+const pressFacts = [
+  ['Official name', brand.name],
+  ['Tagline', `${brand.tagline}™`],
+  ['Type of business', 'South Indian food delivery kitchen (delivery only, no dine-in)'],
+  ['City', `${brand.city}, West Bengal, India`],
+  ['Phone and WhatsApp', `+91 ${brand.phoneDisplay}`],
+  ['Website', `${SITE}/`],
+  ['Hours', brand.hours.label],
+  ['Food', '100% pure vegetarian: idli, vada, dosa, uttapam, upma'],
+  ['Delivery', `₹${brand.deliveryCharge} per order, minimum order ₹${brand.minOrder}, across north and east ${brand.city}`],
+  ['Delivery areas', listAnd(areaGroups.map((g) => g.name))],
+]
+const pressImages = [
+  ['Logo (PNG, 400 × 397)', '/images/logo.png'],
+  ['Link preview banner (JPG, 1200 × 630)', '/og-image.jpg'],
+  ['Idli plate (JPG)', '/images/idli-plate.jpg'],
+  ['Dosa plate (JPG)', '/images/dosa-plate.jpg'],
+  ...showcaseSlides.map((sl) => [`${sl.name} photo (WebP, 1600 wide)`, `/images/showcase/${sl.id}-wide.webp`]),
+]
+const longBlurb = `${brand.intro} Everything on the menu is 100% pure vegetarian, and every dish comes with complimentary ${sides.full}. ${brand.name} delivers ${brand.hours.label} across north and east ${brand.city}, including Salt Lake, Lake Town, Dum Dum, Kestopur, Baguiati and Chinar Park, with ₹${brand.deliveryCharge} delivery on orders of ₹${brand.minOrder} or more. Order on ${SITE.replace('https://', '')} or WhatsApp ${brand.phoneDisplay}.`
+const linkSnippet = `<a href="${SITE}/">${brand.name}: South Indian food delivery in ${brand.city}</a>`
+pages['press/'] = layout({
+  path: '/press/',
+  title: `${brand.name} Press Kit | Logo, Photos & Official Details`,
+  desc: `Official ${brand.name} details for journalists, food bloggers and directories: name, phone, hours, descriptions, logo and photos of the pure veg South Indian kitchen in ${brand.city}.`,
+  ogTitle: `${brand.name} press kit`,
+  lds: [
+    { '@context': 'https://schema.org', '@type': 'WebPage', url: `${SITE}/press/`, name: `${brand.name} press kit`, inLanguage: 'en-IN', dateModified: brand.updated, about: { '@id': `${SITE}/#restaurant` } },
+    restaurantRef({ description: blurbs.medium, logo: restaurant.logo, slogan: brand.tagline }),
+    crumbs([[brand.name, `${SITE}/`], ['Press kit', `${SITE}/press/`]]),
+  ],
+  main: `      <section class="hero"><div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb"><a href="/">${brand.name}</a> › Press kit</nav>
+        <span class="eyebrow">For journalists, food bloggers and listings</span>
+        <h1>${brand.name} press kit</h1>
+        <p class="lead">Writing about us, listing us in a directory or recommending us to your readers? Thank you. Please use the details below exactly as written, so every listing points to the same business.</p>
+      </div></section>
+      <section class="area-menu"><div class="container">
+        <h2>Official details</h2>
+        <dl class="facts-list">${pressFacts.map(([k, v]) => `<div><dt>${esc(k)}</dt><dd>${esc(v)}</dd></div>`).join('')}</dl>
+        <p class="menu__updated">Details checked <time datetime="${brand.updated}">${brand.updatedLabel}</time></p>
+      </div></section>
+      <section class="area-menu"><div class="container">
+        <h2>Descriptions you can copy</h2>
+        <h3>One line</h3>
+        <p>${esc(blurbs.short)}</p>
+        <h3>Short</h3>
+        <p>${esc(blurbs.medium)}</p>
+        <h3>Long</h3>
+        <p>${esc(longBlurb)}</p>
+      </div></section>
+      <section class="area-menu"><div class="container">
+        <h2>Logo and photos</h2>
+        <p>You are welcome to use these when writing about ${brand.name}.</p>
+        <ul class="area-links">${pressImages.map(([label, src]) => `<li><a href="${src}">${esc(label)}</a></li>`).join('')}</ul>
+        <h2>Linking to us</h2>
+        <p>Please link to our home page, <a href="/">${SITE.replace('https://', '')}</a>, or to the menu at <a href="/menu/">${SITE.replace('https://', '')}/menu/</a>. A ready-made link:</p>
+        <pre><code>${esc(linkSnippet)}</code></pre>
+        <h2>Find us online</h2>
+        <ul class="area-links">${profiles.map((p) => `<li><a href="${esc(p.url)}" target="_blank" rel="noreferrer me">${esc(p.name)}</a></li>`).join('')}</ul>
+        <h2>Contact</h2>
+        <p>For press, collaborations or tasting requests, WhatsApp or call <a href="tel:${brand.phone}">${brand.phoneDisplay}</a>.</p>
       </div></section>`,
 })
 
@@ -580,7 +655,7 @@ Last updated: ${brand.updated}
 - Diet: 100% pure vegetarian
 - Hours: ${brand.hours.label}
 - Prices: ₹${Math.min(...prices)} to ₹${Math.max(...prices)} per dish; ₹${brand.minOrder} minimum order; ₹${brand.deliveryCharge} delivery charge
-- Free with every dish: ${sides.full}
+- Complimentary with every dish: ${sides.full}
 - How to order: on the website (order is sent on WhatsApp) or call/WhatsApp +91 ${brand.phoneDisplay}
 - Payment: arranged on WhatsApp when the order is confirmed; no online payment on the website
 
@@ -595,6 +670,8 @@ Last updated: ${brand.updated}
 - Delivery areas page: ${SITE}/delivery/
 - About ${brand.name}: ${SITE}/about/
 - All questions and answers: ${SITE}/faq/
+- Press kit (logo, official descriptions, contact): ${SITE}/press/
+- Official profiles: ${profiles.map((p) => `${p.name}: ${p.url}`).join(' · ')}
 - Other languages: ${Object.values(locales).map((l) => `${l.label}: ${SITE}${l.path}`).join(' · ')}
 - Name in other scripts: ${Object.values(locales).filter((l) => l.brandName !== brand.name).map((l) => l.brandName).join(', ')}
 - Dish pages: ${dishPages.map((d) => `${d.name}: ${dishUrl(d)}`).join(' · ')}
