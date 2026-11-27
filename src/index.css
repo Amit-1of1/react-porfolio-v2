@@ -577,3 +577,6 @@ a.cart-btn { text-decoration: none; }
 .facts-list dd { margin: 0; }
 .steps-list { padding-left: 1.25rem; line-height: 1.7; margin: 0.5rem 0 1.5rem; }
 @media (max-width: 560px) { .facts-list > div { grid-template-columns: 1fr; gap: 0.15rem; } }
+
+/* Press kit: ready-made link snippet wraps instead of running off small screens */
+.area-menu pre { white-space: pre-wrap; overflow-wrap: anywhere; background: #fff; border-radius: 12px; padding: 12px 14px; font-size: 0.85rem; }
